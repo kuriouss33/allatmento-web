@@ -1,9 +1,13 @@
 import type { NextConfig } from "next";
 
+const isProd = process.env.NODE_ENV === 'production';
+
 const nextConfig: NextConfig = {
-  /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
+  output: isProd ? 'export' : undefined,
+  basePath: isProd ? '/allatmento-web' : '',
+  images: {
+    unoptimized: true,
+  },
   turbopack: {
     rules: {
       "*.css": {
