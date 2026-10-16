@@ -50,7 +50,7 @@ export const Header: React.FC = () => {
           {/* Logo & Brand */}
           <Link href="/" className="flex items-center gap-2 sm:gap-3 group focus:outline-none">
             <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-xl overflow-hidden border border-blue-500/30 dark:border-blue-400/20 shadow-sm flex-shrink-0 group-hover:scale-105 transition-transform" style={{ position: 'relative' }}>
-              <Image src="/logo.png" alt="Állatmentő Portál" width={36} height={36} className="w-full h-full object-cover" priority />
+              <Image src={`${process.env.NODE_ENV === 'production' ? '/allatmento-web' : ''}/logo.png`} alt="Állatmentő Portál" width={36} height={36} className="w-full h-full object-cover" priority />
             </div>
             <div className="flex flex-col">
               <span className="font-extrabold text-sm sm:text-lg tracking-tight text-slate-900 dark:text-white leading-tight">

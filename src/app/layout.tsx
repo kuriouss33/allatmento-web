@@ -14,11 +14,14 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
+const isProd = process.env.NODE_ENV === 'production';
+const basePath = isProd ? '/allatmento-web' : '';
+
 export const metadata: Metadata = {
   title: 'Állatmentő Portál - Sürgősségi Segítség & Koordináció',
   description: 'Valós idejű állatmentő és diszpécser koordinációs portál bejelentők és hitelesített mentőszervezetek számára.',
   icons: {
-    icon: '/logo.png',
+    icon: `${basePath}/logo.png`,
   },
 };
 

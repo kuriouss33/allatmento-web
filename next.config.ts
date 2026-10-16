@@ -5,6 +5,7 @@ const isProd = process.env.NODE_ENV === 'production';
 const nextConfig: NextConfig = {
   output: isProd ? 'export' : undefined,
   basePath: isProd ? '/allatmento-web' : '',
+  trailingSlash: true,
   images: {
     unoptimized: true,
   },

@@ -196,7 +196,8 @@ export default function ReportWizardPage() {
 
   const copyShareLink = () => {
     if (typeof window !== 'undefined') {
-      const link = `${window.location.origin}/terkep?reportId=${createdReportId}`;
+      const basePath = process.env.NODE_ENV === 'production' ? '/allatmento-web' : '';
+      const link = `${window.location.origin}${basePath}/terkep?reportId=${createdReportId}`;
       navigator.clipboard.writeText(link);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -556,7 +557,7 @@ export default function ReportWizardPage() {
             <div className="flex flex-col sm:flex-row gap-2">
               <a
                 href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-                  typeof window !== 'undefined' ? `${window.location.origin}/terkep?reportId=${createdReportId}` : ''
+                  typeof window !== 'undefined' ? `${window.location.origin}${process.env.NODE_ENV === 'production' ? '/allatmento-web' : ''}/terkep?reportId=${createdReportId}` : ''
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
