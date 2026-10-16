@@ -3,12 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "node scripts/build-css.js && next dev --webpack",
+    "build": "node scripts/build-css.js && next build --webpack",
+    "build:css": "node scripts/build-css.js",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
+    "@types/leaflet": "^1.9.22",
+    "@types/leaflet.markercluster": "^1.5.6",
+    "firebase": "^13.0.0",
+    "leaflet": "^1.9.4",
+    "leaflet.markercluster": "^1.5.3",
+    "lucide-react": "^1.57.0",
     "next": "16.4.2",
     "react": "19.3.0",
     "react-dom": "19.3.0"

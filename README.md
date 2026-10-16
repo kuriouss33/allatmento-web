@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Állatmentő Portál - Next.js & React WebApp
 
-## Getting Started
+Modern, teljes funkcióparitású Next.js (App Router, React 19, TypeScript, Tailwind CSS v4) frontend az Állatmentő és Diszpécser Portálhoz.
 
-First, run the development server:
+## 🚀 Indítás Fejlesztői Környezetben
 
 ```bash
+cd allatmento-web
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Az alkalmazás elérhető a [http://localhost:3000](http://localhost:3000) címen.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🏗️ Éles Build Készítése
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+cd allatmento-web
+npm run build
+npm run start
+```
 
-## Learn More
+## 🔗 Kapcsolat a Meglévő Háttérrendszerekkel
 
-To learn more about Next.js, take a look at the following resources:
+- **Express/TypeScript Backend:** `https://allatmento-backend.onrender.com/api` (vagy a `NEXT_PUBLIC_BACKEND_URL` környezeti változóban felülbírálható)
+- **Firebase Auth & Firestore Real-time Database:** `allatmento-app.firebaseapp.com`
+- **Valós idejű eseményfigyelés:** Firestore `onSnapshot` a bejelentésekre és a chat üzenetekre
+- **Fénykép tömörítés:** Kliensoldali HTML5 Canvas tömörítés feltöltés előtt
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📁 Főbb Oldalak és Útvonalak
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `/` – Főoldal & Sürgősségi Irányítópult (élő statisztikák, gyorsgombok)
+- `/terkep` – Diszpécser Műszerfal (2 oszlopos osztott felület, szűrők, Leaflet térkép, klaszterezés, akciók)
+- `/bejelentes` – 3 lépéses Bejelentő Varázsló (Fajta ➔ Helyszín & GPS & Fotó ➔ Adatok & GDPR ➔ Sikeroldal megosztással)
+- `/ugyek` – Saját Ügyeim (általam bejelentett és elvállalt esetek)
+- `/szervezetek` – Menhelyek, állatorvosok, hatóságok és vadmentők országos jegyzéke közvetlen hívással
+- `/kisokos` – Elsősegély útmutatók szakértői ajánlásokkal
+- `/admin` – Rendszeradminisztrációs felület (jogosultságok kezelése, mentők jóváhagyása)
