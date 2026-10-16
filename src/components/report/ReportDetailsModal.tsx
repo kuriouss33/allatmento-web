@@ -35,7 +35,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
     if (report) {
       setComments(report.kommentek || []);
     }
-    if (!report || !isOpen || !isRescuer) return;
+    if (!report || !isOpen || !isRescuer || !db) return;
 
     // Real-time Firestore figyelő a bejelentésre és kommentjeire (kizárólag hitelesített mentőknek)
     const unsubscribe = onSnapshot(

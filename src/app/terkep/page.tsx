@@ -71,7 +71,7 @@ export default function DispatchPage() {
     let unsubscribe: () => void = () => {};
     let pollInterval: NodeJS.Timeout | null = null;
 
-    if (isRescuer) {
+    if (isRescuer && db) {
       try {
         const q = query(collection(db, 'bejelentesek'));
         unsubscribe = onSnapshot(

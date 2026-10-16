@@ -68,6 +68,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
+    if (!auth) {
+      setLoading(false);
+      return;
+    }
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setFirebaseUser(user);
       if (user) {
@@ -83,11 +87,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (email: string, pass: string) => {
+    if (!auth) throw new Error('A bejelentkezési szolgáltatás jelenleg nem elérhető.');
     const cred = await signInWithEmailAndPassword(auth, email, pass);
     await fetchProfile(cred.user);
   };
 
   const register = async (email: string, pass: string) => {
+    if (!auth) throw new Error('A regisztrációs szolgáltatás jelenleg nem elérhető.');
     const cred = await createUserWithEmailAndPassword(auth, email, pass);
     try {
       await registerProfile(cred.user.uid, email);
@@ -99,7 +105,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = async () => {
-    await fbSignOut(auth);
+    if (auth) {
+      await fbSignOut(auth);
+    }
     setFirebaseUser(null);
     setProfile(null);
     setIdToken(null);

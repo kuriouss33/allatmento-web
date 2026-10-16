@@ -41,6 +41,7 @@ export default function OrganizationsPage() {
   useEffect(() => {
     const fetchOrgs = async () => {
       try {
+        if (!db) return;
         const snap = await getDocs(collection(db, 'szervezetek'));
         if (!snap.empty) {
           const list: Organization[] = [];
