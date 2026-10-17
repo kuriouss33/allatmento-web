@@ -76,7 +76,8 @@ export interface Organization {
   kategoria: OrgCategory;
   megye: string;
   cim?: string;
-  telefon: string;
+  telefon?: string;
+  email?: string;
   leiras?: string;
   weboldal?: string;
 }

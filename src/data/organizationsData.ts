@@ -146,6 +146,423 @@ export const ORGANIZATIONS: Organization[] = [
     "leiras": "Bajbajutott, sérült és utcára került kutyák szakszerű mentése, átmeneti gondozása."
   },
   {
+    "id": "vet-bp-fuziovet",
+    "nev": "FuzioVet Állatkórház és Macskaközpont (FeliCaVet)",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1112 Budapest, Budaörsi út 146/B (és 1118 Rétköz u. 16.)",
+    "telefon": "+36 1 246 6945",
+    "email": "info@fuziovet.hu",
+    "leiras": "Buda kiemelkedő kisállatkórháza és specializált macskagyógyászata: ortopédia, neurológia, sürgősségi intenzív ellátás (Mobil: +36 30 469 9459)."
+  },
+  {
+    "id": "vet-bp-primavet",
+    "nev": "PrimaVet Kisállat-rendelőintézet és Szakorvosi Központ",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1152 Budapest, Rákos út 60.",
+    "telefon": "+36 1 306 1364",
+    "email": "rendelo@primavetrendelo.hu",
+    "leiras": "Észak-Pest egyik legnagyobb szakorvosi kisállat-kórháza: digitális CT, ultrahang, lágyszöveti és csontsebészet."
+  },
+  {
+    "id": "vet-bp-csipetcsapat",
+    "nev": "Csipet-Csapat Állatgyógyászati Központ",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1183 Budapest, Ráday Gedeon utca 67.",
+    "telefon": "+36 1 290 8970",
+    "email": "info@csipetcsapatallatorvos.hu",
+    "leiras": "Pestszentlőrinc (XVIII. kerület) modern állatorvosi központja: baleseti traumatológia, sebészet, készenléti ügyelet (Mobil: +36 30 080 1992)."
+  },
+  {
+    "id": "vet-bp-rakosliget",
+    "nev": "Rákosligeti Állatorvosi Rendelőintézet",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1172 Budapest, XX. utca 2. (Ferihegyi út sarok)",
+    "telefon": "+36 1 257 8719",
+    "email": "info@kisallatkorhaz.hu",
+    "leiras": "Rákosmente (XVII. kerület) elismert kisállat-kórháza: digitális röntgen, sebészet, belgyógyászat és intenzív ellátás (Mobil: +36 30 132 6494)."
+  },
+  {
+    "id": "vet-bp-budateteny",
+    "nev": "Budatétényi Állatklinika és Állatkórház",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1223 Budapest, Rákóczi út 37.",
+    "telefon": "+36 1 362 2643",
+    "email": "budatetenyiallatkorhaz@gmail.com",
+    "leiras": "Dél-Buda (XXII. kerület) vezető állatklinikája: csontsebészet, ultrahang, laborvizsgálatok és fekvőbeteg részleg."
+  },
+  {
+    "id": "vet-bp-pasareti",
+    "nev": "Pasaréti Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1026 Budapest, Radna utca 14.",
+    "telefon": "+36 1 787 9002",
+    "email": "pasaretiallatorvos@gmail.com",
+    "leiras": "II. kerület / Pasarét korszerű kisállatrendelője: lágysebészet, ultrahang, belgyógyászat és megelőző állatorvosi ellátás."
+  },
+  {
+    "id": "vet-bp-obudai",
+    "nev": "Óbudai Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1032 Budapest, San Marco utca 77.",
+    "telefon": "+36 1 368 7430",
+    "email": "info@allatorvosobuda.hu",
+    "leiras": "III. kerület Óbuda központi rendelője: sebészeti műtétek, ultrahang, fogászat és baleseti sebészet."
+  },
+  {
+    "id": "vet-bp-csepel",
+    "nev": "Csepeli Állatorvosi Rendelő (Dr. Molnár Péter)",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1214 Budapest, II. Rákóczi Ferenc út 230.",
+    "telefon": "+36 1 277 1333",
+    "email": "csepelirendelo@gmail.com",
+    "leiras": "XXI. kerület Csepel nagy múltú rendelője: baleseti ellátás, sebészet, röntgen és labor (Mobil: +36 30 989 5074)."
+  },
+  {
+    "id": "vet-bp-csaladoki",
+    "nev": "Család utcai Kisállatrendelő (Családoki)",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1039 Budapest, Család u. 36/a",
+    "telefon": "+36 1 240 9780",
+    "email": "csaladoki@gmail.com",
+    "leiras": "Békásmegyer és Csillaghegy közkedvelt rendelője: sebészet, oltások, chipregisztráció és belgyógyászat (Mobil: +36 30 934 5480)."
+  },
+  {
+    "id": "vet-bp-vezer",
+    "nev": "Vezér Állatorvosi Rendelő (Max-Vet)",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1148 Budapest, Vezér út 132.",
+    "telefon": "+36 1 220 6332",
+    "email": "maxvetrendelo@gmail.com",
+    "leiras": "Zugló (XIV. kerület) kiemelt forgalmú kisállatrendelője: baleseti ellátás, sebészet, szűrések (Mobil: +36 30 202 2240)."
+  },
+  {
+    "id": "vet-bp-szentbernat",
+    "nev": "Szent Bernát Kisállat-rendelőintézet",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1195 Budapest, Kossuth Lajos utca 38.",
+    "telefon": "+36 1 280 8470",
+    "email": "info@szentbernat.hu",
+    "leiras": "Kispest (XIX. kerület) elismert kisállat-rendelőintézete: ultrahang, sebészeti beavatkozások és belgyógyászat."
+  },
+  {
+    "id": "vet-bp-ujpest",
+    "nev": "Újpesti Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1041 Budapest, Templom utca 5.",
+    "telefon": "+36 1 369 5791",
+    "email": "ujpestiallatorvos@gmail.com",
+    "leiras": "IV. kerület Újpest központi állatorvosi rendelője: műtétek, röntgen, ultrahang, védőoltások (Mobil: +36 30 283 4251)."
+  },
+  {
+    "id": "vet-bp-ferencvaros",
+    "nev": "Középső Ferencvárosi Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1096 Budapest, Telepy utca 23.",
+    "telefon": "+36 1 215 2991",
+    "email": "ferencvarosiallatorvos@gmail.com",
+    "leiras": "Ferencváros (IX. kerület) megbízható kisállat-rendelője: sebészeti ellátás, vakcinázás és labor."
+  },
+  {
+    "id": "vet-bp-varosliget",
+    "nev": "Városligeti Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1146 Budapest, Hermina út 30.",
+    "telefon": "+36 1 251 1445",
+    "email": "varosligetiallatorvos@gmail.com",
+    "leiras": "XIV. kerület Herminamező / Városliget környéki kisállat-ellátás, sebészet és diagnosztika."
+  },
+  {
+    "id": "vet-bp-budagyongye",
+    "nev": "Budagyöngye Kisállat Rendelő és Diagnosztika",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1026 Budapest, Szilágyi Erzsébet fasor 121.",
+    "telefon": "+36 30 273 7402",
+    "email": "budagyongyeallatpatika@gmail.com",
+    "leiras": "II. kerület Budagyöngye körzetének állatorvosi rendelője és szakpatikája: szűrővizsgálatok, belgyógyászat."
+  },
+  {
+    "id": "vet-bp-tutivet",
+    "nev": "TutiVet Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1082 Budapest, Horváth Mihály tér 6.",
+    "telefon": "+36 1 781 6607",
+    "email": "tutivetrendelo@gmail.com",
+    "leiras": "Józsefváros (VIII. kerület) belvárosi kisállat-rendelője: lágysebészet, ultrahang, labor (Mobil: +36 20 490 5959)."
+  },
+  {
+    "id": "vet-bp-bekasmegyer",
+    "nev": "Békásmegyeri Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1039 Budapest, Hímző utca 3.",
+    "telefon": "+36 1 243 1975",
+    "email": "allatorvosbekasmegyer@gmail.com",
+    "leiras": "III. kerület Békásmegyer lakótelep és a Duna-part környéki kutyák, macskák orvosi ellátása (Mobil: +36 20 515 5663)."
+  },
+  {
+    "id": "vet-bp-kobanya-bihari",
+    "nev": "Kőbányai Kisállatrendelő (Dr. Szakmáry Katalin)",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1107 Budapest, Bihari út 27.",
+    "telefon": "+36 1 262 0620",
+    "email": "kobanyaiallatorvos@gmail.com",
+    "leiras": "X. kerület Kőbánya forgalmas rendelője: sebészet, belgyógyászat, mikrochip és sürgős ellátás (Mobil: +36 30 952 5770)."
+  },
+  {
+    "id": "vet-bp-ohegy",
+    "nev": "Óhegyi Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1103 Budapest, Tarló utca 22.",
+    "telefon": "+36 1 261 2022",
+    "email": "ohegyirendelo@gmail.com",
+    "leiras": "Kőbánya-Óhegy és Újhegy kisállat-ellátása: lágyszöveti sebészet, védőoltások, bőrgyógyászat."
+  },
+  {
+    "id": "vad-bp-allatkert",
+    "nev": "Fővárosi Állat- és Növénykert Vadállatmentő Központ (Magyar Madármentők Alapítvány)",
+    "kategoria": "vad",
+    "megye": "Budapest",
+    "cim": "1146 Budapest, Állatkerti körút 6-12.",
+    "telefon": "+36 1 273 4900",
+    "email": "madarmentok@zoobudapest.com",
+    "leiras": "Vadon élő sérült védett állatok, madarak, ragadozómadarak, sünök és emlősök szakszerű mentése, gyógyítása és visszavadítása a Városligetben."
+  },
+  {
+    "id": "vad-bp-sundetektor",
+    "nev": "Sündetektor Egyesület – Országos és Budapesti Sünmentés",
+    "kategoria": "vad",
+    "megye": "Budapest",
+    "cim": "Budapest és Pest vármegye",
+    "telefon": "+36 70 941 2629",
+    "email": "nemeth.jozsef18@gmail.com",
+    "leiras": "Nappal talált, elgázolt, fűkaszával sérült vagy késő ősszel alulsúlyos sünök szakszerű orvosi ellátása és védett teleltetése."
+  },
+  {
+    "id": "sh-bp-allatmentoliga",
+    "nev": "Állatmentő Liga (Budapest)",
+    "kategoria": "menhely",
+    "megye": "Budapest",
+    "cim": "1048 Budapest, Szíjgyártó utca 13. (Ügyfélszolgálat: 1044 Váci út 67-69.)",
+    "telefon": "+36 30 512 6196",
+    "email": "kommunikacio@allatmentoliga.com",
+    "leiras": "Budapesti operatív gyorsreagálású állatmentő szervezet: rendőrséggel (BRFK) és hatóságokkal együttműködve azonnali mentés bajba jutott állatokhoz."
+  },
+  {
+    "id": "sh-bp-szurkolok",
+    "nev": "Szurkolók az Állatokért Alapítvány",
+    "kategoria": "menhely",
+    "megye": "Budapest",
+    "cim": "1141 Budapest, Szugló utca 82.",
+    "telefon": "+36 70 611 8823",
+    "email": "info@szurkolokazallatokert.hu",
+    "leiras": "Határozott fellépés az állatkínzás ellen Budapesten és országszerte: bántalmazott, láncon tartott kutyák kimentése, rehabilitációja és elhelyezése."
+  },
+  {
+    "id": "sh-bp-tetovaltak",
+    "nev": "Tetovált Állatmentők Állatvédelmi Egyesület",
+    "kategoria": "menhely",
+    "megye": "Budapest",
+    "cim": "Budapest és Pest vármegye",
+    "telefon": "+36 70 592 0270",
+    "email": "info@allatmentok.hu",
+    "leiras": "Balesetes, elütött, kínzott és krízishelyzetben lévő kutyák és cicák azonnali helyszíni mentése és kórházi kezelése."
+  },
+  {
+    "id": "sh-bp-retriever",
+    "nev": "Retriever Rescue Fajtamentő Egyesület",
+    "kategoria": "menhely",
+    "megye": "Budapest",
+    "cim": "Budapest és országos hálózat",
+    "telefon": "+36 20 526 2703",
+    "email": "info@retrieverhelp.hu",
+    "leiras": "Golden retrieverek, labrador retrieverek és keverékeik fajtamentése: gyógykezelés, ideiglenes befogadás és szigorúan ellenőrzött örökbeadás."
+  },
+  {
+    "id": "sh-bp-futrinka",
+    "nev": "Futrinka Egyesület (Német Dog és Tacskó Fajtamentés)",
+    "kategoria": "menhely",
+    "megye": "Budapest",
+    "cim": "1115 Budapest, Fraknó utca",
+    "telefon": "+36 30 383 7450",
+    "email": "info@futrinkautca.hu",
+    "leiras": "Német dogok, tacskók és esélytelen, idős vagy beteg kutyák mentése, orvosi rehabilitációja és felelős gazdihoz juttatása."
+  },
+  {
+    "id": "sh-bp-vizslas",
+    "nev": "Magyar Vizsla Fajtamentő Csoport (Magyar Vizsla SOS)",
+    "kategoria": "menhely",
+    "megye": "Budapest",
+    "cim": "Budapest és országos koordináció",
+    "telefon": "+36 30 383 7450",
+    "email": "magyarvizslasos@gmail.com",
+    "leiras": "Rövidszőrű és drótszőrű magyar vizslák, vizslakeverékek mentése, szocializációja és gazdisítása."
+  },
+  {
+    "id": "sh-bp-spaniel",
+    "nev": "Cocker Rocker Spániel Fajtamentő Egyesület",
+    "kategoria": "menhely",
+    "megye": "Budapest",
+    "cim": "Budapest és vonzáskörzete",
+    "telefon": "+36 30 998 3947",
+    "email": "spanielmentes@gmail.com",
+    "leiras": "Angol és amerikai cocker spánielek, spániel keverékek mentése, fül- és szembetegségeik speciális gyógykezelése és örökbeadása."
+  },
+  {
+    "id": "sh-bp-beagle",
+    "nev": "BEAGLE-ért Közhasznú Egyesület (Beagle Fajtamentés)",
+    "kategoria": "menhely",
+    "megye": "Budapest",
+    "cim": "Budapest és országos hálózat",
+    "telefon": "+36 20 255 4188",
+    "email": "mentes@beagle-fajtamentes.hu",
+    "leiras": "Elveszett, elhagyott, bántalmazott és laboratóriumi beagle kutyák rehabilitációja és örökbeadása."
+  },
+  {
+    "id": "sh-bp-nemetjuhasz",
+    "nev": "Német Juhászkutya Fajtamentés Alapítvány",
+    "kategoria": "menhely",
+    "megye": "Budapest",
+    "cim": "Budapest és Pest vármegye",
+    "telefon": "+36 70 408 7207",
+    "email": "njmentes@freemail.hu",
+    "leiras": "Német juhászkutyák és keverékeik mentése: szocializáció, rehabilitáció, orvosi ellátás és felelős gazdihoz közvetítés."
+  },
+  {
+    "id": "sh-bp-lelenc",
+    "nev": "Lelenc Kutyamentő Egyesület",
+    "kategoria": "menhely",
+    "megye": "Budapest",
+    "cim": "Budapest és Pest vármegye északi térsége",
+    "telefon": "+36 30 201 6671",
+    "email": "info@lelenc.hu",
+    "leiras": "Utcára került, altatásra ítélt és sérült ebek orvosi ellátása, ideiglenes befogadása és családba adása."
+  },
+  {
+    "id": "sh-bp-mfoek",
+    "nev": "MFÖEK – Mindenki Fogadjon Örökbe Egy Kiskutyát Alapítvány",
+    "kategoria": "menhely",
+    "megye": "Budapest",
+    "cim": "Budapest és országos hálózat",
+    "email": "team@mfoek.hu",
+    "leiras": "Gyepmesteri telepekről és utcáról mentett kutyák, macskák szakszerű ellátása, ideiglenes gondozása és örökbeadása."
+  },
+  {
+    "id": "sh-bp-hangya",
+    "nev": "Hangya Közösség Alapítvány",
+    "kategoria": "menhely",
+    "megye": "Budapest",
+    "cim": "1161 Budapest, Érsekújvári utca 22.",
+    "email": "info@hangyakozosseg.hu",
+    "leiras": "Országos és budapesti ernyőszervezet: menhelyek és állatvédők közvetlen támogatása táppal, gyógyszerrel és infrastruktúrával."
+  },
+  {
+    "id": "sh-bp-czapary",
+    "nev": "Czapáry Macskaház Alapítvány (FIV / FeLV Cicamentés)",
+    "kategoria": "menhely",
+    "megye": "Budapest",
+    "cim": "Budapest és környéke",
+    "telefon": "+36 20 562 7449",
+    "email": "czaparymacskahaz@gmail.com",
+    "leiras": "Speciális orvosi igényű, immunszupresszált és leukózisos macskák védelme, szakszerű orvosi ellátása és otthona."
+  },
+  {
+    "id": "sh-bp-macskaarvahaz",
+    "nev": "Macskaárvaház Alapítvány",
+    "kategoria": "menhely",
+    "megye": "Budapest",
+    "cim": "1034 Budapest, Selmeci utca 26.",
+    "telefon": "+36 30 250 8272",
+    "email": "info@macskaarvahaz.hu",
+    "leiras": "Óbudai macskamentő alapítvány: gazdátlan, sérült és elárvult macskák mentése, ivartalanítása és gazdisítása."
+  },
+  {
+    "id": "sh-bp-macskavilag",
+    "nev": "Macskavilág Alapítvány",
+    "kategoria": "menhely",
+    "megye": "Budapest",
+    "cim": "Budapest és környéke",
+    "email": "info@macskavilag.com",
+    "leiras": "Kóbor macskakolóniák ivartalanítása (TNR), árva kiscicák felnevelése, gyógyítása és örökbeadása."
+  },
+  {
+    "id": "sh-bp-noe-bulldog",
+    "nev": "NOÉ Állatotthon – Bulldog Fajtamentő Csoport",
+    "kategoria": "menhely",
+    "megye": "Budapest",
+    "cim": "1171 Budapest, Csordakút utca vége",
+    "telefon": "+36 30 221 1299",
+    "email": "bulldogmentes@noeallatotthon.hu",
+    "leiras": "Angol és francia bulldogok speciális fajtamentése: légúti, bőr- és szemműtétek, rehabilitáció és örökbeadás."
+  },
+  {
+    "id": "sh-bp-noe-boxer",
+    "nev": "NOÉ Állatotthon – Boxer Fajtamentő Csoport",
+    "kategoria": "menhely",
+    "megye": "Budapest",
+    "cim": "1171 Budapest, Csordakút utca vége",
+    "telefon": "+36 30 221 1299",
+    "email": "boxermentes@noeallatotthon.hu",
+    "leiras": "Boxer kutyák mentése, szív- és daganatos megbetegedések speciális szakorvosi gyógykezelése és felelős gazdihoz adása."
+  },
+  {
+    "id": "sh-bp-barsonytalp",
+    "nev": "Bársonytalp Macskamentő Alapítvány",
+    "kategoria": "menhely",
+    "megye": "Budapest",
+    "cim": "Budapest és vonzáskörzete",
+    "telefon": "+36 20 340 4274",
+    "email": "barsonytalpalapitvany@gmail.com",
+    "leiras": "Sérült, kidobott és veszélyben lévő cicák mentése, orvosi szűrése (FIV/FeLV) és biztonságos örökbeadása."
+  },
+  {
+    "id": "sh-bp-tappancsos",
+    "nev": "Tappancsos Család Állatvédő Alapítvány",
+    "kategoria": "menhely",
+    "megye": "Budapest",
+    "cim": "1188 Budapest, Vasút utca 12.",
+    "telefon": "+36 30 942 8887",
+    "email": "tappancsoscsalad@gmail.com",
+    "leiras": "Dél-pesti kóbor és bántalmazott állatok mentése, orvosi rehabilitációja és ideiglenes elhelyezése."
+  },
+  {
+    "id": "sh-bp-csellengo",
+    "nev": "Csellengő Tappancsok Állatvédő Egyesület",
+    "kategoria": "menhely",
+    "megye": "Budapest",
+    "cim": "Budapest és környéke",
+    "telefon": "+36 30 464 9741",
+    "email": "csellengotappancsok@gmail.com",
+    "leiras": "Kóbor, elhagyott és bajbajutott kutyák megmentése, egészségügyi helyreállítása és szerető családhoz közvetítése."
+  },
+  {
+    "id": "sh-bp-koborkak",
+    "nev": "Kóborkák Állatvédő Egyesület (Budapest)",
+    "kategoria": "menhely",
+    "megye": "Budapest",
+    "cim": "Budapest és kistérsége",
+    "telefon": "+36 20 541 6292",
+    "email": "koborkak.egyesulet@gmail.com",
+    "leiras": "Gazdátlan állatok rehabilitációja, szocializációja, utcai macskák és kutyák ivartalanítási támogatása."
+  },
+  {
     "id": "vad-dinpi",
     "nev": "Duna-Ipoly Nemzeti Park Igazgatóság",
     "kategoria": "vad",

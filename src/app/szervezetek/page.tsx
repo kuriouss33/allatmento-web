@@ -10,7 +10,8 @@ import {
   Stethoscope, 
   ShieldAlert, 
   Bird, 
-  Home 
+  Home,
+  Mail
 } from 'lucide-react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -100,14 +101,15 @@ export default function OrganizationsPage() {
         }
       }
 
-      // Szabadszavas kereső (név, cím, megye, leírás)
+      // Szabadszavas kereső (név, cím, megye, leírás, email)
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim();
         const inName = (org.nev || '').toLowerCase().includes(q);
         const inCity = (org.cim || '').toLowerCase().includes(q);
         const inCounty = (org.megye || '').toLowerCase().includes(q);
         const inDesc = (org.leiras || '').toLowerCase().includes(q);
-        if (!inName && !inCity && !inCounty && !inDesc) return false;
+        const inEmail = (org.email || '').toLowerCase().includes(q);
+        if (!inName && !inCity && !inCounty && !inDesc && !inEmail) return false;
       }
       return true;
     });
@@ -132,9 +134,12 @@ export default function OrganizationsPage() {
       
       {/* Header */}
       <div className="shrink-0 text-center flex flex-col items-center justify-center">
-        <h1 className="text-lg sm:text-2xl font-light text-slate-900 dark:text-white tracking-tight flex items-center justify-center gap-2">
+        <h1 className="text-lg sm:text-2xl font-light text-slate-900 dark:text-white tracking-tight flex items-center justify-center gap-2 flex-wrap">
           <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600 dark:text-emerald-400" />
           <span>{t.orgsTitle}</span>
+          <span className="text-xs font-normal text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+            {filteredOrgs.length}
+          </span>
         </h1>
         <p className="text-[11px] sm:text-sm text-slate-500 dark:text-slate-400 text-center font-light">
           {t.orgsSub}
@@ -254,8 +259,8 @@ export default function OrganizationsPage() {
                     )}
                   </div>
 
-                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80">
-                    {org.telefon ? (
+                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 space-y-1.5">
+                    {org.telefon && !org.telefon.includes('@') ? (
                       <a
                         href={`tel:${org.telefon}`}
                         className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl font-light text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-500/20 active:scale-[0.98] transition-all"
@@ -263,10 +268,28 @@ export default function OrganizationsPage() {
                         <Phone className="w-3.5 h-3.5" />
                         <span>{t.callNow.toUpperCase()} ({org.telefon})</span>
                       </a>
+                    ) : (org.email || (org.telefon && org.telefon.includes('@'))) ? (
+                      <a
+                        href={`mailto:${org.email || org.telefon}`}
+                        className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl font-light text-xs bg-blue-600 hover:bg-blue-700 text-white shadow-sm shadow-blue-500/20 active:scale-[0.98] transition-all"
+                      >
+                        <Mail className="w-3.5 h-3.5" />
+                        <span>EMAIL ({org.email || org.telefon})</span>
+                      </a>
                     ) : (
                       <div className="text-center py-2 text-xs text-slate-400 font-light">
                         {t.noPhoneProvided}
                       </div>
+                    )}
+
+                    {org.telefon && !org.telefon.includes('@') && org.email && (
+                      <a
+                        href={`mailto:${org.email}`}
+                        className="w-full flex items-center justify-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors pt-0.5"
+                      >
+                        <Mail className="w-3 h-3" />
+                        <span>{org.email}</span>
+                      </a>
                     )}
                   </div>
                 </div>
