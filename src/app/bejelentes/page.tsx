@@ -160,6 +160,9 @@ export default function ReportWizardPage() {
         } catch (uploadErr: any) {
           console.warn('Tömörített képfeltöltési kísérlet sikertelen, próbálkozás az eredetivel:', uploadErr);
           try {
+            if (photoFile.size > 4 * 1024 * 1024) {
+              throw new Error('A fénykép mérete meghaladja a 4 MB-os korlátot és a tömörítés nem sikerült. Kérlek, válassz kisebb méretű fotót!');
+            }
             uploadedPhotoUrl = await uploadImage(photoFile, photoFile.name || 'report-photo.jpg');
           } catch (origErr: any) {
             throw new Error(`Képfeltöltési hiba: ${origErr.message || 'A szerver visszautasította a fotót.'}`);

@@ -57,6 +57,9 @@ export const ResolveModal: React.FC<ResolveModalProps> = ({
           const compressedBlob = await compressImage(photoFile);
           photoUrl = await uploadImage(compressedBlob, photoFile.name || 'resolve-photo.jpg');
         } catch {
+          if (photoFile.size > 4 * 1024 * 1024) {
+            throw new Error('A fénykép mérete meghaladja a 4 MB-os korlátot és a tömörítés nem sikerült. Kérlek, válassz kisebb méretű fotót!');
+          }
           photoUrl = await uploadImage(photoFile, photoFile.name || 'resolve-photo.jpg');
         }
       }

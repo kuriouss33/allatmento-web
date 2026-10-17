@@ -143,6 +143,9 @@ export async function uploadImage(fileOrBlob: Blob | File, filename: string = 'p
   } catch {}
 
   if (!res.ok) {
+    if (res.status === 413) {
+      errorMessage = 'A feltöltött kép mérete meghaladja a szerver nélküli limitet (max. 4.5 MB). Kérlek, próbáld kisebb méretű fotóval vagy engedd a tömörítést!';
+    }
     throw new Error(errorMessage);
   }
 
