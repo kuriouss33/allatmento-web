@@ -5,178 +5,97 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { 
-  MapPin, 
-  PlusCircle, 
-  ClipboardList, 
-  Building2, 
-  BookOpen, 
-  ShieldCheck, 
-  Sun, 
-  Moon, 
-  Globe, 
-  LogOut, 
-  LogIn,
-  ShieldAlert,
-  BarChart3,
-  ArrowLeft
+  ArrowLeft, 
+  Settings, 
+  User, 
+  LogOut 
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { useTheme } from '@/context/ThemeContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { AuthModal } from '@/components/auth/AuthModal';
 
 export const Header: React.FC = () => {
   const pathname = usePathname();
-  const { firebaseUser, profile, logout, isRescuer, isAdmin } = useAuth();
-  const { theme, toggleTheme } = useTheme();
-  const { lang, toggleLang, t } = useLanguage();
+  const { firebaseUser, logout } = useAuth();
+  const { t } = useLanguage();
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
-  const navLinks = [
-    { href: '/terkep', label: t.navMap, icon: MapPin },
-    { href: '/ugyek', label: t.navMyCases, icon: ClipboardList },
-    { href: '/bejelentes', label: t.navNew, icon: PlusCircle, isAction: true },
-    { href: '/szervezetek', label: t.navOrgs, icon: Building2 },
-    { href: '/kisokos', label: t.navGuide, icon: BookOpen },
-    { href: '/statisztika', label: t.navStats, icon: BarChart3 },
-  ];
-
-  if (isAdmin) {
-    navLinks.push({ href: '/admin', label: t.navAdmin, icon: ShieldAlert, isAction: false });
-  }
+  const isHome = pathname === '/';
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 dark:border-slate-800/80 bg-white/85 dark:bg-slate-900/85 backdrop-blur-md transition-colors shrink-0">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-13 sm:h-16 flex items-center justify-between gap-2 sm:gap-4">
+      <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md transition-colors shrink-0">
+        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
           
-          <div className="flex items-center gap-2">
-            {/* Mobile Back Button when on subpages */}
-            {pathname !== '/' && (
+          {/* Bal oldal: Főoldalon a logó (kitöltve a containert), aloldalakon vissza nyíl */}
+          <div className="flex items-center">
+            {isHome ? (
+              <Link 
+                href="/" 
+                className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden border border-blue-500/25 dark:border-blue-400/20 shadow-sm flex items-center justify-center shrink-0 hover:scale-105 active:scale-95 transition-transform bg-white dark:bg-slate-900"
+                title={t.navHome || 'Főoldal'}
+              >
+                <Image 
+                  src={`${process.env.NODE_ENV === 'production' ? '/allatmento-web' : ''}/logo.png`} 
+                  alt="Állatmentő Portál" 
+                  width={44} 
+                  height={44} 
+                  className="w-full h-full object-cover" 
+                  priority 
+                />
+              </Link>
+            ) : (
               <Link
                 href="/"
-                className="xl:hidden inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors shrink-0"
-                title={t.backToHome}
+                className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 shadow-sm active:scale-95 transition-all shrink-0"
+                title={t.backToHome || 'Vissza a főoldalra'}
+                aria-label="Vissza a főoldalra"
               >
-                <ArrowLeft className="w-4 h-4" />
-                <span className="text-[11px] font-semibold">{t.backToHome}</span>
+                <ArrowLeft className="w-5 h-5 stroke-[2.2]" />
               </Link>
             )}
-
-            {/* Logo & Brand */}
-            <Link href="/" className="flex items-center gap-2 sm:gap-3 group focus:outline-none">
-              <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-xl overflow-hidden border border-blue-500/30 dark:border-blue-400/20 shadow-sm flex-shrink-0 group-hover:scale-105 transition-transform" style={{ position: 'relative' }}>
-                <Image src={`${process.env.NODE_ENV === 'production' ? '/allatmento-web' : ''}/logo.png`} alt="Állatmentő Portál" width={36} height={36} className="w-full h-full object-cover" priority />
-              </div>
-              <div className="flex flex-col">
-                <span className="font-extrabold text-sm sm:text-lg tracking-tight text-slate-900 dark:text-white leading-tight">
-                  {t.appTitle}
-                </span>
-                <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 hidden xl:inline-block">
-                  {t.appSub}
-                </span>
-              </div>
-            </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden xl:flex items-center gap-1 xl:gap-1.5 flex-nowrap shrink-0">
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-              const isActive = pathname === link.href;
-
-              if (link.isAction) {
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="flex items-center gap-1.5 px-3 xl:px-3.5 py-1.5 rounded-lg text-xs xl:text-sm font-semibold bg-red-600 hover:bg-red-700 text-white shadow-sm shadow-red-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all whitespace-nowrap ml-1"
-                  >
-                    <Icon className="w-3.5 h-3.5 xl:w-4 xl:h-4" />
-                    <span>{link.label}</span>
-                  </Link>
-                );
-              }
-
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`flex items-center gap-1 xl:gap-1.5 px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-sm font-medium whitespace-nowrap transition-colors ${
-                    isActive
-                      ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-semibold'
-                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
-                  }`}
-                >
-                  <Icon className="w-3.5 h-3.5 xl:w-4 xl:h-4 opacity-80" />
-                  <span>{link.label}</span>
-                </Link>
-              );
-            })}
-          </nav>
-
-          {/* Header Controls & Auth */}
+          {/* Jobb oldal: Két ikon - Beállítások és Bejelentkezés */}
           <div className="flex items-center gap-2 sm:gap-2.5">
-            {/* Language Toggle */}
-            <button
-              onClick={toggleLang}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 transition-colors"
-              title="Váltás nyelvet / Switch Language"
+            {/* Beállítások gomb */}
+            <Link
+              href="/beallitasok"
+              className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl border flex items-center justify-center transition-all active:scale-95 ${
+                pathname === '/beallitasok'
+                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 shadow-sm ring-1 ring-blue-500/30'
+                  : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 shadow-sm'
+              }`}
+              title={t.navSettings || 'Beállítások'}
+              aria-label="Beállítások"
             >
-              <Globe className="w-3.5 h-3.5" />
-              <span>{lang.toUpperCase()}</span>
-            </button>
+              <Settings className="w-5 h-5" />
+            </Link>
 
-            {/* Dark Mode Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-colors"
-              title="Téma váltása"
-            >
-              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
-            </button>
-
-            {/* User Status / Role Badge */}
-            {profile && (
-              <span
-                className={`hidden 2xl:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border ${
-                  isAdmin
-                    ? 'bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-400'
-                    : isRescuer
-                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
-                    : 'bg-slate-500/10 border-slate-500/30 text-slate-600 dark:text-slate-400'
-                }`}
-              >
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>
-                  {isAdmin
-                    ? t.roleSuperAdmin
-                    : isRescuer
-                    ? t.roleVerifiedRescuer
-                    : t.rolePending}
-                </span>
-              </span>
-            )}
-
-            {/* Auth Buttons */}
+            {/* Bejelentkezés / Fiók gomb */}
             {firebaseUser ? (
               <button
+                type="button"
                 onClick={() => logout()}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-red-50 dark:hover:bg-red-950/30 hover:border-red-300 dark:hover:border-red-900 text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 text-xs font-semibold transition-colors"
+                className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-red-50 dark:hover:bg-red-950/40 hover:border-red-300 dark:hover:border-red-900 text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 flex items-center justify-center transition-all shadow-sm active:scale-95"
+                title={t.logout || 'Kijelentkezés'}
+                aria-label="Kijelentkezés"
               >
-                <LogOut className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">{t.logout}</span>
+                <LogOut className="w-5 h-5" />
               </button>
             ) : (
               <button
+                type="button"
                 onClick={() => setAuthModalOpen(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-blue-500/30 dark:border-blue-400/30 bg-blue-50/80 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 text-xs font-bold transition-all shadow-sm"
+                className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl border border-blue-500/30 dark:border-blue-400/30 bg-blue-50/80 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 flex items-center justify-center transition-all shadow-sm active:scale-95"
+                title={t.login || 'Bejelentkezés'}
+                aria-label="Bejelentkezés"
               >
-                <LogIn className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                <span>{t.login}</span>
+                <User className="w-5 h-5" />
               </button>
             )}
           </div>
+
         </div>
       </header>
 

@@ -7,13 +7,13 @@
   --font-display: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-weight-thin: 100;
   --font-weight-extralight: 200;
-  --font-weight-light: 200;
-  --font-weight-normal: 200;
-  --font-weight-medium: 200;
-  --font-weight-semibold: 200;
-  --font-weight-bold: 200;
-  --font-weight-extrabold: 200;
-  --font-weight-black: 200;
+  --font-weight-light: 300;
+  --font-weight-normal: 300;
+  --font-weight-medium: 300;
+  --font-weight-semibold: 300;
+  --font-weight-bold: 300;
+  --font-weight-extrabold: 300;
+  --font-weight-black: 300;
 }
 
 :root {
@@ -29,7 +29,7 @@
 
 html {
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-weight: 200 !important;
+  font-weight: 300 !important;
   overflow-x: hidden;
   max-width: 100vw;
   scroll-behavior: auto;
@@ -40,7 +40,7 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-weight: 200 !important;
+  font-weight: 300 !important;
   height: 100dvh;
   min-height: 100dvh;
   overflow: hidden;
@@ -55,7 +55,7 @@ body {
   }
 }
 
-/* Minden főcím, alcím, felirat és betűsúly osztály mérettől függetlenül 200-as extralight súlyt kap */
+/* Minden főcím, alcím, felirat és betűsúly osztály mérettől függetlenül 300-as light súlyt kap */
 h1, h2, h3, h4, h5, h6, 
 .font-display,
 .font-black,
@@ -65,7 +65,7 @@ h1, h2, h3, h4, h5, h6,
 .font-medium,
 b, 
 strong {
-  font-weight: 200 !important;
+  font-weight: 300 !important;
 }
 
 /* Custom Leaflet Map Pins */

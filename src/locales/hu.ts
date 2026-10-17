@@ -160,4 +160,19 @@ export const hu = {
   statsCountyBreakdown: "Gócpontok és bejelentések megyénként",
   statsCityBreakdown: "Top városok és települések",
   statsResolutionRate: "Megoldási arány",
+
+  // Settings
+  navSettings: "Beállítások",
+  settingsTitle: "Beállítások",
+  settingsSub: "Alkalmazás nyelvének és megjelenésének testreszabása",
+  settingsLangSection: "Nyelv / Language",
+  settingsLangDesc: "Válaszd ki az alkalmazás megjelenítési nyelvét",
+  settingsLangHu: "Magyar (HU)",
+  settingsLangEn: "English (EN)",
+  settingsThemeSection: "Megjelenés / Téma",
+  settingsThemeDesc: "Világos, sötét vagy a telefon rendszeréhez igazodó nézet",
+  settingsThemeSystem: "Telefon beállítása (Automatikus)",
+  settingsThemeLight: "Világos mód",
+  settingsThemeDark: "Sötét mód",
+  settingsAutoBadge: "Alapértelmezett",
 };

@@ -162,4 +162,19 @@ export const en: typeof hu = {
   statsCountyBreakdown: "Hotspots & Reports by County",
   statsCityBreakdown: "Top Cities & Municipalities",
   statsResolutionRate: "Resolution Rate",
+
+  // Settings
+  navSettings: "Settings",
+  settingsTitle: "Settings",
+  settingsSub: "Customize application language and display appearance",
+  settingsLangSection: "Language / Nyelv",
+  settingsLangDesc: "Select the display language for the application",
+  settingsLangHu: "Hungarian / Magyar (HU)",
+  settingsLangEn: "English (EN)",
+  settingsThemeSection: "Appearance & Theme",
+  settingsThemeDesc: "Light, dark or match your phone's system preference",
+  settingsThemeSystem: "System Default (Automatic)",
+  settingsThemeLight: "Light Mode",
+  settingsThemeDark: "Dark Mode",
+  settingsAutoBadge: "Default",
 };
