@@ -336,6 +336,476 @@ export const ORGANIZATIONS: Organization[] = [
     "leiras": "Kőbánya-Óhegy és Újhegy kisállat-ellátása: lágyszöveti sebészet, védőoltások, bőrgyógyászat."
   },
   {
+    "id": "vet-bp-batthyany",
+    "nev": "Batthyány utcai Állatorvosi Rendelő (Dr. Hámori Zsolt)",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1015 Budapest, Batthyány u. 48.",
+    "telefon": "+36 1 213 6874",
+    "email": "drhamorizsolt@gmail.com",
+    "leiras": "I. kerület Víziváros nagy múltú kisállatrendelője: lágyszöveti sebészet, védőoltások, belgyógyászat és mikrochip (Mobil: +36 30 933 1025)."
+  },
+  {
+    "id": "vet-bp-pauler",
+    "nev": "Pauler Vet Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1013 Budapest, Roham utca 3.",
+    "telefon": "+36 1 225 0523",
+    "email": "paulervet@gmail.com",
+    "leiras": "I. kerület Krisztinaváros kisállat-ellátása: sebészet, belgyógyászat, ultrahang és szűrővizsgálatok (Mobil: +36 30 676 5818)."
+  },
+  {
+    "id": "vet-bp-boxi",
+    "nev": "Boxi Állatorvosi Rendelő (Dr. Szepes Orsolya)",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1027 Budapest, Medve u. 23.",
+    "telefon": "+36 20 515 1675",
+    "email": "boxivet@gmail.com",
+    "leiras": "II. kerület Margit híd budai hídfő környéki rendelő: megelőző állatorvoslás, lágyszöveti műtétek, laborvizsgálatok."
+  },
+  {
+    "id": "vet-bp-vadaskerti",
+    "nev": "Vadaskerti Állatorvosi Ambulancia",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1021 Budapest, Hűvösvölgyi út 114.",
+    "telefon": "+36 1 200 5143",
+    "email": "vadaskertiallat@gmail.com",
+    "leiras": "Hűvösvölgy és Lipótmező kisállatrendelője: sebészet, ultrahang, belgyógyászat és fogászat."
+  },
+  {
+    "id": "vet-bp-fauna",
+    "nev": "Fauna Állatorvosi Rendelő (Óbuda)",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1035 Budapest, Szél utca 17.",
+    "telefon": "+36 30 542 9430",
+    "email": "faunarendelo@gmail.com",
+    "leiras": "III. kerület Flórián tér és Óbuda központjának rendelője: sebészeti beavatkozások, oltási programok, ivartalanítás."
+  },
+  {
+    "id": "vet-bp-allatidoktorok",
+    "nev": "Állati Doktorok Rendelője",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1038 Budapest, Ráby Mátyás u. 26.",
+    "telefon": "+36 1 409 8624",
+    "email": "info@allatidoktorok.hu",
+    "leiras": "Csillaghegy és Római-part kisállat-ellátása: belgyógyászat, bőrgyógyászat, sebészet (Mobil: +36 70 253 7729)."
+  },
+  {
+    "id": "vet-bp-curiositas",
+    "nev": "Curiositas Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1039 Budapest, Iszap u. 24.",
+    "telefon": "+36 1 240 8766",
+    "email": "curiositasbt@gmail.com",
+    "leiras": "Békásmegyer-Ófalu állategészségügyi rendelője: kutyák, cicák és kisemlősök kezelése, mikrochip regisztráció."
+  },
+  {
+    "id": "vet-bp-ujpestvet",
+    "nev": "Újpest-Vet Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1042 Budapest, Petőfi utca 16.",
+    "telefon": "+36 1 370 1899",
+    "email": "ujpestvet@gmail.com",
+    "leiras": "Újpest-Központ forgalmas rendelője: sebészet, belgyógyászat, ultrahang és laboratórium (Mobil: +36 20 361 0031)."
+  },
+  {
+    "id": "vet-bp-palya",
+    "nev": "Pálya utcai Állatorvosi Rendelő (Állatszerviz)",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1046 Budapest, Vetés utca 82.",
+    "telefon": "+36 30 620 9785",
+    "email": "allatszerviz@gmail.com",
+    "leiras": "Káposztásmegyer és Újpest északi részének rendelője: sebészeti ellátás, oltások, szűrővizsgálatok."
+  },
+  {
+    "id": "vet-bp-vetplus",
+    "nev": "Vet-Plus Állatorvosi Rendelő és Patika",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1041 Budapest, Bárdos Artúr u. 4.",
+    "telefon": "+36 1 360 0755",
+    "email": "vetplusrendelo@gmail.com",
+    "leiras": "IV. kerületi kisállatrendelő és szakpatika: lágyszöveti sebészet, belgyógyászat (Mobil: +36 20 662 7285)."
+  },
+  {
+    "id": "vet-bp-belvarosi",
+    "nev": "Belvárosi Állatorvosi Rendelő (CityVet)",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1056 Budapest, Belgrád rakpart 17.",
+    "telefon": "+36 1 267 4478",
+    "email": "belvarosiallatorvos@gmail.com",
+    "leiras": "V. kerület Duna-parti állatorvosi rendelője: belgyógyászat, sebészet, szűrővizsgálatok a belváros szívében."
+  },
+  {
+    "id": "vet-bp-centrum",
+    "nev": "Centrum Állatorvosi Rendelő és Állatpatika",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1054 Budapest, Báthory utca 17.",
+    "telefon": "+36 1 302 4676",
+    "email": "centrumallatorvos@gmail.com",
+    "leiras": "Lipótváros és Parlament környéki rendelő: megelőző kezelések, belgyógyászat, gyógyszertári háttér."
+  },
+  {
+    "id": "vet-bp-o-utca",
+    "nev": "Ó utcai Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1066 Budapest, Ó utca 36.",
+    "telefon": "+36 1 353 2310",
+    "email": "outcaiallatorvos@gmail.com",
+    "leiras": "VI. kerület Terézváros és az Andrássy út körzetének állatorvosi rendelője: sebészet, oltások, chipregisztráció."
+  },
+  {
+    "id": "vet-bp-dembinszky",
+    "nev": "Dembinszky utcai Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1071 Budapest, Dembinszky utca 32.",
+    "telefon": "+36 1 794 7997",
+    "email": "keruletiallatorvos@gmail.com",
+    "leiras": "VII. kerület Erzsébetváros kerületi rendelője: sebészeti beavatkozások, ultrahang és belgyógyászat."
+  },
+  {
+    "id": "vet-bp-palavet",
+    "nev": "Palavet Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1071 Budapest, Peterdy utca 35.",
+    "telefon": "+36 1 793 0266",
+    "email": "info@palavet.hu",
+    "leiras": "Korszerű erzsébetvárosi kisállatrendelő: fogászat, lágyszöveti sebészet, bőrgyógyászat és labor."
+  },
+  {
+    "id": "vet-bp-exopet",
+    "nev": "Exo-Pet Állatgyógyászati Centrum (Egzotikus & Kisállat)",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1078 Budapest, Hernád utca 40.",
+    "telefon": "+36 1 585 8666",
+    "email": "info@exopet.hu",
+    "leiras": "Egzotikus kedvencek (nyulak, vadászgörények, madarak, hüllők) és macskák, kutyák országos hírű szakorvosi centruma."
+  },
+  {
+    "id": "vet-bp-vetart",
+    "nev": "Vet-Art Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1082 Budapest, Horváth Mihály tér 11.",
+    "telefon": "+36 1 333 0948",
+    "email": "vetartrendelo@gmail.com",
+    "leiras": "Józsefváros Baross utca és Horváth Mihály tér környéki rendelője: lágyszöveti sebészet, védőoltások, belgyógyászat."
+  },
+  {
+    "id": "vet-bp-aurora",
+    "nev": "Auróra utcai Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1084 Budapest, Auróra utca 14.",
+    "telefon": "+36 20 934 2243",
+    "email": "auroraallatorvos@gmail.com",
+    "leiras": "VIII. kerületi kisállatrendelő: baleseti elsősegély, belgyógyászat és szűrővizsgálatok."
+  },
+  {
+    "id": "vet-bp-knezich",
+    "nev": "Knézich Állatorvosi Rendelő (Dr. Horváth Dávid)",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1092 Budapest, Knézich utca 4.",
+    "telefon": "+36 1 217 5720",
+    "email": "knezichrendelo@gmail.com",
+    "leiras": "Belső-Ferencváros megbízható rendelője a Bakáts tér mellett: sebészet, belgyógyászat, mikrochip és vakcinázás."
+  },
+  {
+    "id": "vet-bp-santakutya",
+    "nev": "Állatorvosi Rendelő a Sánta Kutyához",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1094 Budapest, Páva utca 9–11.",
+    "telefon": "+36 30 280 1108",
+    "email": "santakutyarendelo@gmail.com",
+    "leiras": "IX. kerület Corvin negyed környéki rendelő: ortopédia, sántaság-diagnosztika, lágyszöveti sebészet."
+  },
+  {
+    "id": "vet-bp-etelevet",
+    "nev": "EteleVet Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1119 Budapest, Etele út 69. fszt. 2.",
+    "telefon": "+36 23 202 850",
+    "email": "rendelo@etelevet.hu",
+    "leiras": "Újbuda Kelenföld és az Etele tér körzetének modern rendelője: sebészet, ultrahang, labor (Vonalas: +36 1 789 2030)."
+  },
+  {
+    "id": "vet-bp-budaikisallat",
+    "nev": "Budai Kisállat Klinika",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1112 Budapest, Csárda utca 10.",
+    "telefon": "+36 20 484 8484",
+    "email": "info@budaikisallatklinika.hu",
+    "leiras": "XI. kerület Gazdagrét és Kamaraerdő szomszédságában lévő klinika: korszerű sebészeti műtő, digitális diagnosztika."
+  },
+  {
+    "id": "vet-bp-brutusz",
+    "nev": "Brútusz Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1116 Budapest, Vegyész u. 5.",
+    "telefon": "+36 1 208 4060",
+    "email": "brutuszrendelo@gmail.com",
+    "leiras": "Albertfalva és Fehérvári út környékének rendelője: lágyszöveti műtétek, oltások, belgyógyászat."
+  },
+  {
+    "id": "vet-bp-budavet",
+    "nev": "Buda-Vet Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1126 Budapest, Tartsay Vilmos u. 19.",
+    "telefon": "+36 1 375 2624",
+    "email": "budavet@gmail.com",
+    "leiras": "Hegyvidék / Németvölgy elismert kisállatrendelője: sebészet, ultrahang, laborvizsgálatok (Mobil: +36 70 326 2300)."
+  },
+  {
+    "id": "vet-bp-focusvet",
+    "nev": "Focus-Vet Szemészeti és Kisállat Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1125 Budapest, Tündér u. 4/b",
+    "telefon": "+36 20 414 4144",
+    "email": "focusvetrendelo@gmail.com",
+    "leiras": "Speciális állatorvosi szemészeti szakrendelés és kisállat-ellátás a XII. kerületben."
+  },
+  {
+    "id": "vet-bp-pegivet",
+    "nev": "Pegi-Vet Krisztinavárosi Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1122 Budapest, Maros u. 23.",
+    "telefon": "+36 1 282 8717",
+    "email": "pegivet@gmail.com",
+    "leiras": "Déli pályaudvar és Maros utca körzetének rendelője: sebészet, belgyógyászat, mikrochip (Mobil: +36 30 946 9244)."
+  },
+  {
+    "id": "vet-bp-medvet",
+    "nev": "Med.Vet. Állatklinika",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1136 Budapest, Tátra utca 25.",
+    "telefon": "+36 1 340 1496",
+    "email": "medvetklinika@gmail.com",
+    "leiras": "XIII. kerület Újlipótváros szívében: lágyszöveti sebészet, ultrahang, belgyógyászat és fogászat."
+  },
+  {
+    "id": "vet-bp-zugloi",
+    "nev": "Zuglói Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1145 Budapest, Varsó utca 8.",
+    "telefon": "+36 30 628 7914",
+    "email": "zugloallatorvos@gmail.com",
+    "leiras": "Kiszugló és Thököly út környékének rendelője: sebészet, vakcinák, labor és bőrgyógyászat."
+  },
+  {
+    "id": "vet-bp-longlife",
+    "nev": "LongLife Kisállat Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1143 Budapest, Tábornok utca 23.",
+    "telefon": "+36 1 614 6962",
+    "email": "info@longlifevet.hu",
+    "leiras": "Puskás Ferenc Stadion környékének rendelője: sebészeti ellátás, belgyógyászat, ultrahang diagnosztika."
+  },
+  {
+    "id": "vet-bp-ujpalota",
+    "nev": "Újpalotai Állatorvosi Rendelő (Palotavet)",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1156 Budapest, Nyírpalota utca 42.",
+    "telefon": "+36 1 708 0707",
+    "email": "palotavet@gmail.com",
+    "leiras": "XV. kerület Újpalota lakótelep és környékének rendelője: sebészet, oltások, digitális röntgen."
+  },
+  {
+    "id": "vet-bp-dres",
+    "nev": "Dr. 'S' Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1158 Budapest, Hősök útja 3/A",
+    "telefon": "+36 1 410 2307",
+    "email": "dresrendelo@gmail.com",
+    "leiras": "Rákospalota és Pestújhely rendelője: lágyszöveti és csontsebészet, belgyógyászat (Mobil: +36 30 949 5417)."
+  },
+  {
+    "id": "vet-bp-sashalom",
+    "nev": "Sashalmi Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1163 Budapest, Guzsaly utca 36.",
+    "telefon": "+36 1 403 5025",
+    "email": "sashalmiallatorvos@gmail.com",
+    "leiras": "XVI. kerület Sashalom rendelője: sebészeti beavatkozások, ultrahang, laborvizsgálatok (Mobil: +36 30 481 0106)."
+  },
+  {
+    "id": "vet-bp-park",
+    "nev": "Park Állatgyógyászati Centrum",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1165 Budapest, Diósy Lajos u. 5.",
+    "telefon": "+36 1 403 0488",
+    "email": "parkallatorvos@gmail.com",
+    "leiras": "Mátyásföld és Cinkota állategészségügyi központja: műtétek, röntgen, ultrahang és belgyógyászat."
+  },
+  {
+    "id": "vet-bp-minivet",
+    "nev": "Minivet Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1162 Budapest, Szlovák út 108.",
+    "telefon": "+36 1 405 5221",
+    "email": "minivetrendelo@gmail.com",
+    "leiras": "Rákosszentmihály és Árpádföld rendelője: kutyák, cicák és kisemlősök szakszerű ellátása."
+  },
+  {
+    "id": "vet-bp-napkelet",
+    "nev": "Napkelet Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1174 Budapest, Széchenyi utca 36.",
+    "telefon": "+36 1 256 4178",
+    "email": "napkeletrendelo@gmail.com",
+    "leiras": "Rákoshegy és Rákoscsaba rendelője: sebészet, belgyógyászat, mikrochip (Mobil: +36 20 385 1907)."
+  },
+  {
+    "id": "vet-bp-chiruvet",
+    "nev": "Chiru-Vet Állatorvosi Rendelőintézet",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1173 Budapest, Ferihegyi út 232.",
+    "telefon": "+36 1 258 2060",
+    "email": "chiruvetrendelo@gmail.com",
+    "leiras": "Rákoskeresztúr központjának rendelőintézete: lágyszöveti és csontsebészet, röntgen, ultrahang."
+  },
+  {
+    "id": "vet-bp-pestimre",
+    "nev": "Szent Bernát Pestimrei Kisállat-ambulancia",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1188 Budapest, Kisfaludy utca 55/a",
+    "telefon": "+36 1 295 3085",
+    "email": "pestimre@szentbernat.hu",
+    "leiras": "Pestszentimre kisállat-ambulanciája: sebészet, védőoltások, belgyógyászati vizsgálatok."
+  },
+  {
+    "id": "vet-bp-lorinci",
+    "nev": "Lőrinci Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1183 Budapest, Üllői út 446.",
+    "telefon": "+36 30 534 5914",
+    "email": "lorinciallatorvos@gmail.com",
+    "leiras": "XVIII. kerület Üllői úti rendelő: baleseti sebészet, védőoltások, megelőző szűrések."
+  },
+  {
+    "id": "vet-bp-szmolleny",
+    "nev": "Kispesti Állatorvosi Rendelő (Dr. Szmollény Gábor)",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1196 Budapest, Rákóczi u. 99.",
+    "telefon": "+36 1 357 9477",
+    "email": "drszmolleny@gmail.com",
+    "leiras": "Wekerletelep és Kispest rendelője: sebészet, belgyógyászat, hétvégi és készenléti ügyeleti vonal (Mobil: +36 30 625 0044)."
+  },
+  {
+    "id": "vet-bp-pesterzsebet-ipolysag",
+    "nev": "Pesterzsébeti Állatorvosi Rendelő (Ipolyság u.)",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1202 Budapest, Ipolyság u. 2.",
+    "telefon": "+36 1 283 8540",
+    "email": "erzsebetvet@gmail.com",
+    "leiras": "XX. kerület Pesterzsébet elismert rendelője: sebészet, ultrahang, labor (Mobil: +36 20 326 2658)."
+  },
+  {
+    "id": "vet-bp-floris",
+    "nev": "Flóris Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1203 Budapest, Török Flóris u. 41.",
+    "telefon": "+36 1 283 2698",
+    "email": "florisallatorvos@gmail.com",
+    "leiras": "Pesterzsébet központi rendelője a Határ út közelében: védőoltások, mikrochip, sebészet."
+  },
+  {
+    "id": "vet-bp-petvet",
+    "nev": "PET-VET Budapest Kisállat Ambulancia",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1205 Budapest, Valéria u. 87/b.",
+    "telefon": "+36 1 285 0673",
+    "email": "petvetbudapest@gmail.com",
+    "leiras": "Kossuthfalva és Pesterzsébet kisállat-ambulanciája: lágysebészet, röntgen, ultrahang."
+  },
+  {
+    "id": "vet-bp-petlegio",
+    "nev": "PETLEGIO Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1212 Budapest, Széchenyi István u. 21.",
+    "telefon": "+36 20 329 9933",
+    "email": "info@petlegio.hu",
+    "leiras": "Csepel modern kisállatrendelője: digitális diagnosztika, sebészet, fogászat és belgyógyászat."
+  },
+  {
+    "id": "vet-bp-budafoki-kozpont",
+    "nev": "Budafoki Állatgyógyászati Központ",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1221 Budapest, Kossuth Lajos utca 52.",
+    "telefon": "+36 1 229 3865",
+    "email": "kisallatbudafok@gmail.com",
+    "leiras": "Budafok belvárosának állatorvosi központja: baleseti ellátás, sebészet, belgyógyászat."
+  },
+  {
+    "id": "vet-bp-hungarovet",
+    "nev": "Hungarovet Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1223 Budapest, Brassói u. 10/a.",
+    "telefon": "+36 1 362 2699",
+    "email": "hungarovetrendelo@gmail.com",
+    "leiras": "Dél-Buda kisállatrendelője: sebészet, belgyógyászat, bőrgyógyászat (Mobil: +36 70 637 0352)."
+  },
+  {
+    "id": "vet-bp-soroksar-tancsics",
+    "nev": "Soroksári Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1238 Budapest, Táncsics Mihály u. 69.",
+    "telefon": "+36 20 944 3880",
+    "email": "soroksariallatorvos@gmail.com",
+    "leiras": "XXIII. kerület Soroksár központi állatorvosi rendelője: lágyszöveti sebészet, védőoltások, mikrochip és belgyógyászat."
+  },
+  {
+    "id": "vet-bp-fonix",
+    "nev": "Főnix Pet-Well Állatorvosi Rendelő",
+    "kategoria": "orvos",
+    "megye": "Budapest",
+    "cim": "1238 Budapest, Lóállás utca 28.",
+    "telefon": "+36 20 526 4424",
+    "email": "fonixpetwell@gmail.com",
+    "leiras": "Soroksár-Újtelep kisállatrendelője: sebészet, belgyógyászat, preventív ellátás."
+  },
+  {
     "id": "vad-bp-allatkert",
     "nev": "Fővárosi Állat- és Növénykert Vadállatmentő Központ (Magyar Madármentők Alapítvány)",
     "kategoria": "vad",
