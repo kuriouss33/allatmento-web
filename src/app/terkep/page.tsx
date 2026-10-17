@@ -156,6 +156,26 @@ export default function DispatchPage() {
     });
   }, [reports, statusFilter, countyFilter, searchQuery]);
 
+  // Aktív esetek száma: dinamikusan kiszűrve a megoldott ügyeket
+  const activeReportsCount = useMemo(() => {
+    if (statusFilter === 'megoldva') {
+      return reports.filter((r) => {
+        if (r.statusz === 'megoldva') return false;
+        if (countyFilter !== 'all' && r.megye !== countyFilter) return false;
+        if (searchQuery.trim()) {
+          const query = searchQuery.toLowerCase().trim();
+          const inSpecies = (r.fajta || '').toLowerCase().includes(query);
+          const inDesc = (r.leiras || '').toLowerCase().includes(query);
+          const inCity = (r.cim || '').toLowerCase().includes(query);
+          const inPhone = (r.telefon || '').includes(query);
+          if (!inSpecies && !inDesc && !inCity && !inPhone) return false;
+        }
+        return true;
+      }).length;
+    }
+    return filteredReports.filter((r) => r.statusz !== 'megoldva').length;
+  }, [filteredReports, reports, statusFilter, countyFilter, searchQuery]);
+
   // Gyors akciók
   const handleTakeCase = async (report: Report) => {
     if (!idToken) return;
@@ -176,15 +196,15 @@ export default function DispatchPage() {
   };
 
   return (
-    <div className="flex-1 min-h-0 flex flex-col max-w-[1600px] w-full mx-auto px-3 sm:px-6 lg:px-8 py-2 sm:py-6 overflow-hidden animate-fadeIn">
+    <div className="flex-1 min-h-0 flex flex-col max-w-[1600px] w-full mx-auto px-3 sm:px-6 lg:px-8 py-2 sm:py-3.5 lg:h-[calc(100dvh-4.25rem)] lg:max-h-[calc(100dvh-4.25rem)] lg:overflow-hidden animate-fadeIn">
       
       {/* Top Header & Mobile View Toggle */}
-      <div className="flex flex-col items-center justify-center text-center gap-1.5 sm:gap-2.5 mb-2 sm:mb-4 shrink-0">
+      <div className="flex flex-col items-center justify-center text-center gap-1.5 sm:gap-2 mb-2 sm:mb-3 shrink-0">
         <div className="flex flex-col items-center text-center">
           <h1 className="text-lg sm:text-2xl font-light text-slate-900 dark:text-white tracking-tight flex items-center justify-center gap-2">
             <span>{t.dispatchTitle}</span>
             <span className="text-xs font-light px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
-              {filteredReports.length} aktív eset
+              {activeReportsCount} aktív eset
             </span>
           </h1>
           <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 text-center font-light">
@@ -223,10 +243,10 @@ export default function DispatchPage() {
       </div>
 
       {/* Main Split Layout */}
-      <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-2 sm:gap-5 items-stretch">
+      <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-2 sm:gap-5 items-stretch lg:h-full lg:overflow-hidden">
         
         {/* Left Column: Filter Bar & Reports List (440px / 5 cols on lg) */}
-        <div className={`lg:col-span-5 flex-col gap-2 sm:gap-3.5 min-h-0 ${mobileView === 'list' ? 'flex flex-1' : 'hidden lg:flex'}`}>
+        <div className={`lg:col-span-5 flex-col gap-2 sm:gap-3 min-h-0 lg:h-full lg:overflow-hidden ${mobileView === 'list' ? 'flex flex-1' : 'hidden lg:flex'}`}>
           
           {/* Filters Bar Card with Auto-Hide on scroll */}
           <div
@@ -267,11 +287,11 @@ export default function DispatchPage() {
                   onClick={() => setStatusFilter('folyamatban')}
                   className={`flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-light transition-all whitespace-nowrap ${
                     statusFilter === 'folyamatban'
-                      ? 'bg-amber-500 text-white shadow-sm shadow-amber-500/25'
-                      : 'bg-amber-500/10 text-amber-600 border border-amber-500/20 hover:bg-amber-500/20'
+                      ? 'bg-orange-500 text-white shadow-sm shadow-orange-500/25'
+                      : 'bg-orange-500/10 text-orange-600 border border-orange-500/20 hover:bg-orange-500/20'
                   }`}
                 >
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-orange-500" />
                   <span>{t.filterInProgress}</span>
                 </button>
 
@@ -350,20 +370,14 @@ export default function DispatchPage() {
                     }
                   }}
                   onOpenDetails={(r) => setActiveDetailsReport(r)}
-                  onOpenHelp={(r) => setActiveHelpReport(r)}
-                  onTakeCase={handleTakeCase}
-                  onCancelTake={handleCancelTake}
-                  onResolve={(r) => setActiveResolveReport(r)}
-                  onDelete={(r) => setActiveDeleteReport(r)}
-                  onImageClick={(url) => setLightboxImage(url)}
                 />
               ))
             )}
           </div>
         </div>
 
-        {/* Right Column: Full Interactive Leaflet Map (7 cols on lg) */}
-        <div className={`lg:col-span-7 h-full w-full min-h-0 flex-1 ${mobileView === 'map' ? 'flex flex-col' : 'hidden lg:flex flex-col'}`}>
+        {/* Right Column: Full Interactive Leaflet Map (7 cols on lg) - Fixed on Desktop */}
+        <div className={`lg:col-span-7 w-full min-h-0 flex-1 lg:h-full lg:sticky lg:top-0 lg:self-start lg:overflow-hidden ${mobileView === 'map' ? 'flex flex-col h-full' : 'hidden lg:flex flex-col'}`}>
           <DispatchMap
             reports={filteredReports}
             selectedReportId={selectedReportId}
@@ -384,6 +398,21 @@ export default function DispatchPage() {
         report={activeDetailsReport}
         isOpen={Boolean(activeDetailsReport)}
         onClose={() => setActiveDetailsReport(null)}
+        onTakeCase={handleTakeCase}
+        onCancelTake={handleCancelTake}
+        onResolve={(r) => {
+          setActiveDetailsReport(null);
+          setActiveResolveReport(r);
+        }}
+        onOpenHelp={(r) => {
+          setActiveDetailsReport(null);
+          setActiveHelpReport(r);
+        }}
+        onDelete={(r) => {
+          setActiveDetailsReport(null);
+          setActiveDeleteReport(r);
+        }}
+        onImageClick={(url) => setLightboxImage(url)}
       />
 
       <HelpOfferModal

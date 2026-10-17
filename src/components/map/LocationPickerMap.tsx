@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { detectCounty } from '@/lib/countyDetector';
 
 interface LocationPickerMapProps {
   initialLat?: number | null;
@@ -28,7 +29,7 @@ export const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
       );
       const data = await res.json();
       const address = data.display_name || '';
-      const county = data.address?.county || data.address?.state || '';
+      const county = detectCounty(data.address, address);
       onLocationSelect(lat, lon, address, county);
     } catch {
       onLocationSelect(lat, lon);

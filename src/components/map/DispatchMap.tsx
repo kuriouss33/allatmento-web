@@ -102,6 +102,12 @@ export const DispatchMap: React.FC<DispatchMapProps> = ({
           mapInstanceRef.current = map;
           clusterGroupRef.current = cluster;
           circlesGroupRef.current = circlesGroup;
+
+          setTimeout(() => {
+            if (isMounted && mapInstanceRef.current) {
+              mapInstanceRef.current.invalidateSize();
+            }
+          }, 200);
         }
       } catch (err) {
         console.error('Hiba a térkép inicializálásakor:', err);
@@ -110,8 +116,21 @@ export const DispatchMap: React.FC<DispatchMapProps> = ({
 
     initMap();
 
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined' && mapContainerRef.current) {
+      resizeObserver = new ResizeObserver(() => {
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.invalidateSize();
+        }
+      });
+      resizeObserver.observe(mapContainerRef.current);
+    }
+
     return () => {
       isMounted = false;
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;

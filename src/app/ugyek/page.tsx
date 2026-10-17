@@ -210,12 +210,6 @@ export default function MyCasesPage() {
                 key={report.id}
                 report={report}
                 onOpenDetails={(r) => setActiveDetailsReport(r)}
-                onOpenHelp={(r) => setActiveHelpReport(r)}
-                onTakeCase={handleTakeCase}
-                onCancelTake={handleCancelTake}
-                onResolve={(r) => setActiveResolveReport(r)}
-                onDelete={(r) => setActiveDeleteReport(r)}
-                onImageClick={(url) => setLightboxImage(url)}
               />
             ))}
           </div>
@@ -227,6 +221,21 @@ export default function MyCasesPage() {
         report={activeDetailsReport}
         isOpen={Boolean(activeDetailsReport)}
         onClose={() => setActiveDetailsReport(null)}
+        onTakeCase={handleTakeCase}
+        onCancelTake={handleCancelTake}
+        onResolve={(r) => {
+          setActiveDetailsReport(null);
+          setActiveResolveReport(r);
+        }}
+        onOpenHelp={(r) => {
+          setActiveDetailsReport(null);
+          setActiveHelpReport(r);
+        }}
+        onDelete={(r) => {
+          setActiveDetailsReport(null);
+          setActiveDeleteReport(r);
+        }}
+        onImageClick={(url) => setLightboxImage(url)}
       />
 
       <HelpOfferModal

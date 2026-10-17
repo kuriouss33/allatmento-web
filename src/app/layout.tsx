@@ -45,7 +45,7 @@ export default function RootLayout({
             <AuthProvider>
               <ScrollToTop />
               <Header />
-              <main className="flex-1 min-h-0 flex flex-col overflow-y-auto xl:overflow-visible pb-4 sm:pb-8">
+              <main className="flex-1 min-h-0 flex flex-col overflow-y-auto xl:overflow-visible">
                 {children}
               </main>
             </AuthProvider>

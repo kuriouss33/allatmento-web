@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { MEGYEK } from '@/lib/constants';
+import { detectCounty } from '@/lib/countyDetector';
 import { createReport, uploadImage } from '@/lib/api';
 import { compressImage } from '@/lib/image';
 import { saveDeleteToken, getAnonymousUserId } from '@/lib/storage';
@@ -106,11 +107,9 @@ export default function ReportWizardPage() {
             setAddress(data.display_name);
             setLocationStatus(`📍 ${data.display_name}`);
           }
-          if (data.address?.county) {
-            const detectedCounty = MEGYEK.find((m) =>
-              data.address.county.toLowerCase().includes(m.toLowerCase())
-            );
-            if (detectedCounty) setMegye(detectedCounty);
+          const detectedCounty = detectCounty(data.address, data.display_name);
+          if (detectedCounty) {
+            setMegye(detectedCounty);
           }
         } catch {
           // Sikeres GPS, címlekérés nem kötelező
@@ -169,11 +168,12 @@ export default function ReportWizardPage() {
       }
 
       const createrId = firebaseUser?.uid || getAnonymousUserId();
+      const finalCounty = megye || detectCounty(null, address) || 'Budapest';
 
       const result = await createReport({
         fajta,
         leiras: leiras.trim(),
-        megye,
+        megye: finalCounty,
         cim: address.trim() || undefined,
         telefon: telefon.trim() || undefined,
         lat,
@@ -371,14 +371,36 @@ export default function ReportWizardPage() {
                     setLocationStatus(`📍 ${detectedAddress}`);
                   }
                   if (detectedCounty) {
-                    const found = MEGYEK.find((m) =>
-                      detectedCounty.toLowerCase().includes(m.toLowerCase())
-                    );
-                    if (found) setMegye(found);
+                    setMegye(detectedCounty);
                   }
                 }}
               />
             )}
+
+            {/* Bejelentési cím vagy környék megadása / ellenőrzése */}
+            <div className="pt-1 text-center">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1 text-center">
+                Bejelentési cím vagy környék
+              </label>
+              <input
+                type="text"
+                value={address}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setAddress(val);
+                  const detected = detectCounty(null, val);
+                  if (detected) setMegye(detected);
+                }}
+                placeholder="Pl. Budapest, Deák Ferenc tér vagy Debrecen, Fő utca..."
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-center font-light"
+              />
+              {megye && (
+                <p className="text-[11px] font-light text-slate-500 dark:text-slate-400 mt-1.5 flex items-center justify-center gap-1">
+                  <span>Azonosított megye:</span>
+                  <span className="text-blue-600 dark:text-blue-400 font-normal">{megye} megye</span>
+                </p>
+              )}
+            </div>
           </div>
 
           {/* Photo Upload Section */}
@@ -461,23 +483,15 @@ export default function ReportWizardPage() {
 
           <div className="flex-1 min-h-0 overflow-y-auto pr-1 space-y-3 sm:space-y-4 scrollbar-thin">
             <div className="space-y-3 sm:space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1 text-center">
-                {t.countyLabel} *
-              </label>
-              <select
-                required
-                value={megye}
-                onChange={(e) => setMegye(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
-              >
-                {MEGYEK.map((m) => (
-                  <option key={m} value={m}>
-                    {m} megye
-                  </option>
-                ))}
-              </select>
-            </div>
+            {megye && (
+              <div className="flex items-center justify-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 py-0.5 select-none">
+                <MapPin className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                <span className="font-light">Azonosított megye:</span>
+                <span className="font-light px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-blue-900/40">
+                  {megye} megye
+                </span>
+              </div>
+            )}
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1 text-center">
