@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { 
   Dog, 
   Cat, 
@@ -254,28 +255,51 @@ export default function ReportWizardPage() {
             </p>
           </div>
 
-          <div className="flex-1 min-h-0 overflow-y-auto pr-1 grid grid-cols-2 gap-2 sm:gap-3 content-center scrollbar-thin">
+          <div className="flex-1 min-h-0 overflow-y-auto pr-1 grid grid-cols-2 gap-3 sm:gap-4 content-center scrollbar-thin py-1 sm:py-2">
             {[
-              { id: 'Kutya', label: t.typeDog, icon: Dog },
-              { id: 'Macska', label: t.typeCat, icon: Cat },
-              { id: 'Vadállat', label: t.typeWild, icon: Bird },
-              { id: 'Egyéb', label: t.typeOther, icon: HelpCircle },
+              { id: 'Kutya', label: t.typeDog, image: '/dog.png' },
+              { id: 'Macska', label: t.typeCat, image: '/cat.png' },
+              { id: 'Vadállat', label: t.typeWild, image: '/wild.png' },
+              { id: 'Egyéb', label: t.typeOther, image: '/other.png' },
             ].map((item) => {
-              const Icon = item.icon;
               const isSelected = fajta === item.id;
+              const basePath = process.env.NODE_ENV === 'production' ? '/allatmento-web' : '';
               return (
                 <button
                   key={item.id}
                   type="button"
                   onClick={() => setFajta(item.id)}
-                  className={`p-3 sm:p-4 rounded-xl border flex flex-col items-center justify-center gap-1.5 sm:gap-2.5 transition-all text-center ${
+                  className={`group relative p-3 sm:p-5 rounded-2xl border flex flex-col items-center justify-center gap-2 sm:gap-3 transition-all text-center cursor-pointer active:scale-[0.98] ${
                     isSelected
-                      ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-bold shadow-sm ring-2 ring-blue-500/20'
-                      : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300'
+                      ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-bold shadow-md ring-2 ring-blue-500/25'
+                      : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 text-slate-700 dark:text-slate-300'
                   }`}
                 >
-                  <Icon className="w-6 h-6 sm:w-7 sm:h-7" />
-                  <span className="text-xs sm:text-sm font-semibold">{item.label}</span>
+                  {/* Kijelölési pipa jelvény jobb felül */}
+                  {isSelected && (
+                    <div className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-sm">
+                      <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
+                    </div>
+                  )}
+
+                  {/* Kép container */}
+                  <div className="relative w-20 h-20 sm:w-28 sm:h-28 flex items-center justify-center">
+                    <Image
+                      src={`${basePath}${item.image}`}
+                      alt={item.label}
+                      width={112}
+                      height={112}
+                      className={`w-full h-full object-contain transition-transform duration-200 ${
+                        isSelected ? 'scale-105 drop-shadow-md' : 'group-hover:scale-105 opacity-90 group-hover:opacity-100'
+                      }`}
+                      priority
+                    />
+                  </div>
+
+                  {/* Fajta neve */}
+                  <span className="text-sm sm:text-base font-bold tracking-tight">
+                    {item.label}
+                  </span>
                 </button>
               );
             })}
