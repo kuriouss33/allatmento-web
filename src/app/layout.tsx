@@ -45,15 +45,16 @@ export default function RootLayout({
               (function() {
                 try {
                   var fs = localStorage.getItem('allatmento_font_size');
-                  if (fs === 'larger') {
-                    document.documentElement.style.fontSize = '125%';
-                    document.documentElement.setAttribute('data-font-size', 'larger');
+                  if (fs === 'normal') {
+                    document.documentElement.style.fontSize = '100%';
+                    document.documentElement.setAttribute('data-font-size', 'normal');
                   } else if (fs === 'large') {
                     document.documentElement.style.fontSize = '112.5%';
                     document.documentElement.setAttribute('data-font-size', 'large');
                   } else {
-                    document.documentElement.style.fontSize = '100%';
-                    document.documentElement.setAttribute('data-font-size', 'normal');
+                    // Alapértelmezett: 'larger' (125%)
+                    document.documentElement.style.fontSize = '125%';
+                    document.documentElement.setAttribute('data-font-size', 'larger');
                   }
                 } catch(e) {}
               })();

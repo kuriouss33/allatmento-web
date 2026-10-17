@@ -10,7 +10,7 @@ interface FontSizeContextType {
 }
 
 const FontSizeContext = createContext<FontSizeContextType>({
-  fontSize: 'normal',
+  fontSize: 'larger',
   setFontSize: () => {},
 });
 
@@ -26,7 +26,7 @@ const applyFontSizeToDOM = (size: FontSize) => {
   // Set root font size:
   // normal = 100% (16px base)
   // large = 112.5% (18px base -> +12.5%)
-  // larger = 125% (20px base -> +25%)
+  // larger = 125% (20px base -> +25% - Default)
   if (size === 'larger') {
     root.style.fontSize = '125%';
   } else if (size === 'large') {
@@ -37,7 +37,7 @@ const applyFontSizeToDOM = (size: FontSize) => {
 };
 
 export const FontSizeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [fontSize, setFontSizeState] = useState<FontSize>('normal');
+  const [fontSize, setFontSizeState] = useState<FontSize>('larger');
 
   useEffect(() => {
     try {
@@ -46,11 +46,13 @@ export const FontSizeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setFontSizeState(saved);
         applyFontSizeToDOM(saved);
       } else {
-        applyFontSizeToDOM('normal');
+        // Alapértelmezett: 'larger'
+        setFontSizeState('larger');
+        applyFontSizeToDOM('larger');
       }
     } catch {
       // LocalStorage might fail in restricted environments
-      applyFontSizeToDOM('normal');
+      applyFontSizeToDOM('larger');
     }
   }, []);
 

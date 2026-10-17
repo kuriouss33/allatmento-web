@@ -13,8 +13,7 @@ import {
   Info,
   ShieldAlert,
   ArrowRight,
-  ALargeSmall,
-  ChevronDown
+  ALargeSmall
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -256,89 +255,97 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Skálázó Dropdown Választó */}
-        <div className="space-y-3 pt-1">
-          <div className="relative">
-            <label htmlFor="font-size-select" className="sr-only">
-              {t.fontSizeLabel}
-            </label>
-            <select
-              id="font-size-select"
-              value={fontSize}
-              onChange={(e) => setFontSize(e.target.value as FontSize)}
-              className="w-full appearance-none px-4 py-3.5 pr-11 rounded-xl bg-slate-50/70 dark:bg-slate-800/50 hover:bg-slate-100/70 dark:hover:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 font-semibold text-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/30 cursor-pointer shadow-sm"
-            >
-              <option value="normal">
-                {t.fontSizeNormal} ({t.fontSizeNormalDesc})
-              </option>
-              <option value="large">
-                {t.fontSizeLarge} ({t.fontSizeLargeDesc})
-              </option>
-              <option value="larger">
-                {t.fontSizeLarger} ({t.fontSizeLargerDesc})
-              </option>
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400 dark:text-slate-500">
-              <ChevronDown className="w-4 h-4 stroke-[2.5]" />
-            </div>
-          </div>
-
-          {/* Gyorsgombok a közvetlen váltáshoz */}
-          <div className="grid grid-cols-3 gap-2.5">
-            <button
-              type="button"
-              onClick={() => setFontSize('normal')}
-              className={`py-2.5 px-3 rounded-xl border text-center transition-all flex flex-col items-center justify-center gap-0.5 ${
-                fontSize === 'normal'
-                  ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-bold shadow-sm ring-1 ring-blue-500/30'
-                  : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 bg-slate-50/50 dark:bg-slate-800/30'
-              }`}
-            >
-              <span className="text-xs font-bold block">{t.fontSizeNormal}</span>
-              <span className="text-[10px] text-slate-500 dark:text-slate-400">100%</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setFontSize('large')}
-              className={`py-2.5 px-3 rounded-xl border text-center transition-all flex flex-col items-center justify-center gap-0.5 ${
-                fontSize === 'large'
-                  ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-bold shadow-sm ring-1 ring-blue-500/30'
-                  : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 bg-slate-50/50 dark:bg-slate-800/30'
-              }`}
-            >
-              <span className="text-sm font-bold block">{t.fontSizeLarge}</span>
-              <span className="text-[10px] text-slate-500 dark:text-slate-400">+12%</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setFontSize('larger')}
-              className={`py-2.5 px-3 rounded-xl border text-center transition-all flex flex-col items-center justify-center gap-0.5 ${
-                fontSize === 'larger'
-                  ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-bold shadow-sm ring-1 ring-blue-500/30'
-                  : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 bg-slate-50/50 dark:bg-slate-800/30'
-              }`}
-            >
-              <span className="text-base font-bold block">{t.fontSizeLarger}</span>
-              <span className="text-[10px] text-slate-500 dark:text-slate-400">+25%</span>
-            </button>
-          </div>
-
-          {/* Élő előnézet bemutató */}
-          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/30 border border-slate-200/80 dark:border-slate-800 flex items-center justify-between gap-3">
-            <div className="space-y-0.5 min-w-0">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                {t.fontSizePreviewTitle}
+        {/* 3 kattintható konténer: Normál, Nagy, Nagyobb */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+          {/* Normál */}
+          <button
+            type="button"
+            onClick={() => setFontSize('normal')}
+            className={`p-4 rounded-xl border text-left flex flex-col justify-between gap-3 transition-all ${
+              fontSize === 'normal'
+                ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 shadow-sm ring-1 ring-blue-500/30'
+                : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 bg-slate-50/50 dark:bg-slate-800/30'
+            }`}
+          >
+            <div className="flex items-center justify-between w-full">
+              <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+                100%
               </span>
-              <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-medium truncate">
-                {t.fontSizePreviewSample}
-              </p>
+              {fontSize === 'normal' && (
+                <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center">
+                  <Check className="w-3 h-3 stroke-[3]" />
+                </div>
+              )}
             </div>
-            <div className="px-2.5 py-1 rounded-full bg-violet-100 dark:bg-violet-950/60 text-violet-700 dark:text-violet-300 text-[11px] font-bold shrink-0">
-              {fontSize === 'larger' ? '+25%' : fontSize === 'large' ? '+12%' : '100%'}
+            <div>
+              <span className="font-bold text-xs sm:text-sm block">
+                {t.fontSizeNormal}
+              </span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                {t.fontSizeNormalDesc}
+              </span>
             </div>
-          </div>
+          </button>
+
+          {/* Nagy */}
+          <button
+            type="button"
+            onClick={() => setFontSize('large')}
+            className={`p-4 rounded-xl border text-left flex flex-col justify-between gap-3 transition-all ${
+              fontSize === 'large'
+                ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 shadow-sm ring-1 ring-blue-500/30'
+                : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 bg-slate-50/50 dark:bg-slate-800/30'
+            }`}
+          >
+            <div className="flex items-center justify-between w-full">
+              <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+                +12%
+              </span>
+              {fontSize === 'large' && (
+                <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center">
+                  <Check className="w-3 h-3 stroke-[3]" />
+                </div>
+              )}
+            </div>
+            <div>
+              <span className="font-bold text-sm sm:text-base block">
+                {t.fontSizeLarge}
+              </span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                {t.fontSizeLargeDesc}
+              </span>
+            </div>
+          </button>
+
+          {/* Nagyobb (Alapértelmezett) */}
+          <button
+            type="button"
+            onClick={() => setFontSize('larger')}
+            className={`p-4 rounded-xl border text-left flex flex-col justify-between gap-3 transition-all ${
+              fontSize === 'larger'
+                ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 shadow-sm ring-1 ring-blue-500/30'
+                : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 bg-slate-50/50 dark:bg-slate-800/30'
+            }`}
+          >
+            <div className="flex items-center justify-between w-full">
+              <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300">
+                +25% · {t.settingsAutoBadge}
+              </span>
+              {fontSize === 'larger' && (
+                <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center">
+                  <Check className="w-3 h-3 stroke-[3]" />
+                </div>
+              )}
+            </div>
+            <div>
+              <span className="font-bold text-base sm:text-lg block">
+                {t.fontSizeLarger}
+              </span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                {t.fontSizeLargerDesc}
+              </span>
+            </div>
+          </button>
         </div>
       </div>
 
