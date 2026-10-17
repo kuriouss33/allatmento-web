@@ -304,12 +304,80 @@ export interface TranslateResult {
   detectedSourceLang?: string;
 }
 
+/**
+ * Megbízható kliensoldali nyelvfelismerő (magyar vs angol)
+ */
+export function detectLanguage(text: string): 'hu' | 'en' {
+  if (!text || typeof text !== 'string') return 'hu';
+  const clean = text.trim();
+  if (!clean) return 'hu';
+
+  // 1. Ha tartalmaz specifikus magyar ékezetes karaktereket (á, é, í, ó, ö, ő, ú, ü, ű)
+  if (/[áéíóöőúüűÁÉÍÓÖŐÚÜŰ]/.test(clean)) {
+    return 'hu';
+  }
+
+  // 2. Szavak gyakorisági elemzése
+  const words = clean.toLowerCase().match(/[a-z]{2,}/g) || [];
+  if (words.length === 0) {
+    return 'hu';
+  }
+
+  const huWords = new Set([
+    'a', 'az', 'es', 'és', 'hogy', 'nem', 'van', 'volt', 'lesz', 'egy', 'ez', 'itt', 'ott',
+    'meg', 'de', 'ha', 'csak', 'mar', 'már', 'vagy', 'kell', 'be', 'ki', 'el', 'le', 'fel',
+    'szia', 'sziasztok', 'koszi', 'köszi', 'koszonom', 'köszönöm', 'kutya', 'kutyus', 'macska',
+    'cica', 'cicat', 'kutyat', 'allat', 'állat', 'mento', 'mentő', 'segitseg', 'segítség',
+    'serult', 'sérült', 'verzik', 'vérzik', 'latom', 'látom', 'lattam', 'láttam', 'talaltam',
+    'találtam', 'merre', 'ment', 'helyszin', 'helyszín', 'utca', 'orvos', 'rendelo', 'rendelő',
+    'tudok', 'tudsz', 'megyek', 'jovok', 'jövök', 'udv', 'üdv', 'rendben', 'igen', 'baba', 'nappal'
+  ]);
+
+  const enWords = new Set([
+    'the', 'and', 'is', 'are', 'was', 'were', 'to', 'in', 'at', 'on', 'of', 'for', 'with',
+    'this', 'that', 'it', 'its', 'dog', 'cat', 'kitten', 'puppy', 'animal', 'rescue', 'injured',
+    'hurt', 'bleeding', 'help', 'found', 'saw', 'see', 'seen', 'here', 'there', 'please',
+    'thank', 'thanks', 'hello', 'hi', 'hey', 'just', 'very', 'well', 'can', 'could', 'would',
+    'should', 'have', 'has', 'had', 'not', 'no', 'yes', 'but', 'or', 'if', 'because', 'where',
+    'what', 'when', 'how', 'who', 'why', 'sweetie', 'park', 'fed', 'street', 'road', 'today', 'now'
+  ]);
+
+  let huScore = 0;
+  let enScore = 0;
+
+  for (const w of words) {
+    if (huWords.has(w)) huScore += 1;
+    if (enWords.has(w)) enScore += 1;
+  }
+
+  if (enScore > huScore) {
+    return 'en';
+  }
+  if (huScore > enScore) {
+    return 'hu';
+  }
+
+  // Alapértelmezés: magyar
+  return 'hu';
+}
+
 // 14. Szöveg automatikus fordítása (magyar <-> angol)
 export async function translateTextDetailed(
   text: string,
   targetLang: 'en' | 'hu'
 ): Promise<TranslateResult> {
   if (!text || !text.trim()) return { translated: text, isTranslated: false };
+
+  // Ha a forrásnyelv és a célnyelv megegyezik: azonnal visszaadjuk eredetiben, nincs hálózati kérés!
+  const detectedLang = detectLanguage(text);
+  if (detectedLang === targetLang) {
+    return {
+      translated: text,
+      isTranslated: false,
+      detectedSourceLang: targetLang,
+    };
+  }
+
   try {
     const res = await apiFetch<{
       success: boolean;

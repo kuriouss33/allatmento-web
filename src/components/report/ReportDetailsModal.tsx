@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { addComment, normalizeReport, translateText, translateTextDetailed } from '@/lib/api';
+import { addComment, normalizeReport, translateText, translateTextDetailed, detectLanguage } from '@/lib/api';
 import { Report, ReportComment } from '@/types';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
@@ -92,20 +92,21 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
     return () => unsubscribe();
   }, [report, isOpen, isRescuer]);
 
-  // Automatikus fordítás leírásra és lezárásra célnyelv szerint (magyar <-> angol)
+  // Automatikus fordítás leírásra és lezárásra célnyelv szerint (csak eltérő nyelvpárok esetén!)
   useEffect(() => {
     if (!liveReport) return;
 
     // Leírás fordítása
     const rawDesc = liveReport.leiras || liveReport.megjegyzes || '';
     if (rawDesc) {
-      if (lang === 'en' && !liveReport.megjegyzes_en && !translatedDesc['en']) {
+      const descLang = liveReport.sourceLang || detectLanguage(rawDesc);
+      if (lang === 'en' && descLang === 'hu' && !liveReport.megjegyzes_en && !translatedDesc['en']) {
         translateTextDetailed(rawDesc, 'en').then((res) => {
           if (res.isTranslated) {
             setTranslatedDesc((prev) => ({ ...prev, en: res.translated }));
           }
         });
-      } else if (lang === 'hu' && !liveReport.megjegyzes_hu && !translatedDesc['hu']) {
+      } else if (lang === 'hu' && descLang === 'en' && !liveReport.megjegyzes_hu && !translatedDesc['hu']) {
         translateTextDetailed(rawDesc, 'hu').then((res) => {
           if (res.isTranslated) {
             setTranslatedDesc((prev) => ({ ...prev, hu: res.translated }));
@@ -117,13 +118,14 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
     // Lezárási szöveg fordítása
     const rawRes = liveReport.megoldasLeiras || liveReport.lezarasMegjegyzes || '';
     if (rawRes) {
-      if (lang === 'en' && !liveReport.lezaras_en && !translatedResolution['en']) {
+      const resLang = liveReport.lezaras_sourceLang || detectLanguage(rawRes);
+      if (lang === 'en' && resLang === 'hu' && !liveReport.lezaras_en && !translatedResolution['en']) {
         translateTextDetailed(rawRes, 'en').then((res) => {
           if (res.isTranslated) {
             setTranslatedResolution((prev) => ({ ...prev, en: res.translated }));
           }
         });
-      } else if (lang === 'hu' && !liveReport.lezaras_hu && !translatedResolution['hu']) {
+      } else if (lang === 'hu' && resLang === 'en' && !liveReport.lezaras_hu && !translatedResolution['hu']) {
         translateTextDetailed(rawRes, 'hu').then((res) => {
           if (res.isTranslated) {
             setTranslatedResolution((prev) => ({ ...prev, hu: res.translated }));
@@ -133,7 +135,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
     }
   }, [liveReport, lang, translatedDesc, translatedResolution]);
 
-  // Kommentek fordítása célnyelvre (magyar <-> angol)
+  // Kommentek fordítása célnyelvre (csak ha a komment nyelve eltér az oldal nyelvétől)
   useEffect(() => {
     if (!comments.length) return;
     comments.forEach((komment, idx) => {
@@ -141,14 +143,24 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
       const langKey = `${baseKey}_${lang}`;
       if (translatedComments[langKey]) return;
 
-      const storedTarget = lang === 'en' ? komment.szoveg_en : komment.szoveg_hu;
-      // Ha még nincs célnyelvi fordítás eltárolva
-      if (!storedTarget) {
-        translateTextDetailed(komment.szoveg, lang).then((res) => {
-          if (res.isTranslated) {
-            setTranslatedComments((prev) => ({ ...prev, [langKey]: res.translated }));
-          }
-        });
+      const commentLang = komment.sourceLang || detectLanguage(komment.szoveg);
+
+      if (lang === 'en' && commentLang === 'hu') {
+        if (!komment.szoveg_en) {
+          translateTextDetailed(komment.szoveg, 'en').then((res) => {
+            if (res.isTranslated) {
+              setTranslatedComments((prev) => ({ ...prev, [langKey]: res.translated }));
+            }
+          });
+        }
+      } else if (lang === 'hu' && commentLang === 'en') {
+        if (!komment.szoveg_hu) {
+          translateTextDetailed(komment.szoveg, 'hu').then((res) => {
+            if (res.isTranslated) {
+              setTranslatedComments((prev) => ({ ...prev, [langKey]: res.translated }));
+            }
+          });
+        }
       }
     });
   }, [comments, lang, translatedComments]);
@@ -367,20 +379,23 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
             {/* Description / Notes */}
             {liveReport.leiras && (() => {
               const rawDesc = liveReport.leiras || '';
+              const textLang = liveReport.sourceLang || detectLanguage(rawDesc);
               let translatedDescText: string | null = null;
-              if (lang === 'en') {
+
+              if (lang === 'en' && textLang === 'hu') {
                 if (liveReport.megjegyzes_en && liveReport.megjegyzes_en.trim().toLowerCase() !== rawDesc.trim().toLowerCase()) {
                   translatedDescText = liveReport.megjegyzes_en;
                 } else if (translatedDesc['en']) {
                   translatedDescText = translatedDesc['en'];
                 }
-              } else if (lang === 'hu') {
+              } else if (lang === 'hu' && textLang === 'en') {
                 if (liveReport.megjegyzes_hu && liveReport.megjegyzes_hu.trim().toLowerCase() !== rawDesc.trim().toLowerCase()) {
                   translatedDescText = liveReport.megjegyzes_hu;
                 } else if (translatedDesc['hu']) {
                   translatedDescText = translatedDesc['hu'];
                 }
               }
+
               const isDescTranslated = Boolean(translatedDescText && translatedDescText.trim().toLowerCase() !== rawDesc.trim().toLowerCase());
               const displayDesc = showOriginalDesc || !isDescTranslated ? rawDesc : translatedDescText!;
 
@@ -418,20 +433,23 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
           {/* Solution info if resolved */}
           {liveReport.statusz === 'megoldva' && (liveReport.megoldasLeiras || liveReport.lezarasMegjegyzes) && (() => {
             const rawRes = liveReport.megoldasLeiras || liveReport.lezarasMegjegyzes || '';
+            const textLang = liveReport.lezaras_sourceLang || detectLanguage(rawRes);
             let translatedResText: string | null = null;
-            if (lang === 'en') {
+
+            if (lang === 'en' && textLang === 'hu') {
               if (liveReport.lezaras_en && liveReport.lezaras_en.trim().toLowerCase() !== rawRes.trim().toLowerCase()) {
                 translatedResText = liveReport.lezaras_en;
               } else if (translatedResolution['en']) {
                 translatedResText = translatedResolution['en'];
               }
-            } else if (lang === 'hu') {
+            } else if (lang === 'hu' && textLang === 'en') {
               if (liveReport.lezaras_hu && liveReport.lezaras_hu.trim().toLowerCase() !== rawRes.trim().toLowerCase()) {
                 translatedResText = liveReport.lezaras_hu;
               } else if (translatedResolution['hu']) {
                 translatedResText = translatedResolution['hu'];
               }
             }
+
             const isResTranslated = Boolean(translatedResText && translatedResText.trim().toLowerCase() !== rawRes.trim().toLowerCase());
             const displayRes = showOriginalResolution || !isResTranslated ? rawRes : translatedResText!;
 
@@ -594,15 +612,16 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                   const showOriginal = Boolean(showOriginalMap[key]);
 
                   const rawOriginal = komment.szoveg;
+                  const textLang = komment.sourceLang || detectLanguage(rawOriginal);
                   let translatedText: string | null = null;
 
-                  if (lang === 'en') {
+                  if (lang === 'en' && textLang === 'hu') {
                     if (komment.szoveg_en && komment.szoveg_en.trim().toLowerCase() !== rawOriginal.trim().toLowerCase()) {
                       translatedText = komment.szoveg_en;
                     } else if (translatedComments[langKey]) {
                       translatedText = translatedComments[langKey];
                     }
-                  } else if (lang === 'hu') {
+                  } else if (lang === 'hu' && textLang === 'en') {
                     if (komment.szoveg_hu && komment.szoveg_hu.trim().toLowerCase() !== rawOriginal.trim().toLowerCase()) {
                       translatedText = komment.szoveg_hu;
                     } else if (translatedComments[langKey]) {
