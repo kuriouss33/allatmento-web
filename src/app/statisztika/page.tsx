@@ -1,9 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useMemo } from 'react';
-import Link from 'next/link';
 import { 
-  ArrowLeft, 
   BarChart3, 
   AlertCircle, 
   CheckCircle2, 
@@ -180,14 +178,6 @@ export default function StatisticsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-slate-200 dark:border-slate-800">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shadow-sm"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Főoldal</span>
-            </Link>
-
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold">
               <Activity className="w-3.5 h-3.5" />
               <span>Valós idejű adatok</span>
@@ -508,17 +498,6 @@ export default function StatisticsPage() {
               )}
             </div>
 
-          </div>
-
-          {/* Alsó vissza link */}
-          <div className="pt-2 flex justify-center">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Vissza a főoldalra</span>
-            </Link>
           </div>
         </>
       )}

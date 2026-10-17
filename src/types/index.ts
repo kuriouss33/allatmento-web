@@ -72,10 +72,13 @@ export interface Organization {
   weboldal?: string;
 }
 
+export type GuideCategory = 'kutya' | 'macska' | 'madar' | 'kisemlos' | 'vad' | 'hullo' | 'altalanos' | string;
+
 export interface FirstAidGuideItem {
   id: string;
   cim: string;
-  kategoria: 'kutya' | 'macska' | 'vad' | 'madar' | 'altalanos';
+  kategoria: GuideCategory;
   leiras: string[];
   figyelmeztetes?: string;
+  surgos?: boolean;
 }

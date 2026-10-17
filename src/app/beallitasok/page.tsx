@@ -1,9 +1,7 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
 import { 
-  ArrowLeft, 
   Settings as SettingsIcon, 
   Globe, 
   Sun, 
@@ -24,22 +22,13 @@ export default function SettingsPage() {
     <div className="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-6 sm:space-y-8 animate-fadeIn">
       
       {/* Top Header */}
-      <div className="flex items-center gap-3 pb-3 border-b border-slate-200 dark:border-slate-800">
-        <Link
-          href="/"
-          className="w-10 h-10 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shadow-sm"
-          title={t.backToHome}
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </Link>
-        <div>
-          <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-            {t.settingsTitle}
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-            {t.settingsSub}
-          </p>
-        </div>
+      <div className="pb-3 border-b border-slate-200 dark:border-slate-800">
+        <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+          {t.settingsTitle}
+        </h1>
+        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+          {t.settingsSub}
+        </p>
       </div>
 
       {/* 1. Kártya: Nyelv beállítása */}
@@ -248,12 +237,6 @@ export default function SettingsPage() {
           <Info className="w-4 h-4 text-slate-400" />
           <span>Állatmentő Portál Web v1.0.0</span>
         </div>
-        <Link
-          href="/"
-          className="font-bold text-blue-600 dark:text-blue-400 hover:underline"
-        >
-          {t.backToHome}
-        </Link>
       </div>
 
     </div>
