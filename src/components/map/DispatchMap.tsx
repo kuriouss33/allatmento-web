@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Report } from '@/types';
 import { canUserSeeExactReport, getReportDisplayLocation, getReportDisplayAddress } from '@/lib/privacy';
 import { useLanguage } from '@/context/LanguageContext';
@@ -35,6 +35,11 @@ export const DispatchMap: React.FC<DispatchMapProps> = ({
   const circlesGroupRef = useRef<any>(null);
   const markersMapRef = useRef<Map<string, any>>(new Map());
   const isUserClickRef = useRef<boolean>(false);
+  const [isMapReady, setIsMapReady] = useState(false);
+
+  // Mindig naprakészen tartjuk a legfrissebb reports referenciát
+  const reportsRef = useRef(reports);
+  reportsRef.current = reports;
 
   // Callbacks ref tárolása, hogy ne váltsanak ki felesleges re-render / layer rebuildet
   const onSelectReportRef = useRef(onSelectReport);
@@ -46,104 +51,8 @@ export const DispatchMap: React.FC<DispatchMapProps> = ({
   const onOpenHelpRef = useRef(onOpenHelp);
   onOpenHelpRef.current = onOpenHelp;
 
-  // 1. Térkép és MarkerCluster inicializálása egyszer a betöltéskor
-  useEffect(() => {
-    if (typeof window === 'undefined' || !mapContainerRef.current) return;
-
-    let isMounted = true;
-
-    const initMap = async () => {
-      try {
-        const leafletModule = await import('leaflet');
-        if (!isMounted || !mapContainerRef.current) return;
-        const L = (leafletModule as any).default || leafletModule;
-        (window as any).L = L;
-
-        await import('leaflet.markercluster');
-
-        delete (L.Icon.Default.prototype as any)._getIconUrl;
-        L.Icon.Default.mergeOptions({
-          iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-          iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-          shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-        });
-
-        if (!mapInstanceRef.current && mapContainerRef.current) {
-          if ((mapContainerRef.current as any)._leaflet_id) {
-            (mapContainerRef.current as any)._leaflet_id = null;
-          }
-
-          // Magyarország központja
-          const map = L.map(mapContainerRef.current, {
-            center: [47.1625, 19.5033],
-            zoom: 7,
-            zoomControl: false,
-          });
-
-          L.control.zoom({ position: 'bottomright' }).addTo(map);
-
-          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; OpenStreetMap közreműködők',
-          }).addTo(map);
-
-          // Clusterezés beállítása
-          const cluster = (L as any).markerClusterGroup({
-            showCoverageOnHover: false,
-            zoomToBoundsOnClick: true,
-            spiderfyOnMaxZoom: true,
-            maxClusterRadius: 45,
-            disableClusteringAtZoom: 17,
-          });
-          map.addLayer(cluster);
-
-          // Védett 100m-es körök rétegcsoportja
-          const circlesGroup = L.layerGroup();
-          map.addLayer(circlesGroup);
-
-          mapInstanceRef.current = map;
-          clusterGroupRef.current = cluster;
-          circlesGroupRef.current = circlesGroup;
-
-          setTimeout(() => {
-            if (isMounted && mapInstanceRef.current) {
-              mapInstanceRef.current.invalidateSize();
-            }
-          }, 200);
-        }
-      } catch (err) {
-        console.error('Hiba a térkép inicializálásakor:', err);
-      }
-    };
-
-    initMap();
-
-    let resizeObserver: ResizeObserver | null = null;
-    if (typeof ResizeObserver !== 'undefined' && mapContainerRef.current) {
-      resizeObserver = new ResizeObserver(() => {
-        if (mapInstanceRef.current) {
-          mapInstanceRef.current.invalidateSize();
-        }
-      });
-      resizeObserver.observe(mapContainerRef.current);
-    }
-
-    return () => {
-      isMounted = false;
-      if (resizeObserver) {
-        resizeObserver.disconnect();
-      }
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
-        mapInstanceRef.current = null;
-        clusterGroupRef.current = null;
-        circlesGroupRef.current = null;
-      }
-    };
-  }, []);
-
-  // 2. Markerek és 100m-es védett körzetek frissítése
-  useEffect(() => {
+  // Markerek és védett körzetek kirajzolása a térképre
+  const renderMarkers = useCallback((reportsList: Report[]) => {
     const map = mapInstanceRef.current;
     const cluster = clusterGroupRef.current;
     const circlesGroup = circlesGroupRef.current;
@@ -157,7 +66,7 @@ export const DispatchMap: React.FC<DispatchMapProps> = ({
     }
     markersMapRef.current.clear();
 
-    const validReports = reports.filter((r) => r.lat && r.lon);
+    const validReports = (reportsList || []).filter((r) => r && r.lat && r.lon);
 
     validReports.forEach((report) => {
       const canSeeExact = canUserSeeExactReport(report, {
@@ -343,8 +252,118 @@ export const DispatchMap: React.FC<DispatchMapProps> = ({
       cluster.addLayer(marker);
       markersMapRef.current.set(report.id, marker);
     });
-  }, [reports, isRescuer, isAdmin, isRegistered, currentUserId]);
+  }, [isRescuer, isAdmin, isRegistered, currentUserId, t]);
 
+  // 1. Térkép és MarkerCluster inicializálása egyszer a betöltéskor
+  useEffect(() => {
+    if (typeof window === 'undefined' || !mapContainerRef.current) return;
+
+    let isMounted = true;
+
+    const initMap = async () => {
+      try {
+        const leafletModule = await import('leaflet');
+        if (!isMounted || !mapContainerRef.current) return;
+        const L = (leafletModule as any).default || leafletModule;
+        (window as any).L = L;
+
+        await import('leaflet.markercluster');
+
+        delete (L.Icon.Default.prototype as any)._getIconUrl;
+        L.Icon.Default.mergeOptions({
+          iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+          iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+          shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+        });
+
+        if (!mapInstanceRef.current && mapContainerRef.current) {
+          if ((mapContainerRef.current as any)._leaflet_id) {
+            (mapContainerRef.current as any)._leaflet_id = null;
+          }
+
+          // Magyarország központja
+          const map = L.map(mapContainerRef.current, {
+            center: [47.1625, 19.5033],
+            zoom: 7,
+            zoomControl: false,
+          });
+
+          L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap közreműködők',
+          }).addTo(map);
+
+          // Clusterezés beállítása
+          const cluster = (L as any).markerClusterGroup({
+            showCoverageOnHover: false,
+            zoomToBoundsOnClick: true,
+            spiderfyOnMaxZoom: true,
+            maxClusterRadius: 45,
+            disableClusteringAtZoom: 17,
+          });
+          map.addLayer(cluster);
+
+          // Védett 100m-es körök rétegcsoportja
+          const circlesGroup = L.layerGroup();
+          map.addLayer(circlesGroup);
+
+          mapInstanceRef.current = map;
+          clusterGroupRef.current = cluster;
+          circlesGroupRef.current = circlesGroup;
+
+          if (isMounted) {
+            setIsMapReady(true);
+            // AZONNAL kirajzoljuk a markereket a meglévő adatokból!
+            if (reportsRef.current && reportsRef.current.length > 0) {
+              renderMarkers(reportsRef.current);
+            }
+          }
+
+          setTimeout(() => {
+            if (isMounted && mapInstanceRef.current) {
+              mapInstanceRef.current.invalidateSize();
+            }
+          }, 150);
+        }
+      } catch (err) {
+        console.error('Hiba a térkép inicializálásakor:', err);
+      }
+    };
+
+    initMap();
+
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined' && mapContainerRef.current) {
+      resizeObserver = new ResizeObserver(() => {
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.invalidateSize();
+        }
+      });
+      resizeObserver.observe(mapContainerRef.current);
+    }
+
+    return () => {
+      isMounted = false;
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+        clusterGroupRef.current = null;
+        circlesGroupRef.current = null;
+      }
+      setIsMapReady(false);
+    };
+  }, [renderMarkers]);
+
+  // 2. Markerek és 100m-es védett körzetek frissítése, amint a térkép kész és az adatok változnak
+  useEffect(() => {
+    if (!isMapReady) return;
+    renderMarkers(reports);
+  }, [isMapReady, reports, renderMarkers]);
   // 3. Fókuszálás kívülről érkező kiválasztáskor (pl. lista kártyára kattintva)
   useEffect(() => {
     if (!selectedReportId) return;

@@ -48,9 +48,35 @@ export default function DispatchPage() {
   const { t } = useLanguage();
   const { idToken, isRescuer, isAdmin, firebaseUser } = useAuth();
 
-  const [reports, setReports] = useState<Report[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Gyors gyorsítótárazott kezdeti állapot (SWR minta a 0 ms-os hidegindításhoz)
+  const [reports, setReports] = useState<Report[]>(() => {
+    if (typeof window === 'undefined') return [];
+    try {
+      const cached = sessionStorage.getItem('allatmento_cached_reports') || localStorage.getItem('allatmento_cached_reports');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [loading, setLoading] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return true;
+    try {
+      const cached = sessionStorage.getItem('allatmento_cached_reports') || localStorage.getItem('allatmento_cached_reports');
+      return cached ? JSON.parse(cached).length === 0 : true;
+    } catch {
+      return true;
+    }
+  });
   const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
+
+  const handleSetReports = (docs: Report[]) => {
+    setReports(docs);
+    setLoading(false);
+    try {
+      sessionStorage.setItem('allatmento_cached_reports', JSON.stringify(docs));
+      localStorage.setItem('allatmento_cached_reports', JSON.stringify(docs));
+    } catch {}
+  };
 
   // Szűrők
   const [statusFilter, setStatusFilter] = useState<'all' | ReportStatus>('all');
@@ -98,24 +124,23 @@ export default function DispatchPage() {
               const timeB = b.idopont?.seconds ? b.idopont.seconds * 1000 : new Date(b.idopont || b.createdAt || 0).getTime();
               return timeB - timeA;
             });
-            setReports(docs);
-            setLoading(false);
+            handleSetReports(docs);
           },
           (err) => {
             getReports(undefined, idToken || undefined)
-              .then((data) => setReports(data))
+              .then((data) => handleSetReports(data))
               .finally(() => setLoading(false));
           }
         );
       } catch (e) {
         getReports(undefined, idToken || undefined)
-          .then((data) => setReports(data))
+          .then((data) => handleSetReports(data))
           .finally(() => setLoading(false));
       }
     } else {
       const fetchPublicReports = () => {
         getReports(undefined, undefined)
-          .then((data) => setReports(data))
+          .then((data) => handleSetReports(data))
           .catch((err) => console.error('Nem sikerült a bejelentések lekérése:', err))
           .finally(() => setLoading(false));
       };

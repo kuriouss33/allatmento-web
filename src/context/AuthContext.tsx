@@ -51,29 +51,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [idToken, setIdToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchProfile = async (user: FirebaseUser) => {
+  const fetchProfile = async (user: FirebaseUser, forceRefresh = false) => {
     try {
-      const tokenResult = await user.getIdTokenResult(true);
+      const tokenResult = await user.getIdTokenResult(forceRefresh);
       const token = tokenResult.token;
       setIdToken(token);
 
       const claimRole = tokenResult.claims?.role as UserProfile['role'] | undefined;
 
-      try {
-        const userProfile = await getMe(token);
+      // Azonnal beállítjuk a jogosultságot a tokenből (0 ms késleltetés a térkép és mentői funkciók indulásakor)
+      setProfile({
+        uid: user.uid,
+        email: user.email || '',
+        role: claimRole || 'public',
+        status: claimRole === 'verified_rescuer' || claimRole === 'super_admin' ? 'active' : 'pending_approval'
+      });
+
+      // A teljes profil szinkronizálása a háttérben fut le, nem akasztja meg az indítást
+      getMe(token).then((userProfile) => {
         setProfile({
           ...userProfile,
           role: claimRole || userProfile.role || 'public',
         });
-      } catch (err) {
+      }).catch((err) => {
         console.warn('Backend profil lekérés figyelmeztetés, token adatok használata:', err);
-        setProfile({
-          uid: user.uid,
-          email: user.email || '',
-          role: claimRole || 'public',
-          status: claimRole === 'verified_rescuer' || claimRole === 'super_admin' ? 'active' : 'pending_approval'
-        });
-      }
+      });
     } catch (err) {
       console.error('Hiba a felhasználói profil lekérésekor:', err);
       setProfile({
@@ -107,7 +109,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, pass: string) => {
     if (!auth) throw new Error('A bejelentkezési szolgáltatás jelenleg nem elérhető.');
     const cred = await signInWithEmailAndPassword(auth, email, pass);
-    await fetchProfile(cred.user);
+    await fetchProfile(cred.user, true);
   };
 
   const register = async (email: string, pass: string) => {
@@ -162,7 +164,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshProfile = async () => {
     if (firebaseUser) {
-      await fetchProfile(firebaseUser);
+      await fetchProfile(firebaseUser, true);
     }
   };
 
