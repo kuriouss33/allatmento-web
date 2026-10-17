@@ -6,6 +6,7 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  sendEmailVerification,
   signOut as fbSignOut,
   getIdToken
 } from 'firebase/auth';
@@ -114,10 +115,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const cred = await createUserWithEmailAndPassword(auth, email, pass);
     try {
       await registerProfile(cred.user.uid, email);
-      await sendVerificationEmail(email);
     } catch (err) {
       console.warn('Figyelem a regisztrációs profil rögzítésekor:', err);
     }
+
+    // 1. Elsődleges kísérlet a backend Resend küldésével
+    try {
+      await sendVerificationEmail(email);
+    } catch (resendErr) {
+      console.warn('Backend Resend küldés sikertelen, közvetlen Firebase megerősítő e-mail küldése indul:', resendErr);
+      // 2. Tartalék fallback: közvetlen Firebase megerősítő e-mail
+      try {
+        await sendEmailVerification(cred.user);
+      } catch (fbErr) {
+        console.error('Közvetlen Firebase e-mail küldés is hibára futott:', fbErr);
+      }
+    }
+
     await fetchProfile(cred.user);
   };
 
@@ -137,7 +151,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const resendVerification = async () => {
     if (firebaseUser?.email) {
-      await sendVerificationEmail(firebaseUser.email);
+      try {
+        await sendVerificationEmail(firebaseUser.email);
+      } catch (err) {
+        console.warn('Resend újraküldés sikertelen, tartalék Firebase küldés indul:', err);
+        await sendEmailVerification(firebaseUser);
+      }
     }
   };
 
