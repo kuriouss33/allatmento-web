@@ -8,7 +8,7 @@ const getFallbackKey = () => {
   }
 };
 
-export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://allatmento-backend.onrender.com/api';
+export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://allatmento-backend.vercel.app/api';
 
 export const FIREBASE_CONFIG = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || getFallbackKey(),
