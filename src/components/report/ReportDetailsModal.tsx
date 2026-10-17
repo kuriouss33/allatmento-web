@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { addComment, normalizeReport, translateText } from '@/lib/api';
+import { addComment, normalizeReport, translateText, translateTextDetailed } from '@/lib/api';
 import { Report, ReportComment } from '@/types';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
@@ -62,9 +62,9 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
   // Automatikus fordítás állapotok (kommentek, leírás, lezárás)
   const [translatedComments, setTranslatedComments] = useState<Record<string, string>>({});
   const [showOriginalMap, setShowOriginalMap] = useState<Record<string, boolean>>({});
-  const [translatedDesc, setTranslatedDesc] = useState<string>('');
+  const [translatedDesc, setTranslatedDesc] = useState<Record<string, string>>({});
   const [showOriginalDesc, setShowOriginalDesc] = useState<boolean>(false);
-  const [translatedResolution, setTranslatedResolution] = useState<string>('');
+  const [translatedResolution, setTranslatedResolution] = useState<Record<string, string>>({});
   const [showOriginalResolution, setShowOriginalResolution] = useState<boolean>(false);
 
   useEffect(() => {
@@ -92,40 +92,61 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
     return () => unsubscribe();
   }, [report, isOpen, isRescuer]);
 
-  // Automatikus fordítás leírásra és lezárásra, ha hiányzik
+  // Automatikus fordítás leírásra és lezárásra célnyelv szerint (magyar <-> angol)
   useEffect(() => {
     if (!liveReport) return;
-    if (lang === 'en') {
-      if (!liveReport.megjegyzes_en && liveReport.leiras && !translatedDesc) {
-        translateText(liveReport.leiras, 'en').then((res) => {
-          if (res) setTranslatedDesc(res);
+
+    // Leírás fordítása
+    const rawDesc = liveReport.leiras || liveReport.megjegyzes || '';
+    if (rawDesc) {
+      if (lang === 'en' && !liveReport.megjegyzes_en && !translatedDesc['en']) {
+        translateTextDetailed(rawDesc, 'en').then((res) => {
+          if (res.isTranslated) {
+            setTranslatedDesc((prev) => ({ ...prev, en: res.translated }));
+          }
+        });
+      } else if (lang === 'hu' && !liveReport.megjegyzes_hu && !translatedDesc['hu']) {
+        translateTextDetailed(rawDesc, 'hu').then((res) => {
+          if (res.isTranslated) {
+            setTranslatedDesc((prev) => ({ ...prev, hu: res.translated }));
+          }
         });
       }
-      const rawRes = liveReport.megoldasLeiras || liveReport.lezarasMegjegyzes;
-      if (!liveReport.lezaras_en && rawRes && !translatedResolution) {
-        translateText(rawRes, 'en').then((res) => {
-          if (res) setTranslatedResolution(res);
+    }
+
+    // Lezárási szöveg fordítása
+    const rawRes = liveReport.megoldasLeiras || liveReport.lezarasMegjegyzes || '';
+    if (rawRes) {
+      if (lang === 'en' && !liveReport.lezaras_en && !translatedResolution['en']) {
+        translateTextDetailed(rawRes, 'en').then((res) => {
+          if (res.isTranslated) {
+            setTranslatedResolution((prev) => ({ ...prev, en: res.translated }));
+          }
+        });
+      } else if (lang === 'hu' && !liveReport.lezaras_hu && !translatedResolution['hu']) {
+        translateTextDetailed(rawRes, 'hu').then((res) => {
+          if (res.isTranslated) {
+            setTranslatedResolution((prev) => ({ ...prev, hu: res.translated }));
+          }
         });
       }
     }
   }, [liveReport, lang, translatedDesc, translatedResolution]);
 
-  // Kommentek automatikus fordítása
+  // Kommentek fordítása célnyelvre (magyar <-> angol)
   useEffect(() => {
     if (!comments.length) return;
     comments.forEach((komment, idx) => {
-      const key = komment.id || `c-${idx}`;
-      if (lang === 'en' && !komment.szoveg_en && !translatedComments[key]) {
-        translateText(komment.szoveg, 'en').then((res) => {
-          if (res && res !== komment.szoveg) {
-            setTranslatedComments((prev) => ({ ...prev, [key]: res }));
-          }
-        });
-      } else if (lang === 'hu' && !komment.szoveg_hu && !translatedComments[key]) {
-        // Ha angolul íródott volna és nincs szoveg_hu
-        translateText(komment.szoveg, 'hu').then((res) => {
-          if (res && res !== komment.szoveg) {
-            setTranslatedComments((prev) => ({ ...prev, [key]: res }));
+      const baseKey = komment.id || `c-${idx}`;
+      const langKey = `${baseKey}_${lang}`;
+      if (translatedComments[langKey]) return;
+
+      const storedTarget = lang === 'en' ? komment.szoveg_en : komment.szoveg_hu;
+      // Ha még nincs célnyelvi fordítás eltárolva
+      if (!storedTarget) {
+        translateTextDetailed(komment.szoveg, lang).then((res) => {
+          if (res.isTranslated) {
+            setTranslatedComments((prev) => ({ ...prev, [langKey]: res.translated }));
           }
         });
       }
@@ -344,28 +365,46 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
             </div>
 
             {/* Description / Notes */}
-            {liveReport.leiras && (
-              <div className="pt-2 border-t border-slate-200/60 dark:border-slate-700/60 space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate-400">{t.reporterDesc}</span>
-                  {lang === 'en' && (liveReport.megjegyzes_en || (translatedDesc && translatedDesc !== liveReport.leiras)) && (
-                    <button
-                      type="button"
-                      onClick={() => setShowOriginalDesc(prev => !prev)}
-                      className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 font-light"
-                    >
-                      <Languages className="w-3 h-3" />
-                      <span>{showOriginalDesc ? t.translatedTag : t.showOriginalBtn}</span>
-                    </button>
-                  )}
+            {liveReport.leiras && (() => {
+              const rawDesc = liveReport.leiras || '';
+              let translatedDescText: string | null = null;
+              if (lang === 'en') {
+                if (liveReport.megjegyzes_en && liveReport.megjegyzes_en.trim().toLowerCase() !== rawDesc.trim().toLowerCase()) {
+                  translatedDescText = liveReport.megjegyzes_en;
+                } else if (translatedDesc['en']) {
+                  translatedDescText = translatedDesc['en'];
+                }
+              } else if (lang === 'hu') {
+                if (liveReport.megjegyzes_hu && liveReport.megjegyzes_hu.trim().toLowerCase() !== rawDesc.trim().toLowerCase()) {
+                  translatedDescText = liveReport.megjegyzes_hu;
+                } else if (translatedDesc['hu']) {
+                  translatedDescText = translatedDesc['hu'];
+                }
+              }
+              const isDescTranslated = Boolean(translatedDescText && translatedDescText.trim().toLowerCase() !== rawDesc.trim().toLowerCase());
+              const displayDesc = showOriginalDesc || !isDescTranslated ? rawDesc : translatedDescText!;
+
+              return (
+                <div className="pt-2 border-t border-slate-200/60 dark:border-slate-700/60 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-slate-400">{t.reporterDesc}</span>
+                    {isDescTranslated && (
+                      <button
+                        type="button"
+                        onClick={() => setShowOriginalDesc(prev => !prev)}
+                        className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 font-light"
+                      >
+                        <Languages className="w-3 h-3" />
+                        <span>{showOriginalDesc ? t.translatedTag : t.showOriginalBtn}</span>
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-wrap">
+                    {displayDesc}
+                  </p>
                 </div>
-                <p className="text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-wrap">
-                  {lang === 'en' && !showOriginalDesc
-                    ? (liveReport.megjegyzes_en || translatedDesc || liveReport.leiras)
-                    : liveReport.leiras}
-                </p>
-              </div>
-            )}
+              );
+            })()}
 
             {/* Timestamp */}
             {liveReport.createdAt && (
@@ -377,44 +416,60 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
           </div>
 
           {/* Solution info if resolved */}
-          {liveReport.statusz === 'megoldva' && (liveReport.megoldasLeiras || liveReport.lezarasMegjegyzes) && (
-            <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-xs sm:text-sm text-emerald-800 dark:text-emerald-200 space-y-2 font-light">
-              <div className="flex items-center justify-between">
-                <span className="font-light text-emerald-900 dark:text-emerald-100 block">{t.rescueResult}</span>
-                {lang === 'en' && (liveReport.lezaras_en || (translatedResolution && translatedResolution !== (liveReport.megoldasLeiras || liveReport.lezarasMegjegyzes))) && (
-                  <button
-                    type="button"
-                    onClick={() => setShowOriginalResolution(prev => !prev)}
-                    className="text-[11px] text-emerald-700 dark:text-emerald-300 hover:underline flex items-center gap-1 font-light"
+          {liveReport.statusz === 'megoldva' && (liveReport.megoldasLeiras || liveReport.lezarasMegjegyzes) && (() => {
+            const rawRes = liveReport.megoldasLeiras || liveReport.lezarasMegjegyzes || '';
+            let translatedResText: string | null = null;
+            if (lang === 'en') {
+              if (liveReport.lezaras_en && liveReport.lezaras_en.trim().toLowerCase() !== rawRes.trim().toLowerCase()) {
+                translatedResText = liveReport.lezaras_en;
+              } else if (translatedResolution['en']) {
+                translatedResText = translatedResolution['en'];
+              }
+            } else if (lang === 'hu') {
+              if (liveReport.lezaras_hu && liveReport.lezaras_hu.trim().toLowerCase() !== rawRes.trim().toLowerCase()) {
+                translatedResText = liveReport.lezaras_hu;
+              } else if (translatedResolution['hu']) {
+                translatedResText = translatedResolution['hu'];
+              }
+            }
+            const isResTranslated = Boolean(translatedResText && translatedResText.trim().toLowerCase() !== rawRes.trim().toLowerCase());
+            const displayRes = showOriginalResolution || !isResTranslated ? rawRes : translatedResText!;
+
+            return (
+              <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-xs sm:text-sm text-emerald-800 dark:text-emerald-200 space-y-2 font-light">
+                <div className="flex items-center justify-between">
+                  <span className="font-light text-emerald-900 dark:text-emerald-100 block">{t.rescueResult}</span>
+                  {isResTranslated && (
+                    <button
+                      type="button"
+                      onClick={() => setShowOriginalResolution(prev => !prev)}
+                      className="text-[11px] text-emerald-700 dark:text-emerald-300 hover:underline flex items-center gap-1 font-light"
+                    >
+                      <Languages className="w-3 h-3" />
+                      <span>{showOriginalResolution ? t.translatedTag : t.showOriginalBtn}</span>
+                    </button>
+                  )}
+                </div>
+                <p>{displayRes}</p>
+                {(liveReport.megoldasFotoUrl || liveReport.lezarasFotoUrl) && (
+                  <div 
+                    onClick={() => {
+                      if (onImageClick) {
+                        onImageClick((liveReport.megoldasFotoUrl || liveReport.lezarasFotoUrl)!);
+                      }
+                    }}
+                    className="w-44 h-32 rounded-xl overflow-hidden border border-emerald-300 dark:border-emerald-800 mt-2 cursor-pointer"
                   >
-                    <Languages className="w-3 h-3" />
-                    <span>{showOriginalResolution ? t.translatedTag : t.showOriginalBtn}</span>
-                  </button>
+                    <img 
+                      src={liveReport.megoldasFotoUrl || liveReport.lezarasFotoUrl} 
+                      alt={t.closurePhoto} 
+                      className="w-full h-full object-cover" 
+                    />
+                  </div>
                 )}
               </div>
-              <p>
-                {lang === 'en' && !showOriginalResolution
-                  ? (liveReport.lezaras_en || translatedResolution || liveReport.megoldasLeiras || liveReport.lezarasMegjegyzes)
-                  : (liveReport.megoldasLeiras || liveReport.lezarasMegjegyzes)}
-              </p>
-              {(liveReport.megoldasFotoUrl || liveReport.lezarasFotoUrl) && (
-                <div 
-                  onClick={() => {
-                    if (onImageClick) {
-                      onImageClick((liveReport.megoldasFotoUrl || liveReport.lezarasFotoUrl)!);
-                    }
-                  }}
-                  className="w-44 h-32 rounded-xl overflow-hidden border border-emerald-300 dark:border-emerald-800 mt-2 cursor-pointer"
-                >
-                  <img 
-                    src={liveReport.megoldasFotoUrl || liveReport.lezarasFotoUrl} 
-                    alt={t.closurePhoto} 
-                    className="w-full h-full object-cover" 
-                  />
-                </div>
-              )}
-            </div>
-          )}
+            );
+          })()}
 
           {/* Rescuer / Volunteer Action Buttons Section */}
           <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3">
@@ -535,28 +590,28 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                 comments.map((komment, idx) => {
                   const isMe = firebaseUser && komment.szerzoUid === firebaseUser.uid;
                   const key = komment.id || `c-${idx}`;
+                  const langKey = `${key}_${lang}`;
                   const showOriginal = Boolean(showOriginalMap[key]);
 
-                  let displayText = komment.szoveg;
-                  let isTranslated = false;
+                  const rawOriginal = komment.szoveg;
+                  let translatedText: string | null = null;
 
                   if (lang === 'en') {
-                    if (komment.szoveg_en && !showOriginal) {
-                      displayText = komment.szoveg_en;
-                      isTranslated = true;
-                    } else if (translatedComments[key] && !showOriginal) {
-                      displayText = translatedComments[key];
-                      isTranslated = true;
+                    if (komment.szoveg_en && komment.szoveg_en.trim().toLowerCase() !== rawOriginal.trim().toLowerCase()) {
+                      translatedText = komment.szoveg_en;
+                    } else if (translatedComments[langKey]) {
+                      translatedText = translatedComments[langKey];
                     }
                   } else if (lang === 'hu') {
-                    if (komment.szoveg_hu && !showOriginal) {
-                      displayText = komment.szoveg_hu;
-                      isTranslated = Boolean(komment.szoveg_en);
-                    } else if (translatedComments[key] && !showOriginal) {
-                      displayText = translatedComments[key];
-                      isTranslated = true;
+                    if (komment.szoveg_hu && komment.szoveg_hu.trim().toLowerCase() !== rawOriginal.trim().toLowerCase()) {
+                      translatedText = komment.szoveg_hu;
+                    } else if (translatedComments[langKey]) {
+                      translatedText = translatedComments[langKey];
                     }
                   }
+
+                  const isTranslated = Boolean(translatedText && translatedText.trim().toLowerCase() !== rawOriginal.trim().toLowerCase());
+                  const displayText = showOriginal || !isTranslated ? rawOriginal : translatedText!;
 
                   const roleLabel =
                     komment.szerep === 'bejelento'

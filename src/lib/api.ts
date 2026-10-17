@@ -298,18 +298,41 @@ export async function adminDeleteUser(targetUid: string, idToken: string): Promi
   });
 }
 
+export interface TranslateResult {
+  translated: string;
+  isTranslated: boolean;
+  detectedSourceLang?: string;
+}
+
 // 14. Szöveg automatikus fordítása (magyar <-> angol)
-export async function translateText(text: string, targetLang: 'en' | 'hu'): Promise<string> {
-  if (!text || !text.trim()) return text;
+export async function translateTextDetailed(
+  text: string,
+  targetLang: 'en' | 'hu'
+): Promise<TranslateResult> {
+  if (!text || !text.trim()) return { translated: text, isTranslated: false };
   try {
-    const res = await apiFetch<{ success: boolean; translated: string }>('/translate', {
+    const res = await apiFetch<{
+      success: boolean;
+      translated: string;
+      detectedSourceLang?: string;
+      isTranslated?: boolean;
+    }>('/translate', {
       method: 'POST',
       body: JSON.stringify({ text, targetLang }),
     });
-    return res.translated || text;
+    return {
+      translated: res.translated || text,
+      isTranslated: Boolean(res.isTranslated),
+      detectedSourceLang: res.detectedSourceLang,
+    };
   } catch (err) {
     console.error('Translation failed:', err);
-    return text;
+    return { translated: text, isTranslated: false };
   }
+}
+
+export async function translateText(text: string, targetLang: 'en' | 'hu'): Promise<string> {
+  const res = await translateTextDetailed(text, targetLang);
+  return res.translated;
 }
 

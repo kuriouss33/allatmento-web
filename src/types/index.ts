@@ -18,6 +18,7 @@ export interface ReportComment {
   szoveg: string;
   szoveg_en?: string;
   szoveg_hu?: string;
+  sourceLang?: string;
   idopont: any;
   szerzoUid: string;
   szerzoEmail?: string;
@@ -31,6 +32,8 @@ export interface Report {
   leiras?: string;
   megjegyzes?: string;
   megjegyzes_en?: string;
+  megjegyzes_hu?: string;
+  sourceLang?: string;
   helyszinLeiras?: string;
   megye?: string;
   cim?: string;
@@ -46,6 +49,8 @@ export interface Report {
   megoldasLeiras?: string;
   lezarasMegjegyzes?: string;
   lezaras_en?: string;
+  lezaras_hu?: string;
+  lezaras_sourceLang?: string;
   lat: number | null;
   lon: number | null;
   lng?: number | null;
@@ -81,8 +86,11 @@ export type GuideCategory = 'kutya' | 'macska' | 'madar' | 'kisemlos' | 'vad' | 
 export interface FirstAidGuideItem {
   id: string;
   cim: string;
+  cim_en?: string;
   kategoria: GuideCategory;
   leiras: string[];
+  leiras_en?: string[];
   figyelmeztetes?: string;
+  figyelmeztetes_en?: string;
   surgos?: boolean;
 }

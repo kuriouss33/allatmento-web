@@ -20,7 +20,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { useAutoHideOnScroll } from '@/hooks';
 
 export default function GuidePage() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -86,7 +86,19 @@ export default function GuidePage() {
   const filteredGuides = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
 
-    return FIRST_AID_GUIDES.filter((guide) => {
+    return FIRST_AID_GUIDES.map((guide) => {
+      const isEn = lang === 'en';
+      const title = isEn && guide.cim_en ? guide.cim_en : guide.cim;
+      const points = isEn && guide.leiras_en ? guide.leiras_en : guide.leiras;
+      const warning = isEn && guide.figyelmeztetes_en ? guide.figyelmeztetes_en : guide.figyelmeztetes;
+
+      return {
+        ...guide,
+        displayTitle: title,
+        displayPoints: points,
+        displayWarning: warning,
+      };
+    }).filter((guide) => {
       // Kategória szűrés
       const matchesCategory = selectedCategory === 'all' || guide.kategoria === selectedCategory;
       if (!matchesCategory) return false;
@@ -94,13 +106,14 @@ export default function GuidePage() {
       // Szabadszavas keresés
       if (!q) return true;
 
-      const titleMatch = guide.cim.toLowerCase().includes(q);
-      const pointsMatch = guide.leiras.some((p) => p.toLowerCase().includes(q));
-      const alertMatch = guide.figyelmeztetes ? guide.figyelmeztetes.toLowerCase().includes(q) : false;
+      const titleMatch = guide.displayTitle.toLowerCase().includes(q) || guide.cim.toLowerCase().includes(q);
+      const pointsMatch = guide.displayPoints.some((p) => p.toLowerCase().includes(q)) || guide.leiras.some((p) => p.toLowerCase().includes(q));
+      const alertMatch = (guide.displayWarning ? guide.displayWarning.toLowerCase().includes(q) : false) ||
+                         (guide.figyelmeztetes ? guide.figyelmeztetes.toLowerCase().includes(q) : false);
 
       return titleMatch || pointsMatch || alertMatch;
     });
-  }, [selectedCategory, searchQuery]);
+  }, [selectedCategory, searchQuery, lang]);
 
   return (
     <div className="flex-1 min-h-0 flex flex-col w-full max-w-4xl min-w-0 mx-auto px-3 sm:px-6 py-2 sm:py-6 space-y-2 sm:space-y-4 overflow-hidden animate-fadeIn">
@@ -249,13 +262,13 @@ export default function GuidePage() {
                   </div>
 
                   <h3 className="text-base sm:text-lg font-light text-slate-900 dark:text-white tracking-tight">
-                    {guide.cim}
+                    {guide.displayTitle}
                   </h3>
                 </div>
 
                 {/* Instruction points */}
                 <div className="space-y-2 sm:space-y-2.5">
-                  {guide.leiras.map((pont, idx) => (
+                  {guide.displayPoints.map((pont, idx) => (
                     <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-light">
                       <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
                       <span>{pont}</span>
@@ -264,10 +277,10 @@ export default function GuidePage() {
                 </div>
 
                 {/* Warning note if available */}
-                {guide.figyelmeztetes && (
+                {guide.displayWarning && (
                   <div className="p-2.5 sm:p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2 font-light">
                     <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
-                    <span>{guide.figyelmeztetes}</span>
+                    <span>{guide.displayWarning}</span>
                   </div>
                 )}
               </div>
