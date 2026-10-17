@@ -7,6 +7,7 @@ import { FontSizeProvider } from '@/context/FontSizeContext';
 import { AuthProvider } from '@/context/AuthContext';
 import { Header } from '@/components/layout/Header';
 import { ScrollToTop } from '@/components/common/ScrollToTop';
+import { WelcomeModal } from '@/components/common/WelcomeModal';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -70,6 +71,7 @@ export default function RootLayout({
                 <main className="flex-1 min-h-0 flex flex-col overflow-y-auto xl:overflow-visible">
                   {children}
                 </main>
+                <WelcomeModal />
               </AuthProvider>
             </FontSizeProvider>
           </LanguageProvider>
