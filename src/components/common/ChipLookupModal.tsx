@@ -20,11 +20,11 @@ export const ChipLookupModal: React.FC<ChipLookupModalProps> = ({ isOpen, onClos
   const validate = () => {
     const clean = chipNumber.trim();
     if (!clean) {
-      setError('Kérlek, írj be egy chipszámot!');
+      setError(t.chipEnterPrompt);
       return false;
     }
     if (!/^\d{15}$/.test(clean)) {
-      setError('A mikrochip száma pontosan 15 darab számjegyből áll (ISO 11784/11785 szabvány).');
+      setError(t.chipLengthError);
       return false;
     }
     setError(null);
@@ -61,7 +61,7 @@ export const ChipLookupModal: React.FC<ChipLookupModalProps> = ({ isOpen, onClos
               {t.chipLookupBtn}
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Ellenőrizd a beolvasott 15 jegyű mikrochipet a hivatalos nyilvántartásokban
+              {t.chipSub}
             </p>
           </div>
         </div>
@@ -76,7 +76,7 @@ export const ChipLookupModal: React.FC<ChipLookupModalProps> = ({ isOpen, onClos
         <div className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              15 jegyű mikrochipszám:
+              {t.chipInputLabel}
             </label>
             <input
               type="text"
@@ -93,7 +93,7 @@ export const ChipLookupModal: React.FC<ChipLookupModalProps> = ({ isOpen, onClos
 
           <div className="space-y-2 pt-2">
             <span className="text-xs font-bold text-slate-600 dark:text-slate-400 block">
-              Keresés indítása a kiválasztott adatbázisban:
+              {t.chipSearchInDb}
             </span>
             {CHIP_DATABASES.map((db) => (
               <button

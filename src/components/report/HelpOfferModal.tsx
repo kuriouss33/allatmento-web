@@ -33,8 +33,8 @@ export const HelpOfferModal: React.FC<HelpOfferModalProps> = ({
     setError(null);
 
     if (!consent) {
-      setError('A segítség felajánlásához el kell fogadnod a kapcsolattartási hozzájárulást.');
-      return;
+      setError(t.helpConsentRequired);
+      return false;
     }
 
     setLoading(true);
@@ -50,7 +50,7 @@ export const HelpOfferModal: React.FC<HelpOfferModalProps> = ({
         onClose();
       }, 2000);
     } catch (err: any) {
-      setError(err.message || 'Nem sikerült elküldeni a felajánlást.');
+      setError(err.message || t.helpOfferFailed);
     } finally {
       setLoading(false);
     }
@@ -96,8 +96,8 @@ export const HelpOfferModal: React.FC<HelpOfferModalProps> = ({
         {success ? (
           <div className="py-8 text-center space-y-3">
             <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto" />
-            <h4 className="font-bold text-slate-900 dark:text-white">Köszönjük a felajánlást!</h4>
-            <p className="text-xs text-slate-500">Az értesítést továbbítottuk a bejelentő és a mentők felé.</p>
+            <h4 className="font-bold text-slate-900 dark:text-white">{t.helpSuccessTitle}</h4>
+            <p className="text-xs text-slate-500">{t.helpSuccessDesc}</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-3.5">
@@ -110,7 +110,7 @@ export const HelpOfferModal: React.FC<HelpOfferModalProps> = ({
                 required
                 value={nev}
                 onChange={(e) => setNev(e.target.value)}
-                placeholder="Pl. Kovács Anna"
+                placeholder={t.namePlaceholder}
                 className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -138,7 +138,7 @@ export const HelpOfferModal: React.FC<HelpOfferModalProps> = ({
                 rows={3}
                 value={uzenet}
                 onChange={(e) => setUzenet(e.target.value)}
-                placeholder="Pl. a közelben vagyok autóval, tudok segíteni a szállításban..."
+                placeholder={t.helpOfferPlaceholder}
                 className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
               />
             </div>

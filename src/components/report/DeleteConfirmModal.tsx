@@ -43,7 +43,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
       onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Nem sikerült törölni a bejelentést.');
+      setError(err.message || t.deleteFailed);
     } finally {
       setLoading(false);
     }

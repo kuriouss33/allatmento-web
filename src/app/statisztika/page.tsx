@@ -180,15 +180,15 @@ export default function StatisticsPage() {
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold">
               <Activity className="w-3.5 h-3.5" />
-              <span>Valós idejű adatok</span>
+              <span>{t.realTimeData}</span>
             </span>
           </div>
 
           <h1 className="text-xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-            Állatmentési Statisztikák & Gócpontok
+            {t.statsTitle}
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-            Valós idejű országos összesítés az állatmentő hálózat bejelentéseiről és eredményeiről.
+            {t.statsSub}
           </p>
         </div>
 
@@ -198,7 +198,7 @@ export default function StatisticsPage() {
           className="self-start sm:self-auto inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 transition-colors shadow-sm disabled:opacity-50"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
-          <span>{refreshing ? 'Frissítés...' : 'Adatok frissítése'}</span>
+          <span>{refreshing ? t.refreshing : t.refreshBtn}</span>
         </button>
       </div>
 
@@ -221,7 +221,7 @@ export default function StatisticsPage() {
             <div className="p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-900/40 shadow-sm flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  Összes bejelentés
+                  {t.statsTotalReports}
                 </span>
                 <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                   <BarChart3 className="w-4 h-4" />
@@ -232,7 +232,7 @@ export default function StatisticsPage() {
                   {totalCount}
                 </span>
                 <span className="block text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                  Rendszerbe érkezett eset
+                  {t.casesReceived}
                 </span>
               </div>
             </div>
@@ -241,7 +241,7 @@ export default function StatisticsPage() {
             <div className="p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-red-200 dark:border-red-900/40 shadow-sm flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-red-600 dark:text-red-400">
-                  Aktív ügyek
+                  {t.statsActiveReports}
                 </span>
                 <div className="w-8 h-8 rounded-xl bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-400 flex items-center justify-center">
                   <AlertCircle className="w-4 h-4" />
@@ -252,7 +252,7 @@ export default function StatisticsPage() {
                   {activeCount}
                 </span>
                 <span className="block text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                  Mentésre váró állat
+                  {t.animalsWaiting}
                 </span>
               </div>
             </div>
@@ -261,7 +261,7 @@ export default function StatisticsPage() {
             <div className="p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-900/40 shadow-sm flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
-                  Folyamatban
+                  {t.statsInProgressReports}
                 </span>
                 <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                   <Clock className="w-4 h-4" />
@@ -272,7 +272,7 @@ export default function StatisticsPage() {
                   {inProgressCount}
                 </span>
                 <span className="block text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                  Mentők úton a helyszínre
+                  {t.rescuersEnRoute}
                 </span>
               </div>
             </div>
@@ -281,7 +281,7 @@ export default function StatisticsPage() {
             <div className="p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-900/40 shadow-sm flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                  Sikeres mentések
+                  {t.statsResolvedReports}
                 </span>
                 <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                   <CheckCircle2 className="w-4 h-4" />
@@ -292,7 +292,7 @@ export default function StatisticsPage() {
                   {resolvedCount}
                 </span>
                 <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
-                  {resolutionRate}% arány
+                  {resolutionRate}% {t.ratioLabel}
                 </span>
               </div>
             </div>
@@ -305,10 +305,10 @@ export default function StatisticsPage() {
               <div>
                 <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                  <span>Bejelentett és Mentett Állatfajták</span>
+                  <span>{t.statsSpeciesBreakdown}</span>
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                  Az esetek megoszlása és a sikeresen megoldott mentések fajtánként
+                  {t.speciesBreakdownSub}
                 </p>
               </div>
             </div>
@@ -331,7 +331,7 @@ export default function StatisticsPage() {
                             {item.label}
                           </span>
                           <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                            {item.percent}% az összesből
+                            {item.percent}% {t.ofTotal}
                           </span>
                         </div>
                       </div>
@@ -349,7 +349,7 @@ export default function StatisticsPage() {
                         />
                       </div>
                       <div className="flex justify-between text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                        <span>Megoldva:</span>
+                        <span>{t.solvedLabel}</span>
                         <span className="text-emerald-600 dark:text-emerald-400 font-bold">
                           {item.resolved} db ({item.total > 0 ? Math.round((item.resolved / item.total) * 100) : 0}%)
                         </span>
@@ -370,17 +370,17 @@ export default function StatisticsPage() {
                 <div>
                   <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
                     <Flame className="w-4 h-4 text-red-500" />
-                    <span>Bejelentési Gócpontok Megyénként</span>
+                    <span>{t.statsCountyBreakdown}</span>
                   </h2>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    Hol a leggyakoribb a segítségkérés az országban?
+                    {t.countyHotspotsSub}
                   </p>
                 </div>
               </div>
 
               {countyStats.length === 0 ? (
                 <div className="py-8 text-center text-xs text-slate-500">
-                  Még nem érkezett bejelentés a megyékből.
+                  {t.noCountyData}
                 </div>
               ) : (
                 <div className="space-y-2.5 flex-1">
@@ -411,11 +411,11 @@ export default function StatisticsPage() {
 
                           <div className="flex items-center gap-2 text-xs font-black">
                             <span className="text-slate-900 dark:text-white">
-                              {item.total} bejelentés
+                              {item.total} {t.reportsUnit}
                             </span>
                             {item.active > 0 && (
                               <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400">
-                                {item.active} aktív
+                                {item.active} {t.activeUnit}
                               </span>
                             )}
                           </div>
@@ -443,17 +443,17 @@ export default function StatisticsPage() {
                 <div>
                   <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
                     <MapPin className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                    <span>Top Városok & Települések</span>
+                    <span>{t.statsCityBreakdown}</span>
                   </h2>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    A legtöbb esetet regisztráló települések toplistája
+                    {t.topCitiesSub}
                   </p>
                 </div>
               </div>
 
               {cityStats.length === 0 ? (
                 <div className="py-8 text-center text-xs text-slate-500">
-                  Még nincs elegendő helyszínadat a városok megjelenítéséhez.
+                  {t.noCityData}
                 </div>
               ) : (
                 <div className="space-y-2 flex-1">
@@ -476,10 +476,10 @@ export default function StatisticsPage() {
 
                           <div className="flex items-center gap-2 text-xs">
                             <span className="font-black text-slate-900 dark:text-white">
-                              {item.total} eset
+                              {item.total} {t.casesUnit}
                             </span>
                             <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.5 rounded">
-                              {item.resolved} megoldva
+                              {item.resolved} {t.solvedUnit}
                             </span>
                           </div>
                         </div>

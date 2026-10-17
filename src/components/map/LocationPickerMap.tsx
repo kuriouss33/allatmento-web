@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { detectCounty } from '@/lib/countyDetector';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface LocationPickerMapProps {
   initialLat?: number | null;
@@ -14,6 +15,7 @@ export const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
   initialLon,
   onLocationSelect,
 }) => {
+  const { t } = useLanguage();
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
@@ -115,7 +117,7 @@ export const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
       {loadingAddress && (
         <div className="absolute top-2 right-2 z-20 bg-white/90 dark:bg-slate-900/90 text-slate-800 dark:text-slate-200 text-xs px-3 py-1.5 rounded-full shadow border border-slate-200 dark:border-slate-800 flex items-center gap-2">
           <div className="w-3 h-3 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-          <span>Cím beolvasása...</span>
+          <span>{t.detectingAddress}</span>
         </div>
       )}
     </div>

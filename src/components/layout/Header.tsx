@@ -39,7 +39,7 @@ export const Header: React.FC = () => {
               >
                 <Image 
                   src={`${process.env.GITHUB_PAGES === 'true' ? '/allatmento-web' : ''}/logo.png`} 
-                  alt="Állatmentő Portál" 
+                  alt={t.appTitle || 'Állatmentő Portál'} 
                   width={44} 
                   height={44} 
                   className="w-full h-full object-cover" 
@@ -51,7 +51,7 @@ export const Header: React.FC = () => {
                 href="/"
                 className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 shadow-sm active:scale-95 transition-all shrink-0"
                 title={t.backToHome || 'Vissza a főoldalra'}
-                aria-label="Vissza a főoldalra"
+                aria-label={t.backToHome || 'Vissza a főoldalra'}
               >
                 <ArrowLeft className="w-5 h-5 stroke-[2.2]" />
               </Link>
@@ -69,11 +69,11 @@ export const Header: React.FC = () => {
                     ? 'border-amber-500 bg-amber-500 text-white shadow-sm shadow-amber-500/30'
                     : 'border-amber-400/60 dark:border-amber-700/60 bg-amber-50/80 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/50 shadow-sm'
                 }`}
-                title="Adminisztráció (Felhasználók és mentői jogosultságok)"
-                aria-label="Adminisztráció"
+                title={t.badgeAdminTooltip}
+                aria-label={t.roleAdminBadge}
               >
                 <ShieldAlert className="w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0" />
-                <span className="hidden sm:inline font-bold">Admin</span>
+                <span className="hidden sm:inline font-bold">{t.roleAdminBadge}</span>
               </Link>
             )}
 
@@ -86,11 +86,11 @@ export const Header: React.FC = () => {
                     ? 'border-emerald-500 bg-emerald-500 text-white shadow-sm shadow-emerald-500/30'
                     : 'border-emerald-400/60 dark:border-emerald-700/60 bg-emerald-50/80 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 shadow-sm'
                 }`}
-                title="Jóváhagyott állatmentő (Saját ügyek)"
-                aria-label="Jóváhagyott állatmentő"
+                title={t.badgeRescuerTooltip}
+                aria-label={t.badgeRescuer}
               >
                 <ShieldCheck className="w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0" />
-                <span className="hidden sm:inline font-bold">Mentő</span>
+                <span className="hidden sm:inline font-bold">{t.badgeRescuer}</span>
               </Link>
             )}
 
@@ -102,8 +102,8 @@ export const Header: React.FC = () => {
                   ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 shadow-sm ring-1 ring-blue-500/30'
                   : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 shadow-sm'
               }`}
-              title={t.navSettings || 'Beállítások'}
-              aria-label="Beállítások"
+              title={t.navSettings}
+              aria-label={t.navSettings}
             >
               <Settings className="w-5 h-5" />
             </Link>
@@ -114,8 +114,8 @@ export const Header: React.FC = () => {
                 type="button"
                 onClick={() => logout()}
                 className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-red-50 dark:hover:bg-red-950/40 hover:border-red-300 dark:hover:border-red-900 text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 flex items-center justify-center transition-all shadow-sm active:scale-95"
-                title={t.logout || 'Kijelentkezés'}
-                aria-label="Kijelentkezés"
+                title={t.logout}
+                aria-label={t.logout}
               >
                 <LogOut className="w-5 h-5" />
               </button>
@@ -124,8 +124,8 @@ export const Header: React.FC = () => {
                 type="button"
                 onClick={() => setAuthModalOpen(true)}
                 className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl border border-blue-500/30 dark:border-blue-400/30 bg-blue-50/80 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 flex items-center justify-center transition-all shadow-sm active:scale-95"
-                title={t.login || 'Bejelentkezés'}
-                aria-label="Bejelentkezés"
+                title={t.login}
+                aria-label={t.login}
               >
                 <User className="w-5 h-5" />
               </button>

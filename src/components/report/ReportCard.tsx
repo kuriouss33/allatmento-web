@@ -114,7 +114,7 @@ export const ReportCard: React.FC<ReportCardProps> = ({
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-1 p-1.5 text-center bg-white/50 dark:bg-slate-800/80">
             <ImageIcon className="w-5 h-5 opacity-50" />
-            <span className="text-[9px] font-light text-slate-400 leading-tight">Nincs fotó</span>
+            <span className="text-[9px] font-light text-slate-400 leading-tight">{t.noPhoto}</span>
           </div>
         )}
       </div>
@@ -133,7 +133,7 @@ export const ReportCard: React.FC<ReportCardProps> = ({
 
           {report.megye && (
             <span className="inline-block text-[10px] sm:text-[11px] px-2 py-0.5 rounded-md bg-white/80 dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 font-light border border-black/5 dark:border-white/10 backdrop-blur-xs">
-              {report.megye} megye
+              {report.megye} {t.countySuffix}
             </span>
           )}
         </div>
@@ -155,7 +155,7 @@ export const ReportCard: React.FC<ReportCardProps> = ({
             }}
             className="w-full sm:w-auto flex items-center justify-center gap-1.5 py-1 px-3 rounded-xl font-light text-xs bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 shadow-xs active:scale-[0.98] transition-all"
           >
-            <span>Részletek</span>
+            <span>{t.details}</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>

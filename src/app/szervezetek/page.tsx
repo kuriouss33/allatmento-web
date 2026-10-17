@@ -159,7 +159,7 @@ export default function OrganizationsPage() {
           {/* Category Pills */}
           <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 w-full">
             {[
-              { id: 'all', label: 'Összes' },
+              { id: 'all', label: t.filterAll },
               { id: 'menhely', label: t.catShelter },
               { id: 'orvos', label: t.catVet },
               { id: 'hatosag', label: t.catAuth },
@@ -190,7 +190,7 @@ export default function OrganizationsPage() {
               <option value="all">{t.allCounties}</option>
               {MEGYEK.map((m) => (
                 <option key={m} value={m}>
-                  {m} megye
+                  {m} {t.countySuffix}
                 </option>
               ))}
             </select>
@@ -218,7 +218,7 @@ export default function OrganizationsPage() {
       >
         {filteredOrgs.length === 0 ? (
           <div className="py-16 text-center p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
-            <p className="text-xs font-light text-slate-500">Nincs a szűrésnek megfelelő szervezet a jegyzékben.</p>
+            <p className="text-xs font-light text-slate-500">{t.noOrgsFound}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4 content-start">
@@ -253,11 +253,11 @@ export default function OrganizationsPage() {
                         className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl font-light text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-500/20 active:scale-[0.98] transition-all"
                       >
                         <Phone className="w-3.5 h-3.5" />
-                        <span>HÍVÁS MOST ({org.telefon})</span>
+                        <span>{t.callNow.toUpperCase()} ({org.telefon})</span>
                       </a>
                     ) : (
                       <div className="text-center py-2 text-xs text-slate-400 font-light">
-                        Nincs megadva telefonszám
+                        {t.noPhoneProvided}
                       </div>
                     )}
                   </div>

@@ -26,46 +26,46 @@ export default function HomePage() {
   const secondaryCards = [
     ...(isAdmin ? [{
       href: '/admin',
-      title: 'Adminisztrációs Pult',
-      description: 'Felhasználók kezelése, mentői jogosultságok kiemelése és moderáció.',
+      title: t.adminCardTitle,
+      description: t.adminCardDesc,
       icon: ShieldAlert,
-      actionText: 'Kezelés',
+      actionText: t.adminCardAction,
       isAdminCard: true,
     }] : []),
     {
       href: '/szervezetek',
-      title: t.navOrgs || 'Szervezetek & Menhelyek',
-      description: 'Állatorvosok, ügyeletek, menhelyek és hatóságok közvetlen hívással.',
+      title: t.navOrgs,
+      description: t.orgsCardDesc,
       icon: Building2,
-      actionText: 'Keresés',
+      actionText: t.orgsCardAction,
     },
     {
       href: '/kisokos',
-      title: t.navGuide || 'Elsősegély Kisokos',
-      description: 'Gyakorlati teendők sérült, gázolt állatok szakszerű elsősegélyéhez.',
+      title: t.navGuide,
+      description: t.guideCardDesc,
       icon: BookOpen,
-      actionText: 'Útmutatók',
+      actionText: t.guideCardAction,
     },
     {
       onClick: () => setChipModalOpen(true),
-      title: 'Chipszám Kereső',
-      description: '15 jegyű ISO mikrochip ellenőrzése a hivatalos nyilvántartásokban.',
+      title: t.chipCardTitle,
+      description: t.chipCardDesc,
       icon: Search,
-      actionText: 'Keresés',
+      actionText: t.chipCardAction,
     },
     {
       href: '/statisztika',
-      title: 'Statisztikák & Gócpontok',
-      description: 'Valós idejű országos adatok, gócpontok és mentett állatfajták toplistája.',
+      title: t.statsCardTitle,
+      description: t.statsCardDesc,
       icon: BarChart3,
-      actionText: 'Megtekintés',
+      actionText: t.statsCardAction,
     },
     {
       href: '/ugyek',
-      title: t.navMyCases || 'Saját ügyeim',
-      description: 'Az általad beküldött és elvállalt bejelentések követése.',
+      title: t.navMyCases,
+      description: t.myCasesCardDesc,
       icon: ClipboardList,
-      actionText: 'Megnyitás',
+      actionText: t.myCasesCardAction,
     },
   ];
 
@@ -75,10 +75,10 @@ export default function HomePage() {
       {/* Hero Header - Letisztult, felesleges marketing szövegek nélkül */}
       <div className="text-center max-w-xl mx-auto space-y-2">
         <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
-          Állatmentő Portál
+          {t.appTitle}
         </h1>
         <p className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400">
-          Országos sürgősségi segítség bajba jutott állatoknak
+          {t.heroSub}
         </p>
 
         {/* 1. Szín: Piros (Új bejelentés) és 2. Szín: Kék (Bejelentések & Térkép) */}
@@ -88,7 +88,7 @@ export default function HomePage() {
             className="flex-1 flex items-center justify-center gap-3 px-6 py-4 min-h-[58px] sm:min-h-[52px] rounded-2xl font-black text-sm sm:text-base bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white shadow-lg shadow-red-500/25 active:scale-[0.98] transition-all pulse-emergency"
           >
             <AlertCircle className="w-6 h-6 shrink-0" />
-            <span className="tracking-wide uppercase">ÚJ BEJELENTÉST TESZEK</span>
+            <span className="tracking-wide uppercase">{t.btnReportEmergency}</span>
           </Link>
 
           <Link
@@ -96,7 +96,7 @@ export default function HomePage() {
             className="flex-1 flex items-center justify-center gap-3 px-6 py-4 min-h-[58px] sm:min-h-[52px] rounded-2xl font-black text-sm sm:text-base bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/25 active:scale-[0.98] transition-all"
           >
             <MapPin className="w-6 h-6 shrink-0" />
-            <span className="tracking-wide uppercase">BEJELENTÉSEK TÉRKÉPEN</span>
+            <span className="tracking-wide uppercase">{t.btnViewMap}</span>
           </Link>
         </div>
       </div>
@@ -106,7 +106,7 @@ export default function HomePage() {
       <div className="pt-1 sm:pt-3">
         <div className="flex items-center justify-between mb-2.5 px-0.5">
           <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-            További funkciók és segítség
+            {t.moreFeaturesHelp}
           </h2>
         </div>
 

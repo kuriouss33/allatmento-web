@@ -182,7 +182,7 @@ export default function DispatchPage() {
     try {
       await updateReportStatus(report.id, 'folyamatban', idToken);
     } catch (err: any) {
-      alert(err.message || 'Nem sikerült elvállalni az ügyet.');
+      alert(err.message || t.takeCaseFailed);
     }
   };
 
@@ -191,7 +191,7 @@ export default function DispatchPage() {
     try {
       await updateReportStatus(report.id, 'uj', idToken);
     } catch (err: any) {
-      alert(err.message || 'Nem sikerült visszavonni a vállalást.');
+      alert(err.message || t.cancelTakeFailed);
     }
   };
 
@@ -204,7 +204,7 @@ export default function DispatchPage() {
           <h1 className="text-lg sm:text-2xl font-light text-slate-900 dark:text-white tracking-tight flex items-center justify-center gap-2">
             <span>{t.dispatchTitle}</span>
             <span className="text-xs font-light px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
-              {activeReportsCount} aktív eset
+              {activeReportsCount} {t.activeIncidentsCount}
             </span>
           </h1>
           <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 text-center font-light">
@@ -319,7 +319,7 @@ export default function DispatchPage() {
                   <option value="all">{t.allCounties}</option>
                   {MEGYEK.map((m) => (
                     <option key={m} value={m}>
-                      {m} megye
+                      {m} {t.countySuffix}
                     </option>
                   ))}
                 </select>

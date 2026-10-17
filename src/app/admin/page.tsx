@@ -76,7 +76,7 @@ export default function AdminPage() {
   if (authLoading || !isAdmin) {
     return (
       <div className="py-24 text-center text-slate-500 text-sm">
-        Jogosultságok ellenőrzése...
+        {t.checkingPermissions}
       </div>
     );
   }
@@ -102,7 +102,7 @@ export default function AdminPage() {
           className="flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors disabled:opacity-50"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-          <span>Frissítés</span>
+          <span>{t.refreshBtn}</span>
         </button>
       </div>
 
@@ -118,11 +118,11 @@ export default function AdminPage() {
         {loading ? (
           <div className="py-16 text-center text-slate-400 text-xs font-semibold space-y-2">
             <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" />
-            <p>Felhasználók betöltése...</p>
+            <p>{t.loadingUsers}</p>
           </div>
         ) : users.length === 0 ? (
           <div className="py-12 text-center p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
-            <p className="text-xs font-bold text-slate-500">Nincs regisztrált felhasználó a rendszerben.</p>
+            <p className="text-xs font-bold text-slate-500">{t.noUsersFound}</p>
           </div>
         ) : (
           users.map((user) => {
@@ -135,7 +135,7 @@ export default function AdminPage() {
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span className="font-extrabold text-sm text-slate-900 dark:text-white">
-                      {user.email || 'Névtelen felhasználó'}
+                      {user.email || t.anonymousUser}
                     </span>
                     {isMe && (
                       <span className="text-[11px] font-semibold text-blue-600 dark:text-blue-400">
@@ -168,7 +168,7 @@ export default function AdminPage() {
                           onClick={() => handleRoleChange(user.uid, 'verified_rescuer')}
                           className="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs font-semibold hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition-colors"
                         >
-                          Mentővé tesz
+                          {t.promoteToRescuer}
                         </button>
                       )}
 
@@ -177,7 +177,7 @@ export default function AdminPage() {
                           onClick={() => handleRoleChange(user.uid, 'super_admin')}
                           className="px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-amber-700 dark:text-amber-300 text-xs font-semibold hover:bg-amber-100 dark:hover:bg-amber-900/60 transition-colors"
                         >
-                          Adminná tesz
+                          {t.promoteToAdmin}
                         </button>
                       )}
 
@@ -186,14 +186,14 @@ export default function AdminPage() {
                           onClick={() => handleRoleChange(user.uid, 'public')}
                           className="px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         >
-                          Visszavonás
+                          {t.demoteToPublic}
                         </button>
                       )}
 
                       <button
                         onClick={() => handleDeleteUser(user.uid)}
                         className="p-1 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
-                        title="Törlés"
+                        title={t.deleteUser}
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>

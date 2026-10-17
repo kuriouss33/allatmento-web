@@ -19,59 +19,59 @@ import { FIRST_AID_GUIDES } from '@/lib/constants';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAutoHideOnScroll } from '@/hooks';
 
-const CATEGORIES = [
-  { id: 'all', label: 'Összes', icon: BookOpen },
-  { id: 'kutya', label: 'Kutya', icon: Dog },
-  { id: 'macska', label: 'Macska', icon: Cat },
-  { id: 'madar', label: 'Madár & Fióka', icon: Bird },
-  { id: 'kisemlos', label: 'Sün & Kisemlősök', icon: Sparkles },
-  { id: 'vad', label: 'Nagyvadak', icon: Shield },
-  { id: 'hullo', label: 'Hüllők & Kétéltűek', icon: Activity },
-  { id: 'altalanos', label: 'Általános vészhelyzet', icon: AlertTriangle },
-];
-
-const CATEGORY_META: Record<string, { label: string; badgeClass: string; icon: any }> = {
-  kutya: {
-    label: 'Kutya',
-    badgeClass: 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20',
-    icon: Dog,
-  },
-  macska: {
-    label: 'Macska',
-    badgeClass: 'bg-orange-500/10 text-orange-700 dark:text-orange-300 border-orange-500/20',
-    icon: Cat,
-  },
-  madar: {
-    label: 'Madár & Fióka',
-    badgeClass: 'bg-sky-500/10 text-sky-700 dark:text-sky-300 border-sky-500/20',
-    icon: Bird,
-  },
-  kisemlos: {
-    label: 'Sün & Kisemlősök',
-    badgeClass: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20',
-    icon: Sparkles,
-  },
-  vad: {
-    label: 'Nagyvad',
-    badgeClass: 'bg-lime-500/10 text-lime-800 dark:text-lime-300 border-lime-500/20',
-    icon: Shield,
-  },
-  hullo: {
-    label: 'Hüllő & Kétéltű',
-    badgeClass: 'bg-teal-500/10 text-teal-700 dark:text-teal-300 border-teal-500/20',
-    icon: Activity,
-  },
-  altalanos: {
-    label: 'Általános vészhelyzet',
-    badgeClass: 'bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-500/20',
-    icon: AlertTriangle,
-  },
-};
-
 export default function GuidePage() {
   const { t } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  const categories = useMemo(() => [
+    { id: 'all', label: t.filterAll, icon: BookOpen },
+    { id: 'kutya', label: t.typeDog, icon: Dog },
+    { id: 'macska', label: t.typeCat, icon: Cat },
+    { id: 'madar', label: t.typeBirdFull, icon: Bird },
+    { id: 'kisemlos', label: t.typeSmallMammal, icon: Sparkles },
+    { id: 'vad', label: t.typeBigGame, icon: Shield },
+    { id: 'hullo', label: t.typeReptile, icon: Activity },
+    { id: 'altalanos', label: t.typeGeneralEmergency, icon: AlertTriangle },
+  ], [t]);
+
+  const categoryMeta: Record<string, { label: string; badgeClass: string; icon: any }> = useMemo(() => ({
+    kutya: {
+      label: t.typeDog,
+      badgeClass: 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20',
+      icon: Dog,
+    },
+    macska: {
+      label: t.typeCat,
+      badgeClass: 'bg-orange-500/10 text-orange-700 dark:text-orange-300 border-orange-500/20',
+      icon: Cat,
+    },
+    madar: {
+      label: t.typeBirdFull,
+      badgeClass: 'bg-sky-500/10 text-sky-700 dark:text-sky-300 border-sky-500/20',
+      icon: Bird,
+    },
+    kisemlos: {
+      label: t.typeSmallMammal,
+      badgeClass: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20',
+      icon: Sparkles,
+    },
+    vad: {
+      label: t.typeBigGame,
+      badgeClass: 'bg-lime-500/10 text-lime-800 dark:text-lime-300 border-lime-500/20',
+      icon: Shield,
+    },
+    hullo: {
+      label: t.typeReptile,
+      badgeClass: 'bg-teal-500/10 text-teal-700 dark:text-teal-300 border-teal-500/20',
+      icon: Activity,
+    },
+    altalanos: {
+      label: t.typeGeneralEmergency,
+      badgeClass: 'bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-500/20',
+      icon: AlertTriangle,
+    },
+  }), [t]);
 
   const {
     isVisible: isFilterVisible,
@@ -134,14 +134,14 @@ export default function GuidePage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setIsFilterVisible(true)}
-              placeholder="Gyorskeresés (pl. sün, hőguta, gázolás, fióka, mérgezés)..."
+              placeholder={t.searchGuidePlaceholder}
               className="w-full pl-9 pr-9 py-2 rounded-xl text-xs sm:text-sm bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/40 font-light"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                title="Keresés törlése"
+                title={t.clearSearch}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -150,7 +150,7 @@ export default function GuidePage() {
 
           {/* Category Filter Pills */}
           <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 w-full">
-            {CATEGORIES.map((item) => {
+            {categories.map((item) => {
               const Icon = item.icon;
               const isSelected = selectedCategory === item.id;
               return (
@@ -173,8 +173,8 @@ export default function GuidePage() {
           {/* Results Counter */}
           <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 font-light pt-0.5">
             <span>
-              {filteredGuides.length} útmutató találat
-              {selectedCategory !== 'all' && ` (${CATEGORIES.find(c => c.id === selectedCategory)?.label})`}
+              {filteredGuides.length} {t.guideResultsCount}
+              {selectedCategory !== 'all' && ` (${categories.find(c => c.id === selectedCategory)?.label})`}
             </span>
             {(selectedCategory !== 'all' || searchQuery) && (
               <button
@@ -184,7 +184,7 @@ export default function GuidePage() {
                 }}
                 className="text-amber-600 dark:text-amber-400 hover:underline cursor-pointer"
               >
-                Szűrők törlése
+                {t.clearFilters}
               </button>
             )}
           </div>
@@ -201,10 +201,10 @@ export default function GuidePage() {
           <div className="p-8 text-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
             <BookOpen className="w-8 h-8 mx-auto text-slate-400 opacity-60" />
             <h3 className="text-sm sm:text-base font-light text-slate-700 dark:text-slate-300">
-              Nincs a keresésnek megfelelő elsősegély útmutató
+              {t.noGuidesFound}
             </h3>
             <p className="text-xs text-slate-400 font-light">
-              Próbálj meg más keresőszót beírni, vagy válassz az "Összes" kategóriából.
+              {t.noGuidesFoundDesc}
             </p>
             <button
               onClick={() => {
@@ -213,12 +213,12 @@ export default function GuidePage() {
               }}
               className="mt-2 px-3 py-1.5 rounded-xl text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 font-light"
             >
-              Összes útmutató mutatása
+              {t.showAllGuides}
             </button>
           </div>
         ) : (
           filteredGuides.map((guide) => {
-            const meta = CATEGORY_META[guide.kategoria] || {
+            const meta = categoryMeta[guide.kategoria] || {
               label: guide.kategoria,
               badgeClass: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-300',
               icon: BookOpen,
@@ -243,7 +243,7 @@ export default function GuidePage() {
                     {guide.surgos && (
                       <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[11px] font-light bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 animate-pulse">
                         <ShieldAlert className="w-3 h-3" />
-                        <span>Sürgős beavatkozás</span>
+                        <span>{t.urgentAction}</span>
                       </span>
                     )}
                   </div>

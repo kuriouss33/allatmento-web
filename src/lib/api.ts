@@ -297,3 +297,19 @@ export async function adminDeleteUser(targetUid: string, idToken: string): Promi
     },
   });
 }
+
+// 14. Szöveg automatikus fordítása (magyar <-> angol)
+export async function translateText(text: string, targetLang: 'en' | 'hu'): Promise<string> {
+  if (!text || !text.trim()) return text;
+  try {
+    const res = await apiFetch<{ success: boolean; translated: string }>('/translate', {
+      method: 'POST',
+      body: JSON.stringify({ text, targetLang }),
+    });
+    return res.translated || text;
+  } catch (err) {
+    console.error('Translation failed:', err);
+    return text;
+  }
+}
+

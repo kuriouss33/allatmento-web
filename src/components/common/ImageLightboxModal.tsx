@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { X } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface ImageLightboxModalProps {
   imageUrl: string | null;
@@ -9,6 +10,7 @@ interface ImageLightboxModalProps {
 }
 
 export const ImageLightboxModal: React.FC<ImageLightboxModalProps> = ({ imageUrl, onClose }) => {
+  const { t } = useLanguage();
   if (!imageUrl) return null;
 
   return (
@@ -29,7 +31,7 @@ export const ImageLightboxModal: React.FC<ImageLightboxModalProps> = ({ imageUrl
       >
         <img
           src={imageUrl}
-          alt="Nagyított fotó"
+          alt={t.photoEnlarged || "Photo"}
           className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl"
         />
       </div>

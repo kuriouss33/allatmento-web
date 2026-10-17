@@ -3,6 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Report } from '@/types';
 import { canUserSeeExactReport, getReportDisplayLocation, getReportDisplayAddress } from '@/lib/privacy';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface DispatchMapProps {
   reports: Report[];
@@ -27,6 +28,7 @@ export const DispatchMap: React.FC<DispatchMapProps> = ({
   isRegistered,
   currentUserId,
 }) => {
+  const { t } = useLanguage();
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const clusterGroupRef = useRef<any>(null);
@@ -173,18 +175,18 @@ export const DispatchMap: React.FC<DispatchMapProps> = ({
       const displayAddress = getReportDisplayAddress(report, canSeeExact);
 
       let badgeBg = 'bg-red-500/10 text-red-600 border-red-500/30';
-      let statusText = 'Új bejelentés';
+      let statusText = t.statusNew;
       let circleColor = '#ef4444';
       let pinClass = 'pin-uj';
 
       if (report.statusz === 'folyamatban') {
         badgeBg = 'bg-amber-500/10 text-amber-600 border-amber-500/30';
-        statusText = 'Folyamatban';
+        statusText = t.statusInProg;
         circleColor = '#f59e0b';
         pinClass = 'pin-folyamatban';
       } else if (report.statusz === 'megoldva') {
         badgeBg = 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30';
-        statusText = 'Megoldva';
+        statusText = t.statusSolved;
         circleColor = '#10b981';
         pinClass = 'pin-megoldva';
       }
@@ -194,16 +196,16 @@ export const DispatchMap: React.FC<DispatchMapProps> = ({
       popupContent.className = 'p-1 min-w-[210px] max-w-[270px] text-slate-800 dark:text-slate-100';
 
       const exactBadgeHtml = canSeeExact
-        ? `<span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">🎯 Pontos cím</span>`
-        : `<span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">🛡️ ~100m körzet</span>`;
+        ? `<span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">🎯 ${t.exactAddress}</span>`
+        : `<span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">🛡️ ${t.approxZone}</span>`;
 
       const noticeHtml = !canSeeExact
         ? `<div class="mb-2 p-1.5 rounded-lg bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200/60 dark:border-blue-800/40 text-[10px] text-blue-800 dark:text-blue-300 leading-snug">
-            🛡️ <strong>Védett körzet:</strong> A pontos címet az állat védelmében csak regisztrált mentők láthatják.
+            🛡️ ${t.protectedZoneDesc}
            </div>`
         : '';
 
-      const navLabel = canSeeExact ? 'Útvonaltervezés a pontos címre ↗' : 'Útvonaltervezés a körzethez ↗';
+      const navLabel = canSeeExact ? t.routeToExactAddress : t.routeToZone;
 
       popupContent.innerHTML = `
         <div class="flex items-center justify-between gap-1.5 mb-1.5">
@@ -228,12 +230,12 @@ export const DispatchMap: React.FC<DispatchMapProps> = ({
         </p>
         <div class="mt-2.5 pt-2 border-t border-slate-200 flex flex-col gap-1.5">
           <button id="popup-btn-details-${report.id}" class="w-full py-1.5 px-3 rounded-lg text-xs font-bold bg-blue-600 text-white hover:bg-blue-700 transition-colors">
-            Részletek & Koordináció
+            ${t.detailsAndCoordination}
           </button>
           ${
             !canSeeExact && report.statusz !== 'megoldva' && onOpenHelpRef.current
               ? `<button id="popup-btn-help-${report.id}" class="w-full py-1.5 px-3 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white transition-colors">
-                  🤝 Segítség felajánlása
+                  🤝 ${t.offerHelpBtn}
                 </button>`
               : ''
           }

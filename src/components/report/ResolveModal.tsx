@@ -58,7 +58,7 @@ export const ResolveModal: React.FC<ResolveModalProps> = ({
           photoUrl = await uploadImage(compressedBlob, photoFile.name || 'resolve-photo.jpg');
         } catch {
           if (photoFile.size > 4 * 1024 * 1024) {
-            throw new Error('A fénykép mérete meghaladja a 4 MB-os korlátot és a tömörítés nem sikerült. Kérlek, válassz kisebb méretű fotót!');
+            throw new Error(t.imageSizeLimitError);
           }
           photoUrl = await uploadImage(photoFile, photoFile.name || 'resolve-photo.jpg');
         }
@@ -72,7 +72,7 @@ export const ResolveModal: React.FC<ResolveModalProps> = ({
       onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Nem sikerült lezárni a bejelentést.');
+      setError(err.message || t.resolveFailed);
     } finally {
       setLoading(false);
     }
@@ -137,7 +137,7 @@ export const ResolveModal: React.FC<ResolveModalProps> = ({
             <div className="flex items-center gap-3">
               <label className="flex-1 flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300 cursor-pointer transition-colors">
                 <Upload className="w-4 h-4 text-slate-400" />
-                <span>{photoFile ? photoFile.name : 'Zárófotó kiválasztása'}</span>
+                <span>{photoFile ? photoFile.name : t.selectClosurePhoto}</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -148,7 +148,7 @@ export const ResolveModal: React.FC<ResolveModalProps> = ({
 
               {photoPreview && (
                 <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-slate-200">
-                  <img src={photoPreview} alt="Előnézet" className="w-full h-full object-cover" />
+                  <img src={photoPreview} alt={t.preview} className="w-full h-full object-cover" />
                 </div>
               )}
             </div>

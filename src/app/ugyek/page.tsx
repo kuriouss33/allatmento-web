@@ -134,7 +134,7 @@ export default function MyCasesPage() {
             <span>{t.navMyCases}</span>
           </h1>
           <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 text-center">
-            Az általad beküldött és a mentőként elvállalt bejelentések áttekintése
+            {t.myCasesSub}
           </p>
         </div>
 
@@ -143,7 +143,7 @@ export default function MyCasesPage() {
           className="flex items-center justify-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-all"
         >
           <PlusCircle className="w-4 h-4" />
-          <span>Új bejelentés</span>
+          <span>{t.btnNewReport}</span>
         </Link>
       </div>
 
@@ -157,7 +157,7 @@ export default function MyCasesPage() {
               : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
           }`}
         >
-          <span>Általam bejelentve</span>
+          <span>{t.tabReportedByMe}</span>
           <span className={`px-1.5 py-0.5 rounded-full text-[10px] ${
             tab === 'created' ? 'bg-white/20 text-slate-900 dark:text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
           }`}>
@@ -174,7 +174,7 @@ export default function MyCasesPage() {
                 : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
             }`}
           >
-            <span>Általam elvállalva</span>
+            <span>{t.tabTakenByMe}</span>
             <span className={`px-1.5 py-0.5 rounded-full text-[10px] ${
               tab === 'taken' ? 'bg-white/20 text-slate-900 dark:text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
             }`}>
@@ -195,12 +195,12 @@ export default function MyCasesPage() {
           <div className="py-12 text-center p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-2">
             <AlertCircle className="w-8 h-8 text-slate-400 mx-auto" />
             <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">
-              Nincs megjeleníthető ügy ebben a kategóriában
+              {t.noReportsInTab}
             </h3>
             <p className="text-xs text-slate-500 max-w-sm mx-auto">
               {tab === 'created'
-                ? 'Még nem küldtél be állatmentési bejelentést erről a készülékről.'
-                : 'Jelenleg nincs nálad aktív mentési küldetés.'}
+                ? t.noCreatedReportsDesc
+                : t.noTakenReportsDesc}
             </p>
           </div>
         ) : (

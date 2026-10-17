@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { addComment, normalizeReport } from '@/lib/api';
+import { addComment, normalizeReport, translateText } from '@/lib/api';
 import { Report, ReportComment } from '@/types';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
@@ -23,7 +23,8 @@ import {
   Trash2, 
   Check, 
   AlertTriangle, 
-  ExternalLink 
+  ExternalLink,
+  Languages
 } from 'lucide-react';
 
 interface ReportDetailsModalProps {
@@ -51,12 +52,20 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
   onDelete,
   onImageClick,
 }) => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { firebaseUser, idToken, isRescuer, isAdmin, anonymousUid } = useAuth();
   const [comments, setComments] = useState<ReportComment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [sending, setSending] = useState(false);
   const [liveReport, setLiveReport] = useState<Report | null>(report ? normalizeReport(report) : null);
+
+  // Automatikus fordítás állapotok (kommentek, leírás, lezárás)
+  const [translatedComments, setTranslatedComments] = useState<Record<string, string>>({});
+  const [showOriginalMap, setShowOriginalMap] = useState<Record<string, boolean>>({});
+  const [translatedDesc, setTranslatedDesc] = useState<string>('');
+  const [showOriginalDesc, setShowOriginalDesc] = useState<boolean>(false);
+  const [translatedResolution, setTranslatedResolution] = useState<string>('');
+  const [showOriginalResolution, setShowOriginalResolution] = useState<boolean>(false);
 
   useEffect(() => {
     setLiveReport(report ? normalizeReport(report) : null);
@@ -82,6 +91,46 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
 
     return () => unsubscribe();
   }, [report, isOpen, isRescuer]);
+
+  // Automatikus fordítás leírásra és lezárásra, ha hiányzik
+  useEffect(() => {
+    if (!liveReport) return;
+    if (lang === 'en') {
+      if (!liveReport.megjegyzes_en && liveReport.leiras && !translatedDesc) {
+        translateText(liveReport.leiras, 'en').then((res) => {
+          if (res) setTranslatedDesc(res);
+        });
+      }
+      const rawRes = liveReport.megoldasLeiras || liveReport.lezarasMegjegyzes;
+      if (!liveReport.lezaras_en && rawRes && !translatedResolution) {
+        translateText(rawRes, 'en').then((res) => {
+          if (res) setTranslatedResolution(res);
+        });
+      }
+    }
+  }, [liveReport, lang, translatedDesc, translatedResolution]);
+
+  // Kommentek automatikus fordítása
+  useEffect(() => {
+    if (!comments.length) return;
+    comments.forEach((komment, idx) => {
+      const key = komment.id || `c-${idx}`;
+      if (lang === 'en' && !komment.szoveg_en && !translatedComments[key]) {
+        translateText(komment.szoveg, 'en').then((res) => {
+          if (res && res !== komment.szoveg) {
+            setTranslatedComments((prev) => ({ ...prev, [key]: res }));
+          }
+        });
+      } else if (lang === 'hu' && !komment.szoveg_hu && !translatedComments[key]) {
+        // Ha angolul íródott volna és nincs szoveg_hu
+        translateText(komment.szoveg, 'hu').then((res) => {
+          if (res && res !== komment.szoveg) {
+            setTranslatedComments((prev) => ({ ...prev, [key]: res }));
+          }
+        });
+      }
+    });
+  }, [comments, lang, translatedComments]);
 
   if (!isOpen || !liveReport) return null;
 
@@ -128,7 +177,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
       await addComment(liveReport.id, newComment.trim(), token);
       setNewComment('');
     } catch (err: any) {
-      alert(err.message || 'Nem sikerült elküldeni az üzenetet.');
+      alert(err.message || t.commentSendFailed);
     } finally {
       setSending(false);
     }
@@ -178,7 +227,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
 
             {liveReport.megye && (
               <span className="text-xs px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-light border border-slate-200/60 dark:border-slate-700/60">
-                {liveReport.megye} megye
+                {liveReport.megye} {t.countySuffix}
               </span>
             )}
 
@@ -188,7 +237,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
           <button
             onClick={onClose}
             className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0"
-            title="Bezárás"
+            title={t.close}
           >
             <X className="w-5 h-5" />
           </button>
@@ -213,7 +262,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                 className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300" 
               />
               <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-light backdrop-blur-[2px]">
-                Nagyítás teljes méretben 🔍
+                {t.zoomImage}
               </div>
             </div>
           )}
@@ -231,11 +280,11 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                   </span>
                   {!canSeeExact ? (
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 font-light">
-                      ~100m védett körzet
+                      {t.protectedZoneBadge}
                     </span>
                   ) : (
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-light">
-                      🎯 Pontos cím (Mentő hozzáférés)
+                      {t.exactLocationBadge}
                     </span>
                   )}
                 </div>
@@ -248,7 +297,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:underline pt-0.5"
                     >
-                      <span>{canSeeExact ? t.openNav : 'Útvonal a körzethez'}</span>
+                      <span>{canSeeExact ? t.openNav : t.routeToZone}</span>
                       <ExternalLink className="w-3 h-3" />
                     </a>
                   </div>
@@ -256,7 +305,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
 
                 {!canSeeExact && (
                   <p className="text-[11px] text-slate-400 leading-snug pt-0.5">
-                    🛡️ Az állatok védelmében a pontos házszám csak regisztrált mentők számára látható.
+                    {t.protectedZoneDesc}
                   </p>
                 )}
               </div>
@@ -268,7 +317,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                 <div className="flex items-center justify-between gap-2 flex-wrap">
                   <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
                     <Phone className="w-4 h-4 text-emerald-500 shrink-0" />
-                    <span className="text-slate-500">Telefonszám:</span>
+                    <span className="text-slate-500">{t.phoneNumberLabel}</span>
                     <a href={`tel:${liveReport.telefon}`} className="font-light text-emerald-600 dark:text-emerald-400 hover:underline">
                       {liveReport.telefon}
                     </a>
@@ -278,18 +327,18 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-light shadow-xs transition-all"
                   >
                     <Phone className="w-3 h-3" />
-                    <span>Hívás most</span>
+                    <span>{t.callNow}</span>
                   </a>
                 </div>
               ) : (liveReport.telefon || liveReport.hasPhone) ? (
                 <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-xs">
                   <Phone className="w-4 h-4 text-slate-400 shrink-0" />
-                  <span>Telefonszám: <em className="text-slate-400">Csak hitelesített mentőknek</em></span>
+                  <span>{t.phoneNumberLabel} <em className="text-slate-400">{t.phoneRestricted}</em></span>
                 </div>
               ) : (
                 <div className="flex items-center gap-2 text-slate-400 text-xs">
                   <Phone className="w-4 h-4 text-slate-400 shrink-0" />
-                  <span>Telefonszám nincs megadva</span>
+                  <span>{t.noPhoneProvided}</span>
                 </div>
               )}
             </div>
@@ -297,9 +346,23 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
             {/* Description / Notes */}
             {liveReport.leiras && (
               <div className="pt-2 border-t border-slate-200/60 dark:border-slate-700/60 space-y-1">
-                <span className="text-xs text-slate-400">Bejelentő leírása:</span>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-slate-400">{t.reporterDesc}</span>
+                  {lang === 'en' && (liveReport.megjegyzes_en || (translatedDesc && translatedDesc !== liveReport.leiras)) && (
+                    <button
+                      type="button"
+                      onClick={() => setShowOriginalDesc(prev => !prev)}
+                      className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 font-light"
+                    >
+                      <Languages className="w-3 h-3" />
+                      <span>{showOriginalDesc ? t.translatedTag : t.showOriginalBtn}</span>
+                    </button>
+                  )}
+                </div>
                 <p className="text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-wrap">
-                  {liveReport.leiras}
+                  {lang === 'en' && !showOriginalDesc
+                    ? (liveReport.megjegyzes_en || translatedDesc || liveReport.leiras)
+                    : liveReport.leiras}
                 </p>
               </div>
             )}
@@ -308,7 +371,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
             {liveReport.createdAt && (
               <div className="pt-2 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center gap-1.5 text-xs text-slate-400">
                 <Clock className="w-3.5 h-3.5" />
-                <span>Bejelentve: {new Date(liveReport.createdAt).toLocaleString('hu-HU')}</span>
+                <span>{t.reportedAt} {new Date(liveReport.createdAt).toLocaleString(lang === 'en' ? 'en-US' : 'hu-HU')}</span>
               </div>
             )}
           </div>
@@ -316,8 +379,24 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
           {/* Solution info if resolved */}
           {liveReport.statusz === 'megoldva' && (liveReport.megoldasLeiras || liveReport.lezarasMegjegyzes) && (
             <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-xs sm:text-sm text-emerald-800 dark:text-emerald-200 space-y-2 font-light">
-              <span className="font-light text-emerald-900 dark:text-emerald-100 block">Mentés eredménye / lezárás:</span>
-              <p>{liveReport.megoldasLeiras || liveReport.lezarasMegjegyzes}</p>
+              <div className="flex items-center justify-between">
+                <span className="font-light text-emerald-900 dark:text-emerald-100 block">{t.rescueResult}</span>
+                {lang === 'en' && (liveReport.lezaras_en || (translatedResolution && translatedResolution !== (liveReport.megoldasLeiras || liveReport.lezarasMegjegyzes))) && (
+                  <button
+                    type="button"
+                    onClick={() => setShowOriginalResolution(prev => !prev)}
+                    className="text-[11px] text-emerald-700 dark:text-emerald-300 hover:underline flex items-center gap-1 font-light"
+                  >
+                    <Languages className="w-3 h-3" />
+                    <span>{showOriginalResolution ? t.translatedTag : t.showOriginalBtn}</span>
+                  </button>
+                )}
+              </div>
+              <p>
+                {lang === 'en' && !showOriginalResolution
+                  ? (liveReport.lezaras_en || translatedResolution || liveReport.megoldasLeiras || liveReport.lezarasMegjegyzes)
+                  : (liveReport.megoldasLeiras || liveReport.lezarasMegjegyzes)}
+              </p>
               {(liveReport.megoldasFotoUrl || liveReport.lezarasFotoUrl) && (
                 <div 
                   onClick={() => {
@@ -329,7 +408,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                 >
                   <img 
                     src={liveReport.megoldasFotoUrl || liveReport.lezarasFotoUrl} 
-                    alt="Zárófotó" 
+                    alt={t.closurePhoto} 
                     className="w-full h-full object-cover" 
                   />
                 </div>
@@ -340,7 +419,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
           {/* Rescuer / Volunteer Action Buttons Section */}
           <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3">
             <h4 className="font-light text-xs sm:text-sm text-slate-900 dark:text-white uppercase tracking-wider text-slate-400">
-              Műveletek & Koordináció
+              {t.detailsAndCoordination}
             </h4>
 
             {/* Take Case (If New & Rescuer) */}
@@ -404,10 +483,10 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                 <button
                   onClick={() => onDelete(liveReport)}
                   className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-red-200 dark:border-red-900/40 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 text-xs font-light transition-colors ml-auto"
-                  title="Bejelentés törlése"
+                  title={t.deleteReportTooltip}
                 >
                   <Trash2 className="w-4 h-4" />
-                  <span>Törlés</span>
+                  <span>{t.btnDelete}</span>
                 </button>
               )}
             </div>
@@ -418,7 +497,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
             <h4 className="font-light text-sm text-slate-900 dark:text-white flex items-center justify-between">
               <span>{t.commentsTitle}</span>
               <span className="text-xs text-slate-400 font-light">
-                {comments.length} üzenet
+                {comments.length} {t.messagesCount}
               </span>
             </h4>
 
@@ -440,13 +519,13 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                     }}
                     className="py-2 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-light text-xs shadow-md transition-all"
                   >
-                    Mentői Bejelentkezés
+                    {t.rescuerLoginBtn}
                   </button>
                 )}
               </div>
             )}
 
-            {/* Comments List */}
+            {/* Comments List with Bidirectional Translation */}
             <div className={`space-y-2.5 min-h-[120px] max-h-64 overflow-y-auto p-1 scrollbar-thin ${!firebaseUser ? 'filter blur-sm select-none' : ''}`}>
               {comments.length === 0 ? (
                 <p className="text-xs text-slate-400 italic text-center py-6 font-light">
@@ -455,9 +534,42 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
               ) : (
                 comments.map((komment, idx) => {
                   const isMe = firebaseUser && komment.szerzoUid === firebaseUser.uid;
+                  const key = komment.id || `c-${idx}`;
+                  const showOriginal = Boolean(showOriginalMap[key]);
+
+                  let displayText = komment.szoveg;
+                  let isTranslated = false;
+
+                  if (lang === 'en') {
+                    if (komment.szoveg_en && !showOriginal) {
+                      displayText = komment.szoveg_en;
+                      isTranslated = true;
+                    } else if (translatedComments[key] && !showOriginal) {
+                      displayText = translatedComments[key];
+                      isTranslated = true;
+                    }
+                  } else if (lang === 'hu') {
+                    if (komment.szoveg_hu && !showOriginal) {
+                      displayText = komment.szoveg_hu;
+                      isTranslated = Boolean(komment.szoveg_en);
+                    } else if (translatedComments[key] && !showOriginal) {
+                      displayText = translatedComments[key];
+                      isTranslated = true;
+                    }
+                  }
+
+                  const roleLabel =
+                    komment.szerep === 'bejelento'
+                      ? t.roleReporter
+                      : komment.szerep === 'mento'
+                      ? t.roleRescuerBadge
+                      : komment.szerep === 'admin'
+                      ? t.roleAdminBadge
+                      : t.roleMember;
+
                   return (
                     <div
-                      key={komment.id || idx}
+                      key={key}
                       className={`p-3 rounded-2xl border text-xs max-w-[85%] font-light ${
                         isMe
                           ? 'ml-auto bg-blue-50 dark:bg-blue-950/50 border-blue-200 dark:border-blue-900/60 text-blue-950 dark:text-blue-100'
@@ -466,22 +578,31 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                     >
                       <div className="flex items-center justify-between gap-2 mb-1 text-[11px]">
                         <span className={isMe ? 'text-blue-600 dark:text-blue-400 font-light' : 'text-slate-600 dark:text-slate-300 font-light'}>
-                          {komment.szerep === 'bejelento'
-                            ? 'Bejelentő'
-                            : komment.szerep === 'mento'
-                            ? 'Mentő'
-                            : komment.szerep === 'admin'
-                            ? 'Admin'
-                            : 'Érdeklődő'}
-                          {isMe && ' (Én)'}
+                          {roleLabel}
+                          {isMe && t.youSuffix}
                         </span>
                         {komment.idopont && (
                           <span className="text-[10px] text-slate-400">
-                            {new Date(komment.idopont.seconds ? komment.idopont.seconds * 1000 : komment.idopont).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            {new Date(komment.idopont.seconds ? komment.idopont.seconds * 1000 : komment.idopont).toLocaleTimeString(lang === 'en' ? 'en-US' : 'hu-HU', { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         )}
                       </div>
-                      <p className="whitespace-pre-wrap leading-relaxed">{komment.szoveg}</p>
+                      <p className="whitespace-pre-wrap leading-relaxed">{displayText}</p>
+                      {isTranslated && (
+                        <div className="mt-1.5 pt-1 border-t border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between gap-2 text-[10px] text-slate-400">
+                          <span className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 font-light">
+                            <Languages className="w-3 h-3" />
+                            <span>{t.autoTranslatedBadge}</span>
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setShowOriginalMap(prev => ({ ...prev, [key]: !prev[key] }))}
+                            className="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 underline font-light"
+                          >
+                            {showOriginal ? t.translatedTag : t.showOriginalBtn}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   );
                 })
@@ -514,3 +635,4 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
     </div>
   );
 };
+

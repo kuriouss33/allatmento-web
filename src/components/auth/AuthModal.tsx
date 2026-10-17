@@ -30,7 +30,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setInfoMsg(null);
 
     if (mode === 'register' && !consent) {
-      setError('A regisztrációhoz el kell fogadnod az adatkezelési tájékoztatót!');
+      setError(t.authConsentRequired);
       return;
     }
 
@@ -41,17 +41,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         onClose();
       } else {
         await register(email, password);
-        setInfoMsg('Sikeres regisztráció! Küldtünk egy megerősítő e-mailt a megadott címre.');
+        setInfoMsg(t.authRegSuccess);
       }
     } catch (err: any) {
       console.error(err);
-      let msg = err.message || 'Hiba történt a művelet során.';
+      let msg = err.message || t.error;
       if (err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
-        msg = 'Helytelen e-mail cím vagy jelszó.';
+        msg = t.authInvalidCred;
       } else if (err.code === 'auth/email-already-in-use') {
-        msg = 'Ez az e-mail cím már regisztrálva van.';
+        msg = t.authEmailInUse;
       } else if (err.code === 'auth/weak-password') {
-        msg = 'A megadott jelszó túl gyenge (legalább 6 karakter szükséges).';
+        msg = t.authWeakPassword;
       }
       setError(msg);
     } finally {
@@ -64,9 +64,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setError(null);
     try {
       await resendVerification();
-      setInfoMsg('A megerősítő e-mail sikeresen elküldve!');
+      setInfoMsg(t.authResendSuccess);
     } catch (err: any) {
-      setError(err.message || 'Nem sikerült elküldeni a megerősítő e-mailt.');
+      setError(err.message || t.authResendFail);
     } finally {
       setLoading(false);
     }
@@ -96,7 +96,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               {mode === 'login' ? t.authModalTitleLogin : t.authModalTitleReg}
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              {mode === 'login' ? 'Lépj be mentői fiókodba az ügyek kezeléséhez' : 'Csatlakozz a hivatalos állatmentő hálózathoz'}
+              {mode === 'login' ? t.authLoginSub : t.authRegSub}
             </p>
           </div>
         </div>

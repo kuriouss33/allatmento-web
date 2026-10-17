@@ -232,7 +232,7 @@ export default function ReportWizardPage() {
                   {step > s ? <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" /> : s}
                 </div>
                 <span className="text-[10px] sm:text-[11px] font-semibold text-slate-500 mt-0.5">
-                  {s === 1 ? '1. Fajta' : s === 2 ? '2. Hely & Fotó' : '3. Adatok'}
+                  {s === 1 ? t.step1Short : s === 2 ? t.step2Short : t.step3Short}
                 </span>
               </div>
             ))}
@@ -332,7 +332,7 @@ export default function ReportWizardPage() {
               {t.locationTitle}
             </h2>
             <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 text-center">
-              Adj meg pontos koordinátát vagy címet a gyors mentéshez
+              {t.locationSub}
             </p>
           </div>
 
@@ -347,7 +347,7 @@ export default function ReportWizardPage() {
                 className="flex items-center justify-center gap-2 p-3 rounded-xl border border-blue-200 dark:border-blue-900/50 bg-blue-50/80 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 text-xs font-bold transition-colors disabled:opacity-50"
               >
                 <Navigation className={`w-4 h-4 ${gpsLoading ? 'animate-spin' : ''}`} />
-                <span>{gpsLoading ? 'Pozíció lekérése...' : t.btnGps}</span>
+                <span>{gpsLoading ? t.fetchingGps : t.btnGps}</span>
               </button>
 
               <button
@@ -356,12 +356,12 @@ export default function ReportWizardPage() {
                 className="flex items-center justify-center gap-2 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition-colors"
               >
                 <MapPin className="w-4 h-4" />
-                <span>{showMapPicker ? 'Térkép elrejtése' : t.btnManualPin}</span>
+                <span>{showMapPicker ? t.hideMap : t.btnManualPin}</span>
               </button>
             </div>
 
             <p className="text-xs text-slate-500 dark:text-slate-400 text-center italic">
-              {locationStatus}
+              {locationStatus || t.locationDefaultPrompt}
             </p>
 
             {/* Interactive Location Picker Map */}
@@ -386,7 +386,7 @@ export default function ReportWizardPage() {
             {/* Bejelentési cím vagy környék megadása / ellenőrzése */}
             <div className="pt-1 text-center">
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1 text-center">
-                Bejelentési cím vagy környék
+                {t.addressLabel}
               </label>
               <input
                 type="text"
@@ -397,13 +397,13 @@ export default function ReportWizardPage() {
                   const detected = detectCounty(null, val);
                   if (detected) setMegye(detected);
                 }}
-                placeholder="Pl. Budapest, Deák Ferenc tér vagy Debrecen, Fő utca..."
+                placeholder={t.addressPlaceholder}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-center font-light"
               />
               {megye && (
                 <p className="text-[11px] font-light text-slate-500 dark:text-slate-400 mt-1.5 flex items-center justify-center gap-1">
-                  <span>Azonosított megye:</span>
-                  <span className="text-blue-600 dark:text-blue-400 font-normal">{megye} megye</span>
+                  <span>{t.detectedCountyLabel}</span>
+                  <span className="text-blue-600 dark:text-blue-400 font-normal">{megye} {t.countySuffix}</span>
                 </p>
               )}
             </div>
@@ -421,7 +421,7 @@ export default function ReportWizardPage() {
 
             {photoPreview ? (
               <div className="relative w-full h-48 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800">
-                <img src={photoPreview} alt="Előnézet" className="w-full h-full object-cover" />
+                <img src={photoPreview} alt={t.photoPreview} className="w-full h-full object-cover" />
                 <button
                   type="button"
                   onClick={handleRemovePhoto}
@@ -438,7 +438,7 @@ export default function ReportWizardPage() {
                   {t.uploadBtn}
                 </span>
                 <span className="text-[11px] text-slate-400 mt-1">
-                  JPG vagy PNG kép automatikusan tömörítve
+                  {t.photoFormatHint}
                 </span>
                 <input
                   type="file"
@@ -483,7 +483,7 @@ export default function ReportWizardPage() {
               {t.detailsTitle}
             </h2>
             <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 text-center">
-              Adj meg minden fontos részletet, ami segíti a helyszíni mentőket
+              {t.detailsSub}
             </p>
           </div>
 
@@ -492,9 +492,9 @@ export default function ReportWizardPage() {
             {megye && (
               <div className="flex items-center justify-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 py-0.5 select-none">
                 <MapPin className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                <span className="font-light">Azonosított megye:</span>
+                <span className="font-light">{t.detectedCountyLabel}</span>
                 <span className="font-light px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-blue-900/40">
-                  {megye} megye
+                  {megye} {t.countySuffix}
                 </span>
               </div>
             )}
@@ -535,7 +535,7 @@ export default function ReportWizardPage() {
                 className="mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer"
               />
               <label htmlFor="privacy-consent-checkbox" className="leading-snug cursor-pointer">
-                Elfogadom az{' '}
+                {t.privacyConsentTextStart}
                 <button
                   type="button"
                   onClick={(e) => {
@@ -545,9 +545,9 @@ export default function ReportWizardPage() {
                   }}
                   className="font-bold text-blue-600 dark:text-blue-400 underline hover:text-blue-700 dark:hover:text-blue-300 inline"
                 >
-                  adatkezelési tájékoztatót
+                  {t.privacyConsentLink}
                 </button>
-                {' '}és hozzájárulok a megadott adatok mentés célú kezeléséhez.
+                {t.privacyConsentTextEnd}
               </label>
             </div>
           </div>
@@ -595,7 +595,7 @@ export default function ReportWizardPage() {
           {/* Share Box */}
           <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 max-w-md mx-auto space-y-3">
             <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">
-              Oszd meg a bejelentést a gyorsabb segítségért:
+              {t.shareIncidentPrompt}
             </span>
 
             <div className="flex flex-col sm:flex-row gap-2">
@@ -627,7 +627,7 @@ export default function ReportWizardPage() {
               href="/terkep"
               className="w-full sm:w-auto px-8 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-all text-center"
             >
-              Megtekintés a térképen
+              {t.viewOnMap}
             </Link>
           </div>
         </div>

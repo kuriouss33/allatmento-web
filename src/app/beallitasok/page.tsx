@@ -65,10 +65,10 @@ export default function SettingsPage() {
           >
             <div className="space-y-0.5">
               <span className="font-bold text-sm block">
-                Magyar (HU) 🇭🇺
+                {t.settingsLangHu} 🇭🇺
               </span>
               <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                Alkalmazás magyar nyelven
+                {t.settingsLangHuDesc}
               </span>
             </div>
             {lang === 'hu' && !isSystemLang && (
@@ -90,10 +90,10 @@ export default function SettingsPage() {
           >
             <div className="space-y-0.5">
               <span className="font-bold text-sm block">
-                English (EN) 🇬🇧
+                {t.settingsLangEn} 🇬🇧
               </span>
               <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                English language
+                {t.settingsLangEnDesc}
               </span>
             </div>
             {lang === 'en' && !isSystemLang && (
@@ -118,16 +118,16 @@ export default function SettingsPage() {
             <Smartphone className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <div>
               <span className="text-xs font-bold block">
-                Telefon nyelve alapján (Automatikus)
+                {t.settingsLangAuto}
               </span>
               <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                A rendszer preferenciái szerint választ nyelvet
+                {t.settingsLangAutoDesc}
               </span>
             </div>
           </div>
           {isSystemLang && (
             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white">
-              Aktív
+              {t.activeBadge}
             </span>
           )}
         </button>
@@ -173,7 +173,7 @@ export default function SettingsPage() {
                 {t.settingsThemeSystem}
               </span>
               <span className="text-[10px] text-slate-500 dark:text-slate-400">
-                Követi a telefont
+                {t.settingsThemeSystemDesc}
               </span>
             </div>
           </button>
@@ -201,7 +201,7 @@ export default function SettingsPage() {
                 {t.settingsThemeLight}
               </span>
               <span className="text-[10px] text-slate-500 dark:text-slate-400">
-                Tiszta, világos felület
+                {t.settingsThemeLightDesc}
               </span>
             </div>
           </button>
@@ -229,7 +229,7 @@ export default function SettingsPage() {
                 {t.settingsThemeDark}
               </span>
               <span className="text-[10px] text-slate-500 dark:text-slate-400">
-                Kíméli a szemet éjjel
+                {t.settingsThemeDarkDesc}
               </span>
             </div>
           </button>
@@ -247,14 +247,14 @@ export default function SettingsPage() {
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
                   <h2 className="text-base font-extrabold text-slate-900 dark:text-white">
-                    Adminisztrációs Pult
+                    {t.adminPanelTitle}
                   </h2>
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500 text-slate-950">
                     Admin
                   </span>
                 </div>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Felhasználók kezelése, mentői jogosultságok kiemelése és profilok adminisztrációja
+                  {t.adminPanelDesc}
                 </p>
               </div>
             </div>
@@ -263,7 +263,7 @@ export default function SettingsPage() {
               href="/admin"
               className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-slate-950 transition-colors shadow-sm self-start sm:self-auto shrink-0"
             >
-              <span>Vezérlőpult megnyitása</span>
+              <span>{t.openAdminPanel}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -274,7 +274,7 @@ export default function SettingsPage() {
       <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Info className="w-4 h-4 text-slate-400" />
-          <span>Állatmentő Portál Web v1.0.0</span>
+          <span>{t.appTitle} Web v1.0.0</span>
         </div>
       </div>
 

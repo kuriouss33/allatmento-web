@@ -16,6 +16,8 @@ export interface UserProfile {
 export interface ReportComment {
   id?: string;
   szoveg: string;
+  szoveg_en?: string;
+  szoveg_hu?: string;
   idopont: any;
   szerzoUid: string;
   szerzoEmail?: string;
@@ -28,6 +30,7 @@ export interface Report {
   allatFajta?: string;
   leiras?: string;
   megjegyzes?: string;
+  megjegyzes_en?: string;
   helyszinLeiras?: string;
   megye?: string;
   cim?: string;
@@ -42,6 +45,7 @@ export interface Report {
   lezarasFotoUrl?: string;
   megoldasLeiras?: string;
   lezarasMegjegyzes?: string;
+  lezaras_en?: string;
   lat: number | null;
   lon: number | null;
   lng?: number | null;
