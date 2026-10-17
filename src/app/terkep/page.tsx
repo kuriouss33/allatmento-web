@@ -432,7 +432,14 @@ export default function DispatchPage() {
         report={activeDeleteReport}
         isOpen={Boolean(activeDeleteReport)}
         onClose={() => setActiveDeleteReport(null)}
-        onSuccess={() => {}}
+        onSuccess={() => {
+          if (activeDeleteReport) {
+            setReports((prev) => prev.filter((r) => r.id !== activeDeleteReport.id));
+            if (selectedReportId === activeDeleteReport.id) {
+              setSelectedReportId(null);
+            }
+          }
+        }}
       />
 
       <ImageLightboxModal

@@ -185,11 +185,14 @@ export default function ReportWizardPage() {
         createrId,
       });
 
-      if (result.deleteToken) {
-        saveDeleteToken(result.id, result.deleteToken);
+      const repId = result.id || (result as any).data?.id;
+      const delToken = result.deleteToken || (result as any).data?.deleteToken;
+
+      if (repId && delToken) {
+        saveDeleteToken(repId, delToken);
       }
 
-      setCreatedReportId(result.id);
+      setCreatedReportId(repId);
       setStep(4);
     } catch (err: any) {
       setError(err.message || 'Hiba történt a bejelentés beküldésekor.');

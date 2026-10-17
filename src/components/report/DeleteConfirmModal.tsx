@@ -22,7 +22,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
   onSuccess,
 }) => {
   const { t } = useLanguage();
-  const { idToken, isAdmin } = useAuth();
+  const { idToken, isAdmin, anonymousUid } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,10 +32,11 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
     setLoading(true);
     setError(null);
     try {
-      const token = getDeleteToken(report.id);
+      const token = getDeleteToken(report.id) || (report as any).deleteToken;
       await deleteReport(report.id, {
         deleteToken: token || undefined,
         idToken: idToken || undefined,
+        anonymousUid: anonymousUid || undefined,
       });
 
       removeDeleteToken(report.id);

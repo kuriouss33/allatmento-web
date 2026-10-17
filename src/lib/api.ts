@@ -100,7 +100,7 @@ export async function createReport(data: {
   lon: number | null;
   fotoUrl?: string;
   createrId?: string;
-}): Promise<{ success: boolean; id: string; deleteToken: string }> {
+}): Promise<{ success: boolean; id: string; deleteToken: string; data?: any }> {
   const payload = {
     ...data,
     allatFajta: data.fajta,
@@ -111,10 +111,20 @@ export async function createReport(data: {
     lng: data.lon,
   };
 
-  return await apiFetch('/reports', {
+  const res = await apiFetch<any>('/reports', {
     method: 'POST',
     body: JSON.stringify(payload),
   });
+
+  const reportId = res?.id || res?.data?.id || '';
+  const token = res?.deleteToken || res?.data?.deleteToken || '';
+
+  return {
+    success: true,
+    id: reportId,
+    deleteToken: token,
+    data: res?.data || res,
+  };
 }
 
 // 3. Képfeltöltés FormData-val (Multer 'image' mezőnévvel)
@@ -183,7 +193,7 @@ export async function updateReportStatus(
 // 5. Bejelentés törlése
 export async function deleteReport(
   reportId: string,
-  options: { deleteToken?: string; idToken?: string }
+  options: { deleteToken?: string; idToken?: string; anonymousUid?: string } = {}
 ): Promise<any> {
   const headers: Record<string, string> = {};
   if (options.deleteToken) {
@@ -191,6 +201,9 @@ export async function deleteReport(
   }
   if (options.idToken) {
     headers['Authorization'] = `Bearer ${options.idToken}`;
+  }
+  if (options.anonymousUid) {
+    headers['x-anonymous-uid'] = options.anonymousUid;
   }
 
   return await apiFetch(`/reports/${reportId}`, {
