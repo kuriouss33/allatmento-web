@@ -18,7 +18,9 @@ export const hu = {
   navMyCases: "Saját ügyeim",
   navOrgs: "Szervezetek",
   navGuide: "Elsősegély",
+  navStats: "Statisztikák",
   navAdmin: "Adminisztráció",
+  backToHome: "Főoldal",
 
   // Auth & Roles
   login: "Mentő Belépés",
@@ -146,4 +148,16 @@ export const hu = {
   demoteToPublic: "Visszavonás (Látogató)",
   deleteUser: "Felhasználó törlése",
   selfNotice: "(Ez a te fiókod)",
+
+  // Statistics
+  statsTitle: "Állatmentési Statisztikák & Gócpontok",
+  statsSub: "Valós idejű országos adatok, bejelentési gócpontok és mentési eredmények",
+  statsTotalReports: "Összes bejelentés",
+  statsActiveReports: "Aktív bejelentések",
+  statsInProgressReports: "Folyamatban lévő mentések",
+  statsResolvedReports: "Sikeresen megoldva",
+  statsSpeciesBreakdown: "Bejelentett és mentett állatfajták",
+  statsCountyBreakdown: "Gócpontok és bejelentések megyénként",
+  statsCityBreakdown: "Top városok és települések",
+  statsResolutionRate: "Megoldási arány",
 };

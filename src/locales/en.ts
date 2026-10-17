@@ -20,7 +20,9 @@ export const en: typeof hu = {
   navMyCases: "My Cases",
   navOrgs: "Organizations",
   navGuide: "First Aid",
+  navStats: "Statistics",
   navAdmin: "Administration",
+  backToHome: "Home",
 
   // Auth & Roles
   login: "Rescuer Login",
@@ -148,4 +150,16 @@ export const en: typeof hu = {
   demoteToPublic: "Demote to Public",
   deleteUser: "Delete User",
   selfNotice: "(This is your account)",
+
+  // Statistics
+  statsTitle: "Rescue Statistics & Hotspots",
+  statsSub: "Real-time national data, incident hotspots and rescue outcomes",
+  statsTotalReports: "Total Reports",
+  statsActiveReports: "Active Reports",
+  statsInProgressReports: "In Progress Rescues",
+  statsResolvedReports: "Successfully Resolved",
+  statsSpeciesBreakdown: "Reported & Rescued Species",
+  statsCountyBreakdown: "Hotspots & Reports by County",
+  statsCityBreakdown: "Top Cities & Municipalities",
+  statsResolutionRate: "Resolution Rate",
 };

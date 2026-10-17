@@ -16,7 +16,9 @@ import {
   Globe, 
   LogOut, 
   LogIn,
-  ShieldAlert
+  ShieldAlert,
+  BarChart3,
+  ArrowLeft
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -36,6 +38,7 @@ export const Header: React.FC = () => {
     { href: '/bejelentes', label: t.navNew, icon: PlusCircle, isAction: true },
     { href: '/szervezetek', label: t.navOrgs, icon: Building2 },
     { href: '/kisokos', label: t.navGuide, icon: BookOpen },
+    { href: '/statisztika', label: t.navStats, icon: BarChart3 },
   ];
 
   if (isAdmin) {
@@ -47,20 +50,34 @@ export const Header: React.FC = () => {
       <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 dark:border-slate-800/80 bg-white/85 dark:bg-slate-900/85 backdrop-blur-md transition-colors shrink-0">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-13 sm:h-16 flex items-center justify-between gap-2 sm:gap-4">
           
-          {/* Logo & Brand */}
-          <Link href="/" className="flex items-center gap-2 sm:gap-3 group focus:outline-none">
-            <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-xl overflow-hidden border border-blue-500/30 dark:border-blue-400/20 shadow-sm flex-shrink-0 group-hover:scale-105 transition-transform" style={{ position: 'relative' }}>
-              <Image src={`${process.env.NODE_ENV === 'production' ? '/allatmento-web' : ''}/logo.png`} alt="Állatmentő Portál" width={36} height={36} className="w-full h-full object-cover" priority />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-extrabold text-sm sm:text-lg tracking-tight text-slate-900 dark:text-white leading-tight">
-                {t.appTitle}
-              </span>
-              <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 hidden xl:inline-block">
-                {t.appSub}
-              </span>
-            </div>
-          </Link>
+          <div className="flex items-center gap-2">
+            {/* Mobile Back Button when on subpages */}
+            {pathname !== '/' && (
+              <Link
+                href="/"
+                className="xl:hidden inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors shrink-0"
+                title={t.backToHome}
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span className="text-[11px] font-semibold">{t.backToHome}</span>
+              </Link>
+            )}
+
+            {/* Logo & Brand */}
+            <Link href="/" className="flex items-center gap-2 sm:gap-3 group focus:outline-none">
+              <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-xl overflow-hidden border border-blue-500/30 dark:border-blue-400/20 shadow-sm flex-shrink-0 group-hover:scale-105 transition-transform" style={{ position: 'relative' }}>
+                <Image src={`${process.env.NODE_ENV === 'production' ? '/allatmento-web' : ''}/logo.png`} alt="Állatmentő Portál" width={36} height={36} className="w-full h-full object-cover" priority />
+              </div>
+              <div className="flex flex-col">
+                <span className="font-extrabold text-sm sm:text-lg tracking-tight text-slate-900 dark:text-white leading-tight">
+                  {t.appTitle}
+                </span>
+                <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 hidden xl:inline-block">
+                  {t.appSub}
+                </span>
+              </div>
+            </Link>
+          </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden xl:flex items-center gap-1 xl:gap-1.5 flex-nowrap shrink-0">

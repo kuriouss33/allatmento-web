@@ -5,7 +5,6 @@ import { ThemeProvider } from '@/context/ThemeContext';
 import { LanguageProvider } from '@/context/LanguageContext';
 import { AuthProvider } from '@/context/AuthContext';
 import { Header } from '@/components/layout/Header';
-import { MobileNav } from '@/components/layout/MobileNav';
 import { ScrollToTop } from '@/components/common/ScrollToTop';
 
 export const viewport: Viewport = {
@@ -35,7 +34,7 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Momo+Trust+Display&family=Momo+Trust+Sans:wght@300;400;500;600;700&display=swap" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" />
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
         <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
@@ -46,10 +45,9 @@ export default function RootLayout({
             <AuthProvider>
               <ScrollToTop />
               <Header />
-              <main className="flex-1 min-h-0 flex flex-col overflow-hidden xl:overflow-visible pb-16 xl:pb-8">
+              <main className="flex-1 min-h-0 flex flex-col overflow-y-auto xl:overflow-visible pb-4 sm:pb-8">
                 {children}
               </main>
-              <MobileNav />
             </AuthProvider>
           </LanguageProvider>
         </ThemeProvider>

@@ -1,54 +1,23 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: 'Momo Trust Sans', 'Momo Trust Display', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --font-display: 'Momo Trust Display', 'Momo Trust Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
-
-@font-face {
-  font-family: 'Momo Trust Display';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('https://fonts.gstatic.com/s/momotrustdisplay/v2/WWXPlieNYgyPZLyBUuEkKZFhFHyjqb1unw.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Momo Trust Sans';
-  font-style: normal;
-  font-weight: 300;
-  font-display: swap;
-  src: url('https://fonts.gstatic.com/s/momotrustsans/v4/BXR8vFfHh_fFyXlQWZgO0TyUN7Pt3pVCeYWqJnZSW-ppbTo.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Momo Trust Sans';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('https://fonts.gstatic.com/s/momotrustsans/v4/BXR8vFfHh_fFyXlQWZgO0TyUN7Pt3pVCeYWqJnZSW7RpbTo.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Momo Trust Sans';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url('https://fonts.gstatic.com/s/momotrustsans/v4/BXR8vFfHh_fFyXlQWZgO0TyUN7Pt3pVCeYWqJnZSW2pubTo.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Momo Trust Sans';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('https://fonts.gstatic.com/s/momotrustsans/v4/BXR8vFfHh_fFyXlQWZgO0TyUN7Pt3pVCeYWqJnZSW1NubTo.ttf') format('truetype');
+  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-display: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-weight-thin: 100;
+  --font-weight-extralight: 200;
+  --font-weight-light: 200;
+  --font-weight-normal: 200;
+  --font-weight-medium: 200;
+  --font-weight-semibold: 200;
+  --font-weight-bold: 200;
+  --font-weight-extrabold: 200;
+  --font-weight-black: 200;
 }
 
 :root {
-  --font-momo-sans: 'Momo Trust Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --font-momo-display: 'Momo Trust Display', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-dm-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --background: #f8fafc;
   --foreground: #0f172a;
 }
@@ -59,8 +28,8 @@
 }
 
 html {
-  font-family: 'Momo Trust Sans', 'Momo Trust Display', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-weight: 300;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 200 !important;
   overflow-x: hidden;
   max-width: 100vw;
   scroll-behavior: auto;
@@ -70,8 +39,8 @@ html {
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: 'Momo Trust Sans', 'Momo Trust Display', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-weight: 300;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 200 !important;
   height: 100dvh;
   min-height: 100dvh;
   overflow: hidden;
@@ -86,8 +55,17 @@ body {
   }
 }
 
-h1, h2, h3, .font-display {
-  font-family: 'Momo Trust Display', 'Momo Trust Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+/* Minden főcím, alcím, felirat és betűsúly osztály mérettől függetlenül 200-as extralight súlyt kap */
+h1, h2, h3, h4, h5, h6, 
+.font-display,
+.font-black,
+.font-extrabold,
+.font-bold,
+.font-semibold,
+.font-medium,
+b, 
+strong {
+  font-weight: 200 !important;
 }
 
 /* Custom Leaflet Map Pins */
