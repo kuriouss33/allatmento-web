@@ -9,7 +9,8 @@ import {
   Settings, 
   User, 
   LogOut,
-  ShieldAlert
+  ShieldAlert,
+  ShieldCheck
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
@@ -17,7 +18,7 @@ import { AuthModal } from '@/components/auth/AuthModal';
 
 export const Header: React.FC = () => {
   const pathname = usePathname();
-  const { firebaseUser, logout, isAdmin } = useAuth();
+  const { firebaseUser, logout, isAdmin, isRescuer } = useAuth();
   const { t } = useLanguage();
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
@@ -73,6 +74,23 @@ export const Header: React.FC = () => {
               >
                 <ShieldAlert className="w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0" />
                 <span className="hidden sm:inline font-bold">Admin</span>
+              </Link>
+            )}
+
+            {/* Jóváhagyott mentő jelvény (kizárólag jóváhagyott mentőknek) */}
+            {isRescuer && !isAdmin && (
+              <Link
+                href="/ugyek"
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3 h-10 sm:h-11 rounded-xl border transition-all active:scale-95 text-xs font-semibold ${
+                  pathname === '/ugyek'
+                    ? 'border-emerald-500 bg-emerald-500 text-white shadow-sm shadow-emerald-500/30'
+                    : 'border-emerald-400/60 dark:border-emerald-700/60 bg-emerald-50/80 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 shadow-sm'
+                }`}
+                title="Jóváhagyott állatmentő (Saját ügyek)"
+                aria-label="Jóváhagyott állatmentő"
+              >
+                <ShieldCheck className="w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0" />
+                <span className="hidden sm:inline font-bold">Mentő</span>
               </Link>
             )}
 
