@@ -36,7 +36,7 @@ export const Header: React.FC = () => {
                 title={t.navHome || 'Főoldal'}
               >
                 <Image 
-                  src={`${process.env.NODE_ENV === 'production' ? '/allatmento-web' : ''}/logo.png`} 
+                  src={`${process.env.GITHUB_PAGES === 'true' ? '/allatmento-web' : ''}/logo.png`} 
                   alt="Állatmentő Portál" 
                   width={44} 
                   height={44} 

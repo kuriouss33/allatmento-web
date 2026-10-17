@@ -13,8 +13,7 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
-const isProd = process.env.NODE_ENV === 'production';
-const basePath = isProd ? '/allatmento-web' : '';
+const basePath = process.env.GITHUB_PAGES === 'true' ? '/allatmento-web' : '';
 
 export const metadata: Metadata = {
   title: 'Állatmentő Portál - Sürgősségi Segítség & Koordináció',

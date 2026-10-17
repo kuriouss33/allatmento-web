@@ -197,7 +197,7 @@ export default function ReportWizardPage() {
 
   const copyShareLink = () => {
     if (typeof window !== 'undefined') {
-      const basePath = process.env.NODE_ENV === 'production' ? '/allatmento-web' : '';
+      const basePath = process.env.GITHUB_PAGES === 'true' ? '/allatmento-web' : '';
       const link = `${window.location.origin}${basePath}/terkep?reportId=${createdReportId}`;
       navigator.clipboard.writeText(link);
       setCopied(true);
@@ -263,7 +263,7 @@ export default function ReportWizardPage() {
               { id: 'Egyéb', label: t.typeOther, image: '/other.png' },
             ].map((item) => {
               const isSelected = fajta === item.id;
-              const basePath = process.env.NODE_ENV === 'production' ? '/allatmento-web' : '';
+              const basePath = process.env.GITHUB_PAGES === 'true' ? '/allatmento-web' : '';
               return (
                 <button
                   key={item.id}
@@ -595,7 +595,7 @@ export default function ReportWizardPage() {
             <div className="flex flex-col sm:flex-row gap-2">
               <a
                 href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-                  typeof window !== 'undefined' ? `${window.location.origin}${process.env.NODE_ENV === 'production' ? '/allatmento-web' : ''}/terkep?reportId=${createdReportId}` : ''
+                  typeof window !== 'undefined' ? `${window.location.origin}${process.env.GITHUB_PAGES === 'true' ? '/allatmento-web' : ''}/terkep?reportId=${createdReportId}` : ''
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
