@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { 
   Settings as SettingsIcon, 
   Globe, 
@@ -9,14 +10,18 @@ import {
   Smartphone, 
   Check, 
   Sparkles,
-  Info
+  Info,
+  ShieldAlert,
+  ArrowRight
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
+import { useAuth } from '@/context/AuthContext';
 
 export default function SettingsPage() {
   const { lang, setLang, resetToSystemLang, isSystemLang, t } = useLanguage();
   const { theme, themePreference, setTheme } = useTheme();
+  const { isAdmin } = useAuth();
 
   return (
     <div className="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-6 sm:space-y-8 animate-fadeIn">
@@ -230,6 +235,40 @@ export default function SettingsPage() {
           </button>
         </div>
       </div>
+
+      {/* Adminisztrációs Vezérlőpult - Kizárólag Adminisztrátoroknak */}
+      {isAdmin && (
+        <div className="p-4 sm:p-6 rounded-2xl bg-amber-50/40 dark:bg-amber-950/20 border border-amber-300/80 dark:border-amber-700/60 shadow-sm space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                <ShieldAlert className="w-5 h-5" />
+              </div>
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-base font-extrabold text-slate-900 dark:text-white">
+                    Adminisztrációs Pult
+                  </h2>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500 text-slate-950">
+                    Admin
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Felhasználók kezelése, mentői jogosultságok kiemelése és profilok adminisztrációja
+                </p>
+              </div>
+            </div>
+
+            <Link
+              href="/admin"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-slate-950 transition-colors shadow-sm self-start sm:self-auto shrink-0"
+            >
+              <span>Vezérlőpult megnyitása</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* 3. Kártya: Információk */}
       <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 flex items-center justify-between">

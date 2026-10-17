@@ -8,7 +8,8 @@ import {
   ArrowLeft, 
   Settings, 
   User, 
-  LogOut 
+  LogOut,
+  ShieldAlert
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
@@ -16,7 +17,7 @@ import { AuthModal } from '@/components/auth/AuthModal';
 
 export const Header: React.FC = () => {
   const pathname = usePathname();
-  const { firebaseUser, logout } = useAuth();
+  const { firebaseUser, logout, isAdmin } = useAuth();
   const { t } = useLanguage();
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
@@ -56,8 +57,25 @@ export const Header: React.FC = () => {
             )}
           </div>
 
-          {/* Jobb oldal: Két ikon - Beállítások és Bejelentkezés */}
+          {/* Jobb oldal: Admin (ha be van lépve), Beállítások és Bejelentkezés/Kijelentkezés */}
           <div className="flex items-center gap-2 sm:gap-2.5">
+            {/* Adminisztráció gomb (kizárólag adminoknak) */}
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3 h-10 sm:h-11 rounded-xl border transition-all active:scale-95 text-xs font-semibold ${
+                  pathname === '/admin'
+                    ? 'border-amber-500 bg-amber-500 text-white shadow-sm shadow-amber-500/30'
+                    : 'border-amber-400/60 dark:border-amber-700/60 bg-amber-50/80 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/50 shadow-sm'
+                }`}
+                title="Adminisztráció (Felhasználók és mentői jogosultságok)"
+                aria-label="Adminisztráció"
+              >
+                <ShieldAlert className="w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0" />
+                <span className="hidden sm:inline font-bold">Admin</span>
+              </Link>
+            )}
+
             {/* Beállítások gomb */}
             <Link
               href="/beallitasok"

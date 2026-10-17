@@ -14,14 +14,24 @@ import {
   ShieldAlert
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
+import { useAuth } from '@/context/AuthContext';
 import { ChipLookupModal } from '@/components/common/ChipLookupModal';
 
 export default function HomePage() {
   const { t } = useLanguage();
+  const { isAdmin } = useAuth();
   const [chipModalOpen, setChipModalOpen] = useState(false);
 
   // A menüpontok egységesen a jóváhagyott 3. domináns színt (Smaragdzöld / Emerald) használják
   const secondaryCards = [
+    ...(isAdmin ? [{
+      href: '/admin',
+      title: 'Adminisztrációs Pult',
+      description: 'Felhasználók kezelése, mentői jogosultságok kiemelése és moderáció.',
+      icon: ShieldAlert,
+      actionText: 'Kezelés',
+      isAdminCard: true,
+    }] : []),
     {
       href: '/szervezetek',
       title: t.navOrgs || 'Szervezetek & Menhelyek',
@@ -103,34 +113,61 @@ export default function HomePage() {
         <div className="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3.5">
           {secondaryCards.map((card, idx) => {
             const Icon = card.icon;
+            const isAdminCard = (card as any).isAdminCard;
+
             const CardContent = (
               <>
                 <div className="flex items-center gap-3.5 sm:gap-4 flex-1 min-w-0">
-                  <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform ${
+                    isAdminCard
+                      ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                      : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                  }`}>
                     <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
                   <div className="space-y-0.5 text-left flex-1 min-w-0">
-                    <h3 className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white leading-snug truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                      {card.title}
-                    </h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className={`font-extrabold text-sm sm:text-base text-slate-900 dark:text-white leading-snug truncate transition-colors ${
+                        isAdminCard
+                          ? 'group-hover:text-amber-600 dark:group-hover:text-amber-400'
+                          : 'group-hover:text-emerald-600 dark:group-hover:text-emerald-400'
+                      }`}>
+                        {card.title}
+                      </h3>
+                      {isAdminCard && (
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-500 text-slate-950 shrink-0">
+                          Admin
+                        </span>
+                      )}
+                    </div>
                     <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2">
                       {card.description}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center text-xs font-bold text-emerald-600 dark:text-emerald-400 pl-2 shrink-0 group-hover:translate-x-0.5 transition-transform">
+                <div className={`flex items-center text-xs font-bold pl-2 shrink-0 group-hover:translate-x-0.5 transition-transform ${
+                  isAdminCard
+                    ? 'text-amber-600 dark:text-amber-400'
+                    : 'text-emerald-600 dark:text-emerald-400'
+                }`}>
                   <ArrowRight className="w-4 h-4" />
                 </div>
               </>
             );
+
+            const containerClasses = `group p-3.5 sm:p-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center justify-between cursor-pointer active:scale-[0.99] ${
+              isAdminCard
+                ? 'bg-amber-50/40 dark:bg-amber-950/20 border border-amber-300/80 dark:border-amber-700/60 hover:border-amber-500'
+                : 'bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-500/80'
+            }`;
 
             if (card.onClick) {
               return (
                 <div
                   key={idx}
                   onClick={card.onClick}
-                  className="group p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-500/80 shadow-sm hover:shadow-md transition-all flex items-center justify-between cursor-pointer active:scale-[0.99]"
+                  className={containerClasses}
                 >
                   {CardContent}
                 </div>
@@ -141,7 +178,7 @@ export default function HomePage() {
               <Link
                 key={idx}
                 href={card.href!}
-                className="group p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-500/80 shadow-sm hover:shadow-md transition-all flex items-center justify-between active:scale-[0.99]"
+                className={containerClasses}
               >
                 {CardContent}
               </Link>

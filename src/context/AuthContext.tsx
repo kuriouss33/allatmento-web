@@ -52,10 +52,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchProfile = async (user: FirebaseUser) => {
     try {
-      const token = await getIdToken(user, true);
+      const tokenResult = await user.getIdTokenResult(true);
+      const token = tokenResult.token;
       setIdToken(token);
-      const userProfile = await getMe(token);
-      setProfile(userProfile);
+
+      const claimRole = tokenResult.claims?.role as UserProfile['role'] | undefined;
+
+      try {
+        const userProfile = await getMe(token);
+        setProfile({
+          ...userProfile,
+          role: claimRole || userProfile.role || 'public',
+        });
+      } catch (err) {
+        console.warn('Backend profil lekérés figyelmeztetés, token adatok használata:', err);
+        setProfile({
+          uid: user.uid,
+          email: user.email || '',
+          role: claimRole || 'public',
+          status: claimRole === 'verified_rescuer' || claimRole === 'super_admin' ? 'active' : 'pending_approval'
+        });
+      }
     } catch (err) {
       console.error('Hiba a felhasználói profil lekérésekor:', err);
       setProfile({
