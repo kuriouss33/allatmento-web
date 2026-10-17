@@ -18,21 +18,11 @@ import { MEGYEK } from '@/lib/constants';
 import { Organization, OrgCategory } from '@/types';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAutoHideOnScroll } from '@/hooks';
-
-const DEFAULT_ORGS: Organization[] = [
-  { id: '1', nev: 'Noé Állatotthon Alapítvány', kategoria: 'menhely', megye: 'Budapest', cim: 'Budapest, XVII. kerület, Csordakút utca vége', telefon: '+36 30 221 1299' },
-  { id: '2', nev: 'Rex Kutyaotthon Alapítvány', kategoria: 'menhely', megye: 'Budapest', cim: 'Budapest, IV. kerület, Óradna utca 2.', telefon: '+36 1 230 4080' },
-  { id: '3', nev: 'Budapesti Állatkórház Éjjel-Nappal', kategoria: 'orvos', megye: 'Budapest', cim: 'Budapest, XIII. kerület, Lehel út 43.', telefon: '+36 1 350 0361' },
-  { id: '4', nev: 'Váci Állatkórház & Ügyelet', kategoria: 'orvos', megye: 'Pest', cim: '2600 Vác, Gombási út 1.', telefon: '+36 27 312 188' },
-  { id: '5', nev: 'Magyar Madártani Egyesület (MME)', kategoria: 'vad', megye: 'Budapest', cim: 'Budapest, Költő u. 21.', telefon: '+36 1 275 6247' },
-  { id: '6', nev: 'Duna-Ipoly Nemzeti Park Igazgatóság', kategoria: 'hatosag', megye: 'Pest', cim: 'Budapest, Költő u. 21.', telefon: '+36 1 391 4610' },
-  { id: '7', nev: 'TordasZoo Állatmentő Farm', kategoria: 'menhely', megye: 'Fejér', cim: '2463 Tordas', telefon: '+36 70 619 1208' },
-  { id: '8', nev: 'Hortobágyi Madárkórház Alapítvány', kategoria: 'vad', megye: 'Hajdú-Bihar', cim: '4071 Hortobágy, Petőfi tér 6.', telefon: '+36 52 369 181' },
-];
+import { ORGANIZATIONS } from '@/data/organizationsData';
 
 export default function OrganizationsPage() {
   const { t } = useLanguage();
-  const [orgs, setOrgs] = useState<Organization[]>(DEFAULT_ORGS);
+  const [orgs, setOrgs] = useState<Organization[]>(ORGANIZATIONS);
   const [loading, setLoading] = useState(false);
 
   const [categoryFilter, setCategoryFilter] = useState<'all' | OrgCategory>('all');
@@ -57,7 +47,12 @@ export default function OrganizationsPage() {
         if (!snap.empty) {
           const list: Organization[] = [];
           snap.forEach((d) => list.push({ id: d.id, ...d.data() } as Organization));
-          setOrgs(list);
+          
+          // Merge: keep all baseline ORGANIZATIONS and add/override any custom Firestore items
+          const map = new Map<string, Organization>();
+          ORGANIZATIONS.forEach((o) => map.set(o.id, o));
+          list.forEach((o) => map.set(o.id, o));
+          setOrgs(Array.from(map.values()));
         }
       } catch (err) {
         console.warn('Alapértelmezett szervezeti lista használata:', err);
@@ -230,11 +225,18 @@ export default function OrganizationsPage() {
                   className="p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between space-y-2.5 sm:space-y-4 hover:border-slate-300 dark:hover:border-slate-700 transition-all"
                 >
                   <div className="space-y-2">
-                    <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-light border ${badge.color}`}>
-                      {badge.label}
-                    </span>
+                    <div className="flex items-center justify-between gap-1.5 flex-wrap">
+                      <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-light border ${badge.color}`}>
+                        {badge.label}
+                      </span>
+                      {org.megye && (
+                        <span className="text-[10px] font-light text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 px-2 py-0.5 rounded-md">
+                          {org.megye}
+                        </span>
+                      )}
+                    </div>
 
-                    <h3 className="font-light text-base text-slate-900 dark:text-white leading-snug">
+                    <h3 className="font-medium sm:font-light text-base text-slate-900 dark:text-white leading-snug">
                       {org.nev}
                     </h3>
 
@@ -242,6 +244,12 @@ export default function OrganizationsPage() {
                       <p className="flex items-start gap-1.5 text-xs text-slate-600 dark:text-slate-400 font-light">
                         <MapPin className="w-3.5 h-3.5 text-slate-400 flex-shrink-0 mt-0.5" />
                         <span>{org.cim}</span>
+                      </p>
+                    )}
+
+                    {org.leiras && (
+                      <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-light leading-relaxed pt-1">
+                        {org.leiras}
                       </p>
                     )}
                   </div>
