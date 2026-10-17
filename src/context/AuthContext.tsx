@@ -122,12 +122,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = async () => {
-    if (auth) {
-      await fbSignOut(auth);
+    try {
+      if (auth) {
+        await fbSignOut(auth);
+      }
+    } catch (err) {
+      console.warn('Figyelmeztetés kijelentkezéskor:', err);
+    } finally {
+      setFirebaseUser(null);
+      setProfile(null);
+      setIdToken(null);
     }
-    setFirebaseUser(null);
-    setProfile(null);
-    setIdToken(null);
   };
 
   const resendVerification = async () => {
