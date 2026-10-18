@@ -428,4 +428,17 @@ export const hu = {
   posterSuccessDownload: "Plakát sikeresen letöltve!",
   posterErrorDownload: "Nem sikerült a plakát letöltése. Próbáld a Nyomtatás opciót!",
   posterEditInfoTip: "A plakát fejlécét és az elérhetőséget fentebb testre szabhatod a nyomtatás előtt.",
+
+  // PWA Offline Mód & Szinkronizáció
+  offlineBannerTitle: "Terepi Offline Üzemmód",
+  offlineBannerDesc: "Nincs internetkapcsolat (pl. erdőszélen, külterületen). A bejelentéseket a telefonod biztonságosan elmenti.",
+  offlinePendingBadge: "bejelentés várakozik hálózatra",
+  offlineSyncNowBtn: "Szinkronizálás most",
+  offlineSyncing: "Szinkronizálás...",
+  offlineSyncSuccess: "Sikeres szinkronizáció! A terepen rögzített bejelentések megérkeztek a központba.",
+  offlineSavedTitle: "Bejelentés mentve a telefonodon! (Offline mód)",
+  offlineSavedDesc: "A helyszín koordinátáit és a fotót sikeresen elmentettük a készülékeden. Amint visszatér a térerő vagy wifi, a rendszer automatikusan beküldi a mentőknek!",
+  offlineRetryNotice: "A telefon automatikusan beküldi, amint lesz térerő. Manuálisan is megpróbálhatod:",
+  offlineTrySyncBtn: "Beküldés megkísérlése most",
+  fieldCompressionNotice: "Képgyorsítás terepen aktív (optimalizált méret)",
 };

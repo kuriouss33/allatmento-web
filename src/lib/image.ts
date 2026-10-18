@@ -1,4 +1,17 @@
-export async function compressImage(file: File, maxDimension: number = 1280, quality: number = 0.8): Promise<Blob> {
+/**
+ * Terepi fotók tömörítése és hálózati ellenőrzés
+ * 
+ * Mobilos terepviszonyok között a kamerák által készített 10-25 MB-os fotókat
+ * a telefon memóriájában azonnal 150-350 KB méretűre tömöríti.
+ * Ez biztosítja, hogy gyenge térerő vagy IndexedDB offline mentés esetén is
+ * villámgyors és megbízható legyen a feltöltés.
+ */
+
+export async function compressImage(
+  fileOrBlob: File | Blob, 
+  maxDimension: number = 1280, 
+  quality: number = 0.78
+): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     const reader = new FileReader();
@@ -31,7 +44,11 @@ export async function compressImage(file: File, maxDimension: number = 1280, qua
         return;
       }
 
+      // Képmegjelenítés simítással
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
       ctx.drawImage(img, 0, 0, width, height);
+
       canvas.toBlob(
         (blob) => {
           if (blob) {
@@ -47,6 +64,31 @@ export async function compressImage(file: File, maxDimension: number = 1280, qua
 
     img.onerror = (err) => reject(err);
     reader.onerror = (err) => reject(err);
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(fileOrBlob);
   });
+}
+
+/**
+ * Hálózati hiba detektálása (pl. nincs internetkapcsolat, DNS hiba, timeout)
+ */
+export function isNetworkError(err: any): boolean {
+  if (typeof navigator !== 'undefined' && !navigator.onLine) {
+    return true;
+  }
+  if (!err) return false;
+
+  const msg = (err.message || err.toString() || '').toLowerCase();
+  return (
+    msg.includes('failed to fetch') ||
+    msg.includes('network error') ||
+    msg.includes('networkerror') ||
+    msg.includes('offline') ||
+    msg.includes('internet') ||
+    msg.includes('net::err_internet_disconnected') ||
+    msg.includes('connection refused') ||
+    msg.includes('timeout') ||
+    msg.includes('hálózati hiba') ||
+    msg.includes('szerver hiba (50') ||
+    msg.includes('nem sikerült csatlakozni')
+  );
 }

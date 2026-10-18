@@ -430,4 +430,17 @@ export const en: typeof hu = {
   posterSuccessDownload: "Poster downloaded successfully!",
   posterErrorDownload: "Could not generate download. Please try the Print option!",
   posterEditInfoTip: "You can customize the poster heading and contact number above before printing.",
+
+  // PWA Offline Mode & Sync
+  offlineBannerTitle: "Field Offline Mode",
+  offlineBannerDesc: "No internet connection (e.g. deep forest, rural outskirts). Reports are safely saved on your device.",
+  offlinePendingBadge: "report(s) waiting for connection",
+  offlineSyncNowBtn: "Sync now",
+  offlineSyncing: "Synchronizing...",
+  offlineSyncSuccess: "Sync complete! Field reports successfully delivered to dispatch.",
+  offlineSavedTitle: "Report saved on your device! (Offline mode)",
+  offlineSavedDesc: "GPS coordinates and photo have been securely saved on your device. Once cellular service or WiFi returns, it will automatically upload to rescuers!",
+  offlineRetryNotice: "Your phone will automatically upload when connected. You can also try manually:",
+  offlineTrySyncBtn: "Try uploading now",
+  fieldCompressionNotice: "Field image acceleration active (optimized size)",
 };

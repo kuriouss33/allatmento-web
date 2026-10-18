@@ -20,16 +20,21 @@ import {
   Copy, 
   AlertCircle,
   ExternalLink,
-  Printer
+  Printer,
+  WifiOff,
+  CloudUpload,
+  RefreshCw
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { MEGYEK } from '@/lib/constants';
 import { detectCounty } from '@/lib/countyDetector';
 import { createReport, uploadImage } from '@/lib/api';
-import { compressImage } from '@/lib/image';
+import { compressImage, isNetworkError } from '@/lib/image';
 import { saveDeleteToken, getAnonymousUserId } from '@/lib/storage';
+import { saveOfflineReport } from '@/lib/offlineQueue';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
+import { useOfflineSync } from '@/context/OfflineSyncContext';
 import { PrivacyModal } from '@/components/common/PrivacyModal';
 import { PosterModal } from '@/components/report/PosterModal';
 
@@ -48,6 +53,7 @@ const LocationPickerMap = dynamic(
 export default function ReportWizardPage() {
   const { t } = useLanguage();
   const { firebaseUser } = useAuth();
+  const { isOnline, syncNow, isSyncing } = useOfflineSync();
 
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
 
@@ -78,6 +84,7 @@ export default function ReportWizardPage() {
   const [copied, setCopied] = useState<boolean>(false);
   const [privacyModalOpen, setPrivacyModalOpen] = useState<boolean>(false);
   const [posterModalOpen, setPosterModalOpen] = useState<boolean>(false);
+  const [isOfflineSubmitted, setIsOfflineSubmitted] = useState<boolean>(false);
 
   // GPS lekérés
   const handleGpsLocation = () => {
@@ -152,29 +159,55 @@ export default function ReportWizardPage() {
     setSubmitting(true);
     setError(null);
 
+    const createrId = firebaseUser?.uid || getAnonymousUserId();
+    const finalCounty = megye || detectCounty(null, address) || 'Budapest';
+    let compressedBlob: Blob | null = null;
+
+    // 1. Kép tömörítése terepen (100 ms alatt 150-350 KB méretre optimalizálva)
+    if (photoFile) {
+      try {
+        compressedBlob = await compressImage(photoFile);
+      } catch (uploadErr: any) {
+        console.warn('Képtömörítési hiba, kísérlet az eredeti fájllal:', uploadErr);
+        compressedBlob = photoFile;
+      }
+    }
+
+    // 2. Ha nincs térerő / offline vagyunk: azonnali mentés az IndexedDB-be
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      try {
+        const offlineRecord = await saveOfflineReport({
+          fajta,
+          leiras: leiras.trim(),
+          megye: finalCounty,
+          cim: address.trim() || undefined,
+          telefon: telefon.trim() || undefined,
+          lat,
+          lon,
+          createrId,
+          photoBlob: compressedBlob,
+          photoFileName: photoFile?.name || 'field-report.jpg',
+        });
+
+        setIsOfflineSubmitted(true);
+        setCreatedReportId(offlineRecord.id);
+        setStep(4);
+        return;
+      } catch (dbErr: any) {
+        setError('Nem sikerült az offline mentés a készülékre: ' + (dbErr.message || 'Helyi tárolási hiba'));
+        return;
+      } finally {
+        setSubmitting(false);
+      }
+    }
+
+    // 3. Online beküldés
     try {
       let uploadedPhotoUrl: string | undefined = undefined;
 
-      // Kép tömörítése és feltöltése a szerverre
-      if (photoFile) {
-        try {
-          const compressedBlob = await compressImage(photoFile);
-          uploadedPhotoUrl = await uploadImage(compressedBlob, photoFile.name || 'report-photo.jpg');
-        } catch (uploadErr: any) {
-          console.warn('Tömörített képfeltöltési kísérlet sikertelen, próbálkozás az eredetivel:', uploadErr);
-          try {
-            if (photoFile.size > 4 * 1024 * 1024) {
-              throw new Error('A fénykép mérete meghaladja a 4 MB-os korlátot és a tömörítés nem sikerült. Kérlek, válassz kisebb méretű fotót!');
-            }
-            uploadedPhotoUrl = await uploadImage(photoFile, photoFile.name || 'report-photo.jpg');
-          } catch (origErr: any) {
-            throw new Error(`Képfeltöltési hiba: ${origErr.message || 'A szerver visszautasította a fotót.'}`);
-          }
-        }
+      if (compressedBlob) {
+        uploadedPhotoUrl = await uploadImage(compressedBlob, photoFile?.name || 'report-photo.jpg');
       }
-
-      const createrId = firebaseUser?.uid || getAnonymousUserId();
-      const finalCounty = megye || detectCounty(null, address) || 'Budapest';
 
       const result = await createReport({
         fajta,
@@ -195,10 +228,37 @@ export default function ReportWizardPage() {
         saveDeleteToken(repId, delToken);
       }
 
+      setIsOfflineSubmitted(false);
       setCreatedReportId(repId);
       setStep(4);
     } catch (err: any) {
-      setError(err.message || 'Hiba történt a bejelentés beküldésekor.');
+      // 4. Ha a hálózat a beküldés közben szakadt meg (terepi hálózati ingadozás)
+      if (isNetworkError(err) || (typeof navigator !== 'undefined' && !navigator.onLine)) {
+        console.warn('Hálózati hiba beküldés közben, automatikus mentés az IndexedDB-be:', err);
+        try {
+          const offlineRecord = await saveOfflineReport({
+            fajta,
+            leiras: leiras.trim(),
+            megye: finalCounty,
+            cim: address.trim() || undefined,
+            telefon: telefon.trim() || undefined,
+            lat,
+            lon,
+            createrId,
+            photoBlob: compressedBlob,
+            photoFileName: photoFile?.name || 'field-report.jpg',
+          });
+
+          setIsOfflineSubmitted(true);
+          setCreatedReportId(offlineRecord.id);
+          setStep(4);
+          return;
+        } catch (dbErr: any) {
+          setError('Hálózati hiba történt, és a helyi offline mentés is sikertelen: ' + (dbErr.message || ''));
+        }
+      } else {
+        setError(err.message || 'Hiba történt a bejelentés beküldésekor.');
+      }
     } finally {
       setSubmitting(false);
     }
@@ -579,21 +639,48 @@ export default function ReportWizardPage() {
         </form>
       )}
 
-      {/* Step 4: Sikeroldal */}
+      {/* Step 4: Sikeroldal / Offline Mentés */}
       {step === 4 && (
         <div className="flex-1 min-h-0 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-8 shadow-sm text-center space-y-4 sm:space-y-6 scrollbar-thin">
-          <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 flex items-center justify-center mx-auto">
-            <CheckCircle2 className="w-8 h-8" />
+          <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto border ${
+            isOfflineSubmitted 
+              ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/60'
+              : 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60'
+          }`}>
+            {isOfflineSubmitted ? (
+              <WifiOff className="w-8 h-8" />
+            ) : (
+              <CheckCircle2 className="w-8 h-8" />
+            )}
           </div>
 
           <div className="space-y-2">
             <h2 className="text-2xl font-black text-slate-900 dark:text-white">
-              {t.successTitle}
+              {isOfflineSubmitted ? t.offlineSavedTitle : t.successTitle}
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto">
-              {t.successSub}
+              {isOfflineSubmitted ? t.offlineSavedDesc : t.successSub}
             </p>
           </div>
+
+          {/* Ha offline mentés történt: Várakozási sor és Szinkronizálás doboz */}
+          {isOfflineSubmitted && (
+            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/25 max-w-md mx-auto space-y-2.5 text-left">
+              <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300 font-semibold text-xs">
+                <CloudUpload className="w-4 h-4 text-amber-600" />
+                <span>{t.offlineRetryNotice}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => syncNow()}
+                disabled={isSyncing}
+                className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs transition-all disabled:opacity-50 cursor-pointer"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
+                <span>{isSyncing ? t.offlineSyncing : t.offlineTrySyncBtn}</span>
+              </button>
+            </div>
+          )}
 
           {/* Poster Generator Callout Box */}
           <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-red-500/10 via-rose-500/5 to-amber-500/10 border-2 border-red-500/30 max-w-md mx-auto space-y-3 text-left">

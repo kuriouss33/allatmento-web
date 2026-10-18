@@ -5,9 +5,11 @@ import { ThemeProvider } from '@/context/ThemeContext';
 import { LanguageProvider } from '@/context/LanguageContext';
 import { FontSizeProvider } from '@/context/FontSizeContext';
 import { AuthProvider } from '@/context/AuthContext';
+import { OfflineSyncProvider } from '@/context/OfflineSyncContext';
 import { Header } from '@/components/layout/Header';
 import { ScrollToTop } from '@/components/common/ScrollToTop';
 import { WelcomeModal } from '@/components/common/WelcomeModal';
+import { OfflineSyncBar } from '@/components/common/OfflineSyncBar';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -20,8 +22,10 @@ const basePath = process.env.GITHUB_PAGES === 'true' ? '/allatmento-web' : '';
 export const metadata: Metadata = {
   title: 'Állatmentő Portál - Sürgősségi Segítség & Koordináció',
   description: 'Valós idejű állatmentő és diszpécser koordinációs portál bejelentők és hitelesített mentőszervezetek számára.',
+  manifest: '/manifest.json',
   icons: {
     icon: `${basePath}/logo.png`,
+    apple: `${basePath}/logo.png`,
   },
 };
 
@@ -33,6 +37,8 @@ export default function RootLayout({
   return (
     <html lang="hu" suppressHydrationWarning>
       <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#2563eb" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" />
@@ -67,12 +73,15 @@ export default function RootLayout({
           <LanguageProvider>
             <FontSizeProvider>
               <AuthProvider>
-                <ScrollToTop />
-                <Header />
-                <main className="flex-1 min-h-0 flex flex-col overflow-y-auto xl:overflow-visible">
-                  {children}
-                </main>
-                <WelcomeModal />
+                <OfflineSyncProvider>
+                  <ScrollToTop />
+                  <Header />
+                  <OfflineSyncBar />
+                  <main className="flex-1 min-h-0 flex flex-col overflow-y-auto xl:overflow-visible">
+                    {children}
+                  </main>
+                  <WelcomeModal />
+                </OfflineSyncProvider>
               </AuthProvider>
             </FontSizeProvider>
           </LanguageProvider>
