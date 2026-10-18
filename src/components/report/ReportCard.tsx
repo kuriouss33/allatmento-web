@@ -1,16 +1,18 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   MapPin, 
   Check, 
   ArrowRight,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Printer
 } from 'lucide-react';
 import { Report } from '@/types';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
 import { canUserSeeExactReport, getReportDisplayAddress } from '@/lib/privacy';
+import { PosterModal } from './PosterModal';
 
 interface ReportCardProps {
   report: Report;
@@ -34,6 +36,7 @@ export const ReportCard: React.FC<ReportCardProps> = ({
 }) => {
   const { firebaseUser, isRescuer, isAdmin } = useAuth();
   const { t } = useLanguage();
+  const [posterModalOpen, setPosterModalOpen] = useState(false);
 
   const getCardStatusClasses = () => {
     switch (report.statusz) {
@@ -146,8 +149,21 @@ export const ReportCard: React.FC<ReportCardProps> = ({
           </span>
         </div>
 
-        {/* Bottom: Részletek gomb */}
-        <div className="pt-1 flex items-center justify-end">
+        {/* Bottom: Plakát gomb + Részletek gomb */}
+        <div className="pt-1 flex items-center justify-end gap-1.5">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setPosterModalOpen(true);
+            }}
+            className="flex items-center justify-center gap-1 py-1 px-2.5 rounded-xl font-light text-xs border border-red-200 dark:border-red-900/40 bg-red-50/70 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 shadow-2xs active:scale-[0.98] transition-all cursor-pointer"
+            title={t.posterModalTitle}
+          >
+            <Printer className="w-3 h-3 text-red-600 dark:text-red-400" />
+            <span className="hidden sm:inline">{t.posterBtnOpen}</span>
+          </button>
+
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -161,6 +177,12 @@ export const ReportCard: React.FC<ReportCardProps> = ({
         </div>
 
       </div>
+
+      <PosterModal
+        isOpen={posterModalOpen}
+        onClose={() => setPosterModalOpen(false)}
+        report={report}
+      />
     </div>
   );
 };

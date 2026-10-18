@@ -19,7 +19,8 @@ import {
   Share2, 
   Copy, 
   AlertCircle,
-  ExternalLink
+  ExternalLink,
+  Printer
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { MEGYEK } from '@/lib/constants';
@@ -30,6 +31,7 @@ import { saveDeleteToken, getAnonymousUserId } from '@/lib/storage';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { PrivacyModal } from '@/components/common/PrivacyModal';
+import { PosterModal } from '@/components/report/PosterModal';
 
 const LocationPickerMap = dynamic(
   () => import('@/components/map/LocationPickerMap').then((mod) => mod.LocationPickerMap),
@@ -75,6 +77,7 @@ export default function ReportWizardPage() {
   const [createdReportId, setCreatedReportId] = useState<string | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
   const [privacyModalOpen, setPrivacyModalOpen] = useState<boolean>(false);
+  const [posterModalOpen, setPosterModalOpen] = useState<boolean>(false);
 
   // GPS lekérés
   const handleGpsLocation = () => {
@@ -592,9 +595,35 @@ export default function ReportWizardPage() {
             </p>
           </div>
 
+          {/* Poster Generator Callout Box */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-red-500/10 via-rose-500/5 to-amber-500/10 border-2 border-red-500/30 max-w-md mx-auto space-y-3 text-left">
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                <Printer className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-sm text-slate-900 dark:text-white">
+                  {t.posterModalTitle}
+                </h3>
+                <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-tight">
+                  {t.posterModalSubtitle}
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setPosterModalOpen(true)}
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold text-xs sm:text-sm shadow-md transition-all active:scale-[0.99] cursor-pointer"
+            >
+              <Printer className="w-4 h-4" />
+              <span>{t.posterBtnOpen} ({t.posterPrintBtn} / PDF)</span>
+            </button>
+          </div>
+
           {/* Share Box */}
           <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 max-w-md mx-auto space-y-3">
-            <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">
+            <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
               {t.shareIncidentPrompt}
             </span>
 
@@ -605,7 +634,7 @@ export default function ReportWizardPage() {
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-[#1877F2] hover:bg-[#166fe5] text-white font-bold text-xs shadow-sm transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-[#1877F2] hover:bg-[#166fe5] text-white font-semibold text-xs shadow-sm transition-colors"
               >
                 <Share2 className="w-4 h-4" />
                 <span>{t.shareFacebook}</span>
@@ -614,7 +643,7 @@ export default function ReportWizardPage() {
               <button
                 type="button"
                 onClick={copyShareLink}
-                className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs transition-colors"
               >
                 <Copy className="w-4 h-4" />
                 <span>{copied ? t.linkCopied : t.copyLink}</span>
@@ -625,7 +654,7 @@ export default function ReportWizardPage() {
           <div className="pt-2 flex items-center justify-center">
             <Link
               href="/terkep"
-              className="w-full sm:w-auto px-8 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-all text-center"
+              className="w-full sm:w-auto px-8 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-md transition-all text-center"
             >
               {t.viewOnMap}
             </Link>
@@ -636,6 +665,22 @@ export default function ReportWizardPage() {
       <PrivacyModal 
         isOpen={privacyModalOpen} 
         onClose={() => setPrivacyModalOpen(false)} 
+      />
+
+      <PosterModal
+        isOpen={posterModalOpen}
+        onClose={() => setPosterModalOpen(false)}
+        initialData={{
+          id: createdReportId || '',
+          fajta,
+          leiras,
+          cim: address,
+          megye,
+          telefon,
+          fotoUrl: photoPreview || undefined,
+          createdAt: new Date().toISOString(),
+          statusz: 'uj',
+        }}
       />
     </div>
   );

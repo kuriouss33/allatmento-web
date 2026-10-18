@@ -24,8 +24,10 @@ import {
   Check, 
   AlertTriangle, 
   ExternalLink,
-  Languages
+  Languages,
+  Printer
 } from 'lucide-react';
+import { PosterModal } from './PosterModal';
 
 interface ReportDetailsModalProps {
   report: Report | null;
@@ -58,6 +60,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
   const [newComment, setNewComment] = useState('');
   const [sending, setSending] = useState(false);
   const [liveReport, setLiveReport] = useState<Report | null>(report ? normalizeReport(report) : null);
+  const [posterModalOpen, setPosterModalOpen] = useState(false);
 
   // Automatikus fordítás állapotok (kommentek, leírás, lezárás)
   const [translatedComments, setTranslatedComments] = useState<Record<string, string>>({});
@@ -539,17 +542,30 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
             )}
 
             {/* Secondary Actions Row */}
-            <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-              {/* Help Offer (Volunteer) */}
-              {liveReport.statusz !== 'megoldva' && onOpenHelp && (
+            <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-100 dark:border-slate-800 flex-wrap">
+              <div className="flex items-center gap-2 flex-wrap">
+                {/* Printable Poster Generator */}
                 <button
-                  onClick={() => onOpenHelp(liveReport)}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-light transition-colors"
+                  type="button"
+                  onClick={() => setPosterModalOpen(true)}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-red-200 dark:border-red-900/40 bg-red-50/70 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 text-xs font-light transition-colors cursor-pointer"
+                  title={t.posterModalTitle}
                 >
-                  <HeartHandshake className="w-4 h-4 text-rose-500" />
-                  <span>{t.btnHelpVolunteer}</span>
+                  <Printer className="w-4 h-4 text-red-600 dark:text-red-400" />
+                  <span>{t.posterBtnOpen}</span>
                 </button>
-              )}
+
+                {/* Help Offer (Volunteer) */}
+                {liveReport.statusz !== 'megoldva' && onOpenHelp && (
+                  <button
+                    onClick={() => onOpenHelp(liveReport)}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-light transition-colors"
+                  >
+                    <HeartHandshake className="w-4 h-4 text-rose-500" />
+                    <span>{t.btnHelpVolunteer}</span>
+                  </button>
+                )}
+              </div>
 
               {/* Delete action */}
               {canDelete && onDelete && (
@@ -706,6 +722,12 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
 
         </div>
       </div>
+
+      <PosterModal
+        isOpen={posterModalOpen}
+        onClose={() => setPosterModalOpen(false)}
+        report={liveReport}
+      />
     </div>
   );
 };
