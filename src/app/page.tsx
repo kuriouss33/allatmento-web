@@ -24,14 +24,13 @@ export default function HomePage() {
 
   // A menüpontok egységesen a jóváhagyott 3. domináns színt (Smaragdzöld / Emerald) használják
   const secondaryCards = [
-    ...(isAdmin ? [{
-      href: '/admin',
-      title: t.adminCardTitle,
-      description: t.adminCardDesc,
-      icon: ShieldAlert,
-      actionText: t.adminCardAction,
-      isAdminCard: true,
-    }] : []),
+    {
+      href: '/ugyek',
+      title: t.navMyCases,
+      description: t.myCasesCardDesc,
+      icon: ClipboardList,
+      actionText: t.myCasesCardAction,
+    },
     {
       href: '/szervezetek',
       title: t.navOrgs,
@@ -47,13 +46,6 @@ export default function HomePage() {
       actionText: t.guideCardAction,
     },
     {
-      onClick: () => setChipModalOpen(true),
-      title: t.chipCardTitle,
-      description: t.chipCardDesc,
-      icon: Search,
-      actionText: t.chipCardAction,
-    },
-    {
       href: '/statisztika',
       title: t.statsCardTitle,
       description: t.statsCardDesc,
@@ -61,12 +53,20 @@ export default function HomePage() {
       actionText: t.statsCardAction,
     },
     {
-      href: '/ugyek',
-      title: t.navMyCases,
-      description: t.myCasesCardDesc,
-      icon: ClipboardList,
-      actionText: t.myCasesCardAction,
+      onClick: () => setChipModalOpen(true),
+      title: t.chipCardTitle,
+      description: t.chipCardDesc,
+      icon: Search,
+      actionText: t.chipCardAction,
     },
+    ...(isAdmin ? [{
+      href: '/admin',
+      title: t.adminCardTitle,
+      description: t.adminCardDesc,
+      icon: ShieldAlert,
+      actionText: t.adminCardAction,
+      isAdminCard: true,
+    }] : []),
   ];
 
   return (
