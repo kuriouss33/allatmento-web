@@ -205,6 +205,21 @@ strong {
   animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Sötét módban tiszta fehérré konvertálja a sötét vonalas PNG ikonokat az átlátszóság megőrzésével */
+.dark-invert-white {
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+:where(.dark, .dark *) .dark-invert-white,
+html[data-theme="dark"] .dark-invert-white {
+  filter: brightness(0) invert(1);
+}
+
+:where(.dark, .dark *) .dark-invert-white.icon-selected,
+html[data-theme="dark"] .dark-invert-white.icon-selected {
+  filter: brightness(0) invert(1) drop-shadow(0 2px 8px rgba(255, 255, 255, 0.35));
+}
+
 /* Poster print typography overrides to guarantee punchy contrast */
 .poster-bold {
   font-weight: 800 !important;

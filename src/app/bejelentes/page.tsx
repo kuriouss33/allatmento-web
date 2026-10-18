@@ -358,8 +358,10 @@ export default function ReportWizardPage() {
                       alt={item.label}
                       width={112}
                       height={112}
-                      className={`w-full h-full object-contain transition-transform duration-200 ${
-                        isSelected ? 'scale-105 drop-shadow-md' : 'group-hover:scale-105 opacity-90 group-hover:opacity-100'
+                      className={`w-full h-full object-contain transition-transform duration-200 dark-invert-white ${
+                        isSelected
+                          ? 'scale-105 drop-shadow-md icon-selected'
+                          : 'group-hover:scale-105 opacity-90 group-hover:opacity-100'
                       }`}
                       priority
                     />
