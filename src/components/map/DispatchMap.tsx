@@ -109,7 +109,7 @@ export const DispatchMap: React.FC<DispatchMapProps> = ({
         : `<span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">🛡️ ${t.approxZone}</span>`;
 
       const noticeHtml = !canSeeExact
-        ? `<div class="mb-2 p-1.5 rounded-lg bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200/60 dark:border-blue-800/40 text-[10px] text-blue-800 dark:text-blue-300 leading-snug">
+        ? `<div class="mb-2 p-1.5 rounded-lg bg-blue-50/70 dark:bg-zinc-800 border border-blue-200/60 dark:border-zinc-700 text-[10px] text-blue-800 dark:text-zinc-200 leading-snug">
             🛡️ ${t.protectedZoneDesc}
            </div>`
         : '';
@@ -118,7 +118,7 @@ export const DispatchMap: React.FC<DispatchMapProps> = ({
 
       popupContent.innerHTML = `
         <div class="flex items-center justify-between gap-1.5 mb-1.5">
-          <span class="font-bold text-sm text-slate-900">${report.fajta}</span>
+          <span class="font-bold text-sm text-slate-900 dark:text-white">${report.fajta}</span>
           <div class="flex items-center gap-1">
             ${exactBadgeHtml}
             <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${badgeBg}">
@@ -129,15 +129,15 @@ export const DispatchMap: React.FC<DispatchMapProps> = ({
         ${noticeHtml}
         ${
           (report.fotoUrl || report.kepUrl)
-            ? `<div class="relative w-full h-28 mb-2 rounded-lg overflow-hidden border border-slate-200">
+            ? `<div class="relative w-full h-28 mb-2 rounded-lg overflow-hidden border border-slate-200 dark:border-zinc-700">
                 <img src="${report.fotoUrl || report.kepUrl}" class="w-full h-full object-cover" alt="Fotó" />
                </div>`
             : ''
         }
-        <p class="text-xs text-slate-600 mb-1 leading-snug">
+        <p class="text-xs text-slate-600 dark:text-zinc-300 mb-1 leading-snug">
           📍 ${displayAddress}
         </p>
-        <div class="mt-2.5 pt-2 border-t border-slate-200 flex flex-col gap-1.5">
+        <div class="mt-2.5 pt-2 border-t border-slate-200 dark:border-zinc-700 flex flex-col gap-1.5">
           <button id="popup-btn-details-${report.id}" class="w-full py-1.5 px-3 rounded-lg text-xs font-bold bg-blue-600 text-white hover:bg-blue-700 transition-colors">
             ${t.detailsAndCoordination}
           </button>

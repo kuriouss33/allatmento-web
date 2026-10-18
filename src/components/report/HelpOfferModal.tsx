@@ -58,7 +58,7 @@ export const HelpOfferModal: React.FC<HelpOfferModalProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn"
       onClick={onClose}
     >
       <div 
@@ -73,7 +73,7 @@ export const HelpOfferModal: React.FC<HelpOfferModalProps> = ({
         </button>
 
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-zinc-800 border border-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center">
             <HeartHandshake className="w-5 h-5" />
           </div>
           <div>

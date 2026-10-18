@@ -242,18 +242,18 @@ export const PosterModal: React.FC<PosterModalProps> = ({
         <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-4 scrollbar-thin">
           
           {/* Testreszabó Eszköztár (no-print) */}
-          <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 space-y-3 no-print">
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 space-y-3 no-print">
             <div className="flex flex-wrap items-center justify-between gap-2.5">
               
               {/* Plakát típusa (Eltűnt vs Talált) */}
-              <div className="flex items-center gap-1.5 bg-slate-200/70 dark:bg-slate-700/60 p-1 rounded-xl">
+              <div className="flex items-center gap-1.5 bg-slate-200/70 dark:bg-zinc-800 p-1 rounded-xl">
                 <button
                   type="button"
                   onClick={() => setPosterType('lost')}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                     posterType === 'lost'
                       ? 'bg-red-600 text-white shadow-xs'
-                      : 'text-slate-700 dark:text-slate-300 hover:text-slate-900'
+                      : 'text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   🚨 {t.posterTypeLost}
@@ -264,7 +264,7 @@ export const PosterModal: React.FC<PosterModalProps> = ({
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                     posterType === 'found'
                       ? 'bg-blue-600 text-white shadow-xs'
-                      : 'text-slate-700 dark:text-slate-300 hover:text-slate-900'
+                      : 'text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   🐾 {t.posterTypeFound}

@@ -247,7 +247,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm animate-fadeIn"
       onClick={onClose}
     >
       <div 
@@ -662,24 +662,24 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                       key={key}
                       className={`p-3 rounded-2xl border text-xs max-w-[85%] font-light ${
                         isMe
-                          ? 'ml-auto bg-blue-50 dark:bg-blue-950/50 border-blue-200 dark:border-blue-900/60 text-blue-950 dark:text-blue-100'
-                          : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200'
+                          ? 'ml-auto bg-blue-50 dark:bg-zinc-800 border-blue-200 dark:border-zinc-700 text-blue-950 dark:text-zinc-100'
+                          : 'bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-zinc-200'
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2 mb-1 text-[11px]">
-                        <span className={isMe ? 'text-blue-600 dark:text-blue-400 font-light' : 'text-slate-600 dark:text-slate-300 font-light'}>
+                        <span className={isMe ? 'text-blue-600 dark:text-blue-400 font-light' : 'text-slate-600 dark:text-zinc-300 font-light'}>
                           {roleLabel}
                           {isMe && t.youSuffix}
                         </span>
                         {komment.idopont && (
-                          <span className="text-[10px] text-slate-400">
+                          <span className="text-[10px] text-slate-400 dark:text-zinc-400">
                             {new Date(komment.idopont.seconds ? komment.idopont.seconds * 1000 : komment.idopont).toLocaleTimeString(lang === 'en' ? 'en-US' : 'hu-HU', { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         )}
                       </div>
                       <p className="whitespace-pre-wrap leading-relaxed">{displayText}</p>
                       {isTranslated && (
-                        <div className="mt-1.5 pt-1 border-t border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between gap-2 text-[10px] text-slate-400">
+                        <div className="mt-1.5 pt-1 border-t border-slate-200/50 dark:border-zinc-700/60 flex items-center justify-between gap-2 text-[10px] text-slate-400 dark:text-zinc-400">
                           <span className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 font-light">
                             <Languages className="w-3 h-3" />
                             <span>{t.autoTranslatedBadge}</span>
@@ -707,7 +707,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   placeholder={t.chatPlaceholder}
-                  className="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 font-light"
+                  className="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 font-light"
                 />
                 <button
                   type="submit"

@@ -238,13 +238,13 @@ export default function DispatchPage() {
         </div>
 
         {/* Mobile View Toggle Buttons (Map vs List) */}
-        <div className="flex lg:hidden items-center justify-center p-1 rounded-xl bg-slate-200/70 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 mx-auto">
+        <div className="flex lg:hidden items-center justify-center p-1 rounded-xl bg-slate-200/70 dark:bg-zinc-800/80 border border-slate-300 dark:border-zinc-700 mx-auto">
           <button
             onClick={() => setMobileView('map')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-light transition-all ${
               mobileView === 'map'
-                ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm'
-                : 'text-slate-600 dark:text-slate-400'
+                ? 'bg-white dark:bg-zinc-900 text-blue-600 dark:text-blue-400 shadow-sm'
+                : 'text-slate-600 dark:text-zinc-300'
             }`}
           >
             <MapIcon className="w-3.5 h-3.5" />
@@ -257,8 +257,8 @@ export default function DispatchPage() {
             }}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-light transition-all ${
               mobileView === 'list'
-                ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm'
-                : 'text-slate-600 dark:text-slate-400'
+                ? 'bg-white dark:bg-zinc-900 text-blue-600 dark:text-blue-400 shadow-sm'
+                : 'text-slate-600 dark:text-zinc-300'
             }`}
           >
             <ListIcon className="w-3.5 h-3.5" />
@@ -290,7 +290,7 @@ export default function DispatchPage() {
                   className={`px-3 py-1.5 rounded-xl text-xs font-light transition-all whitespace-nowrap ${
                     statusFilter === 'all'
                       ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm'
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                      : 'bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-200 hover:bg-slate-200 dark:hover:bg-zinc-700'
                   }`}
                 >
                   {t.filterAll}

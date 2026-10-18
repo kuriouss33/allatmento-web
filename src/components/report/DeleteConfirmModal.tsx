@@ -51,7 +51,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn"
       onClick={onClose}
     >
       <div 
@@ -65,7 +65,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
           <X className="w-5 h-5" />
         </button>
 
-        <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/40 flex items-center justify-center mx-auto mb-4">
+        <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-zinc-800 text-red-600 dark:text-red-400 border border-red-200 dark:border-zinc-700 flex items-center justify-center mx-auto mb-4">
           <Trash2 className="w-6 h-6" />
         </div>
 

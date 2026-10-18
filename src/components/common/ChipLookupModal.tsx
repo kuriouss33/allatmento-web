@@ -38,7 +38,7 @@ export const ChipLookupModal: React.FC<ChipLookupModalProps> = ({ isOpen, onClos
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn"
       onClick={onClose}
     >
       <div 
@@ -53,7 +53,7 @@ export const ChipLookupModal: React.FC<ChipLookupModalProps> = ({ isOpen, onClos
         </button>
 
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-zinc-800 border border-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center">
             <Search className="w-5 h-5" />
           </div>
           <div>
@@ -100,7 +100,7 @@ export const ChipLookupModal: React.FC<ChipLookupModalProps> = ({ isOpen, onClos
                 key={db.name}
                 type="button"
                 onClick={() => handleOpen(db.url)}
-                className="w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:border-blue-300 dark:hover:border-blue-800 text-xs font-semibold text-slate-800 dark:text-slate-200 transition-colors text-left"
+                className="w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 hover:bg-blue-50 dark:hover:bg-zinc-800 hover:border-blue-300 dark:hover:border-zinc-700 text-xs font-semibold text-slate-800 dark:text-slate-200 transition-colors text-left"
               >
                 <span>{db.name}</span>
                 <ExternalLink className="w-4 h-4 text-slate-400" />

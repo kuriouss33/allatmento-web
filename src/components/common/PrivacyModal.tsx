@@ -16,7 +16,7 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn"
       onClick={onClose}
     >
       <div 
@@ -26,7 +26,7 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
         {/* Header */}
         <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-zinc-800 text-blue-600 dark:text-blue-400 flex items-center justify-center">
               <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
@@ -51,7 +51,7 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
         <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed scrollbar-thin">
           {lang === 'hu' ? (
             <>
-              <div className="p-3.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200/60 dark:border-blue-800/40 text-blue-900 dark:text-blue-300">
+              <div className="p-3.5 rounded-xl bg-blue-50/70 dark:bg-zinc-800 border border-blue-200/60 dark:border-zinc-700 text-blue-900 dark:text-zinc-200">
                 <p className="font-semibold text-xs leading-relaxed">
                   Az Állatmentő Portál elkötelezett a bejelentők, megtalálók és állatmentő partnerek személyes adatainak védelme mellett az Európai Unió Általános Adatvédelmi Rendelete (GDPR) szerint.
                 </p>
@@ -110,7 +110,7 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
             </>
           ) : (
             <>
-              <div className="p-3.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200/60 dark:border-blue-800/40 text-blue-900 dark:text-blue-300">
+              <div className="p-3.5 rounded-xl bg-blue-50/70 dark:bg-zinc-800 border border-blue-200/60 dark:border-zinc-700 text-blue-900 dark:text-zinc-200">
                 <p className="font-semibold text-xs leading-relaxed">
                   The Animal Rescue Portal is committed to protecting personal data in accordance with the EU General Data Protection Regulation (GDPR).
                 </p>

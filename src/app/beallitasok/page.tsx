@@ -62,8 +62,8 @@ export default function SettingsPage() {
             onClick={() => setLang('hu')}
             className={`p-4 rounded-xl border text-left flex items-center justify-between transition-all ${
               lang === 'hu' && !isSystemLang
-                ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 shadow-sm ring-1 ring-blue-500/30'
-                : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 bg-slate-50/50 dark:bg-slate-800/30'
+                ? 'border-blue-600 bg-blue-50/70 dark:bg-zinc-800 text-blue-700 dark:text-blue-300 shadow-sm ring-1 ring-blue-500/30'
+                : 'border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700 text-slate-700 dark:text-zinc-200 bg-slate-50/50 dark:bg-zinc-900/60'
             }`}
           >
             <div className="space-y-0.5">
@@ -87,8 +87,8 @@ export default function SettingsPage() {
             onClick={() => setLang('en')}
             className={`p-4 rounded-xl border text-left flex items-center justify-between transition-all ${
               lang === 'en' && !isSystemLang
-                ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 shadow-sm ring-1 ring-blue-500/30'
-                : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 bg-slate-50/50 dark:bg-slate-800/30'
+                ? 'border-blue-600 bg-blue-50/70 dark:bg-zinc-800 text-blue-700 dark:text-blue-300 shadow-sm ring-1 ring-blue-500/30'
+                : 'border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700 text-slate-700 dark:text-zinc-200 bg-slate-50/50 dark:bg-zinc-900/60'
             }`}
           >
             <div className="space-y-0.5">
@@ -113,8 +113,8 @@ export default function SettingsPage() {
           onClick={resetToSystemLang}
           className={`w-full p-3.5 rounded-xl border text-left flex items-center justify-between transition-all ${
             isSystemLang
-              ? 'border-emerald-500 bg-emerald-50/60 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 ring-1 ring-emerald-500/30'
-              : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300'
+              ? 'border-emerald-500 bg-emerald-50/60 dark:bg-zinc-800 text-emerald-700 dark:text-emerald-300 ring-1 ring-emerald-500/30'
+              : 'border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700 text-slate-700 dark:text-zinc-200'
           }`}
         >
           <div className="flex items-center gap-2.5">
@@ -159,8 +159,8 @@ export default function SettingsPage() {
             onClick={() => setTheme('system')}
             className={`p-4 rounded-xl border text-left flex flex-col justify-between gap-2.5 transition-all ${
               themePreference === 'system'
-                ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 shadow-sm ring-1 ring-blue-500/30'
-                : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 bg-slate-50/50 dark:bg-slate-800/30'
+                ? 'border-blue-600 bg-blue-50/70 dark:bg-zinc-800 text-blue-700 dark:text-blue-300 shadow-sm ring-1 ring-blue-500/30'
+                : 'border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700 text-slate-700 dark:text-zinc-200 bg-slate-50/50 dark:bg-zinc-900/60'
             }`}
           >
             <div className="flex items-center justify-between w-full">
@@ -187,8 +187,8 @@ export default function SettingsPage() {
             onClick={() => setTheme('light')}
             className={`p-4 rounded-xl border text-left flex flex-col justify-between gap-2.5 transition-all ${
               themePreference === 'light'
-                ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 shadow-sm ring-1 ring-blue-500/30'
-                : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 bg-slate-50/50 dark:bg-slate-800/30'
+                ? 'border-blue-600 bg-blue-50/70 dark:bg-zinc-800 text-blue-700 dark:text-blue-300 shadow-sm ring-1 ring-blue-500/30'
+                : 'border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700 text-slate-700 dark:text-zinc-200 bg-slate-50/50 dark:bg-zinc-900/60'
             }`}
           >
             <div className="flex items-center justify-between w-full">
@@ -215,8 +215,8 @@ export default function SettingsPage() {
             onClick={() => setTheme('dark')}
             className={`p-4 rounded-xl border text-left flex flex-col justify-between gap-2.5 transition-all ${
               themePreference === 'dark'
-                ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 shadow-sm ring-1 ring-blue-500/30'
-                : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 bg-slate-50/50 dark:bg-slate-800/30'
+                ? 'border-blue-600 bg-blue-50/70 dark:bg-zinc-800 text-blue-700 dark:text-blue-300 shadow-sm ring-1 ring-blue-500/30'
+                : 'border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700 text-slate-700 dark:text-zinc-200 bg-slate-50/50 dark:bg-zinc-900/60'
             }`}
           >
             <div className="flex items-center justify-between w-full">
@@ -263,12 +263,12 @@ export default function SettingsPage() {
             onClick={() => setFontSize('normal')}
             className={`p-4 rounded-xl border text-left flex flex-col justify-between gap-3 transition-all ${
               fontSize === 'normal'
-                ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 shadow-sm ring-1 ring-blue-500/30'
-                : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 bg-slate-50/50 dark:bg-slate-800/30'
+                ? 'border-blue-600 bg-blue-50/70 dark:bg-zinc-800 text-blue-700 dark:text-blue-300 shadow-sm ring-1 ring-blue-500/30'
+                : 'border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700 text-slate-700 dark:text-zinc-200 bg-slate-50/50 dark:bg-zinc-900/60'
             }`}
           >
             <div className="flex items-center justify-between w-full">
-              <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+              <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-slate-200 dark:bg-zinc-700 text-slate-700 dark:text-zinc-200">
                 100%
               </span>
               {fontSize === 'normal' && (
@@ -293,12 +293,12 @@ export default function SettingsPage() {
             onClick={() => setFontSize('large')}
             className={`p-4 rounded-xl border text-left flex flex-col justify-between gap-3 transition-all ${
               fontSize === 'large'
-                ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 shadow-sm ring-1 ring-blue-500/30'
-                : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 bg-slate-50/50 dark:bg-slate-800/30'
+                ? 'border-blue-600 bg-blue-50/70 dark:bg-zinc-800 text-blue-700 dark:text-blue-300 shadow-sm ring-1 ring-blue-500/30'
+                : 'border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700 text-slate-700 dark:text-zinc-200 bg-slate-50/50 dark:bg-zinc-900/60'
             }`}
           >
             <div className="flex items-center justify-between w-full">
-              <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+              <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-slate-200 dark:bg-zinc-700 text-slate-700 dark:text-zinc-200">
                 +12%
               </span>
               {fontSize === 'large' && (
@@ -323,12 +323,12 @@ export default function SettingsPage() {
             onClick={() => setFontSize('larger')}
             className={`p-4 rounded-xl border text-left flex flex-col justify-between gap-3 transition-all ${
               fontSize === 'larger'
-                ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 shadow-sm ring-1 ring-blue-500/30'
-                : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 bg-slate-50/50 dark:bg-slate-800/30'
+                ? 'border-blue-600 bg-blue-50/70 dark:bg-zinc-800 text-blue-700 dark:text-blue-300 shadow-sm ring-1 ring-blue-500/30'
+                : 'border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700 text-slate-700 dark:text-zinc-200 bg-slate-50/50 dark:bg-zinc-900/60'
             }`}
           >
             <div className="flex items-center justify-between w-full">
-              <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300">
+              <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-blue-100 dark:bg-zinc-700 text-blue-700 dark:text-zinc-200">
                 +25% · {t.settingsAutoBadge}
               </span>
               {fontSize === 'larger' && (

@@ -148,18 +148,18 @@ export default function MyCasesPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center justify-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-1.5 sm:pb-2 shrink-0">
+      <div className="flex items-center justify-center gap-2 border-b border-slate-200 dark:border-zinc-800 pb-1.5 sm:pb-2 shrink-0">
         <button
           onClick={() => setTab('created')}
           className={`flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-bold transition-all ${
             tab === 'created'
               ? 'bg-blue-600 text-white shadow-sm'
-              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+              : 'text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800'
           }`}
         >
           <span>{t.tabReportedByMe}</span>
           <span className={`px-1.5 py-0.5 rounded-full text-[10px] ${
-            tab === 'created' ? 'bg-white/20 text-slate-900 dark:text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+            tab === 'created' ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-200'
           }`}>
             {myCreatedReports.length}
           </span>
@@ -171,12 +171,12 @@ export default function MyCasesPage() {
             className={`flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-bold transition-all ${
               tab === 'taken'
                 ? 'bg-blue-600 text-white shadow-sm'
-                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                : 'text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800'
             }`}
           >
             <span>{t.tabTakenByMe}</span>
             <span className={`px-1.5 py-0.5 rounded-full text-[10px] ${
-              tab === 'taken' ? 'bg-white/20 text-slate-900 dark:text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+              tab === 'taken' ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-200'
             }`}>
               {myTakenReports.length}
             </span>

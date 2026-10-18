@@ -173,7 +173,7 @@ export default function GuidePage() {
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-light transition-all ${
                     isSelected
                       ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm'
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                      : 'bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-200 hover:bg-slate-200 dark:hover:bg-zinc-700'
                   }`}
                 >
                   <Icon className={`w-3.5 h-3.5 ${isSelected ? 'opacity-100' : 'opacity-70'}`} />

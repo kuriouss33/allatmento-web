@@ -223,7 +223,7 @@ export default function StatisticsPage() {
                 <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   {t.statsTotalReports}
                 </span>
-                <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-zinc-800 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                   <BarChart3 className="w-4 h-4" />
                 </div>
               </div>
@@ -243,7 +243,7 @@ export default function StatisticsPage() {
                 <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-red-600 dark:text-red-400">
                   {t.statsActiveReports}
                 </span>
-                <div className="w-8 h-8 rounded-xl bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-400 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-xl bg-red-50 dark:bg-zinc-800 text-red-600 dark:text-red-400 flex items-center justify-center">
                   <AlertCircle className="w-4 h-4" />
                 </div>
               </div>
@@ -263,7 +263,7 @@ export default function StatisticsPage() {
                 <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
                   {t.statsInProgressReports}
                 </span>
-                <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-zinc-800 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                   <Clock className="w-4 h-4" />
                 </div>
               </div>
@@ -283,7 +283,7 @@ export default function StatisticsPage() {
                 <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                   {t.statsResolvedReports}
                 </span>
-                <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                   <CheckCircle2 className="w-4 h-4" />
                 </div>
               </div>
@@ -291,7 +291,7 @@ export default function StatisticsPage() {
                 <span className="text-2xl sm:text-4xl font-black text-emerald-600 dark:text-emerald-400">
                   {resolvedCount}
                 </span>
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
+                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400">
                   {resolutionRate}% {t.ratioLabel}
                 </span>
               </div>

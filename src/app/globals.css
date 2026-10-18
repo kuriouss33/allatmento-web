@@ -23,8 +23,41 @@
 }
 
 .dark {
-  --background: #090d16;
-  --foreground: #f8fafc;
+  --background: #000000;
+  --foreground: #ffffff;
+
+  /* AMOLED / Pure Black téma: tiszta fekete fő háttér */
+  --color-slate-950: #000000;
+  /* Containerek: Letisztult semleges sötétszürke kék tónus nélkül */
+  --color-slate-900: #121214;
+  --color-slate-850: #18181b;
+  /* Belső kártyák, input mezők, gombok sötétszürke háttere */
+  --color-slate-800: #202024;
+  /* Keretek, elválasztó vonalak sötét módban */
+  --color-slate-700: #2e2e36;
+  --color-slate-600: #52525c;
+  /* Feliratok sötét módban: kristálytiszta, kontrasztos megjelenés */
+  --color-slate-400: #a1a1aa;
+  --color-slate-300: #d4d4d8;
+  --color-slate-200: #f4f4f5;
+  --color-slate-100: #ffffff;
+
+  /* Korábbi világoskék/navy containerek sötétszürke színe */
+  --color-blue-950: #18181c;
+}
+
+:where(.dark, .dark *) {
+  --color-slate-950: #000000;
+  --color-slate-900: #121214;
+  --color-slate-850: #18181b;
+  --color-slate-800: #202024;
+  --color-slate-700: #2e2e36;
+  --color-slate-600: #52525c;
+  --color-slate-400: #a1a1aa;
+  --color-slate-300: #d4d4d8;
+  --color-slate-200: #f4f4f5;
+  --color-slate-100: #ffffff;
+  --color-blue-950: #18181c;
 }
 
 html {
@@ -161,8 +194,10 @@ strong {
 }
 
 .dark .leaflet-popup-content-wrapper {
-  border-color: rgba(255, 255, 255, 0.1) !important;
-  background: #111827 !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  background: #121214 !important;
+  color: #ffffff !important;
+  box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.7) !important;
 }
 
 .leaflet-popup-tip {
@@ -170,7 +205,7 @@ strong {
 }
 
 .dark .leaflet-popup-tip {
-  background: #111827 !important;
+  background: #121214 !important;
 }
 
 .leaflet-popup-content {

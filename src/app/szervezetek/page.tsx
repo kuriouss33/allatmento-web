@@ -281,7 +281,7 @@ export default function OrganizationsPage() {
                 className={`px-3 py-1.5 rounded-xl text-xs font-light transition-all cursor-pointer ${
                   categoryFilter === cat.id
                     ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                    : 'bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-200 hover:bg-slate-200 dark:hover:bg-zinc-700'
                 }`}
               >
                 {cat.label}
@@ -310,7 +310,7 @@ export default function OrganizationsPage() {
                     className={`px-2.5 py-1 rounded-lg text-xs font-light transition-all cursor-pointer ${
                       radiusKm === r
                         ? 'bg-emerald-600 text-white shadow-xs font-normal'
-                        : 'bg-white/80 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+                        : 'bg-white/80 dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 hover:bg-white dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700'
                     }`}
                   >
                     {r} km

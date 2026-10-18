@@ -68,7 +68,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="antialiased h-dvh xl:h-auto xl:min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 overflow-hidden xl:overflow-auto" suppressHydrationWarning>
+      <body className="antialiased h-dvh xl:h-auto xl:min-h-screen flex flex-col bg-slate-50 dark:bg-black text-slate-900 dark:text-zinc-100 overflow-hidden xl:overflow-auto" suppressHydrationWarning>
         <ThemeProvider>
           <LanguageProvider>
             <FontSizeProvider>

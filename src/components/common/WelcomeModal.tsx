@@ -169,7 +169,7 @@ export const WelcomeModal: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {/* Lépés 1: Gyors bejelentés */}
-              <div className="p-4 rounded-2xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-800/40 space-y-2">
+              <div className="p-4 rounded-2xl bg-blue-50/60 dark:bg-zinc-800 border border-blue-200/60 dark:border-zinc-700 space-y-2">
                 <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-sm">
                   <Camera className="w-4 h-4" />
                 </div>
@@ -182,7 +182,7 @@ export const WelcomeModal: React.FC = () => {
               </div>
 
               {/* Lépés 2: Valós idejű térkép */}
-              <div className="p-4 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-800/40 space-y-2">
+              <div className="p-4 rounded-2xl bg-emerald-50/60 dark:bg-zinc-800 border border-emerald-200/60 dark:border-zinc-700 space-y-2">
                 <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-sm">
                   <MapPin className="w-4 h-4" />
                 </div>
@@ -195,7 +195,7 @@ export const WelcomeModal: React.FC = () => {
               </div>
 
               {/* Lépés 3: Szervezett mentés */}
-              <div className="p-4 rounded-2xl bg-violet-50/60 dark:bg-violet-950/30 border border-violet-200/60 dark:border-violet-800/40 space-y-2">
+              <div className="p-4 rounded-2xl bg-violet-50/60 dark:bg-zinc-800 border border-violet-200/60 dark:border-zinc-700 space-y-2">
                 <div className="w-9 h-9 rounded-xl bg-violet-600 text-white flex items-center justify-center shadow-sm">
                   <ShieldCheck className="w-4 h-4" />
                 </div>

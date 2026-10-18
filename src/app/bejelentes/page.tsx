@@ -340,8 +340,8 @@ export default function ReportWizardPage() {
                   onClick={() => setFajta(item.id)}
                   className={`group relative p-3 sm:p-5 rounded-2xl border flex flex-col items-center justify-center gap-2 sm:gap-3 transition-all text-center cursor-pointer active:scale-[0.98] ${
                     isSelected
-                      ? 'border-blue-600 bg-blue-50/70 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-bold shadow-md ring-2 ring-blue-500/25'
-                      : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 text-slate-700 dark:text-slate-300'
+                      ? 'border-blue-600 bg-blue-50/70 dark:bg-zinc-800 text-blue-600 dark:text-blue-400 font-bold shadow-md ring-2 ring-blue-500/30'
+                      : 'border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700 bg-slate-50/50 dark:bg-zinc-900/60 text-slate-700 dark:text-zinc-200'
                   }`}
                 >
                   {/* Kijelölési pipa jelvény jobb felül */}
@@ -409,7 +409,7 @@ export default function ReportWizardPage() {
                 type="button"
                 onClick={handleGpsLocation}
                 disabled={gpsLoading}
-                className="flex items-center justify-center gap-2 p-3 rounded-xl border border-blue-200 dark:border-blue-900/50 bg-blue-50/80 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 text-xs font-bold transition-colors disabled:opacity-50"
+                className="flex items-center justify-center gap-2 p-3 rounded-xl border border-blue-200 dark:border-zinc-700 bg-blue-50/80 dark:bg-zinc-800 hover:bg-blue-100 dark:hover:bg-zinc-700 text-blue-700 dark:text-zinc-200 text-xs font-bold transition-colors disabled:opacity-50"
               >
                 <Navigation className={`w-4 h-4 ${gpsLoading ? 'animate-spin' : ''}`} />
                 <span>{gpsLoading ? t.fetchingGps : t.btnGps}</span>
@@ -558,7 +558,7 @@ export default function ReportWizardPage() {
               <div className="flex items-center justify-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 py-0.5 select-none">
                 <MapPin className="w-3.5 h-3.5 text-blue-500 shrink-0" />
                 <span className="font-light">{t.detectedCountyLabel}</span>
-                <span className="font-light px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-blue-900/40">
+                <span className="font-light px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-zinc-800 text-blue-700 dark:text-blue-300 border border-blue-200/80 dark:border-zinc-700">
                   {megye} {t.countySuffix}
                 </span>
               </div>
