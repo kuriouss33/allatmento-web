@@ -80,6 +80,9 @@ export interface Organization {
   email?: string;
   leiras?: string;
   weboldal?: string;
+  lat?: number;
+  lon?: number;
+  distanceKm?: number;
 }
 
 export type GuideCategory = 'kutya' | 'macska' | 'madar' | 'kisemlos' | 'vad' | 'hullo' | 'altalanos' | string;

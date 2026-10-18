@@ -11,7 +11,12 @@ import {
   ShieldAlert, 
   Bird, 
   Home,
-  Mail
+  Mail,
+  Navigation,
+  Loader2,
+  Compass,
+  ExternalLink,
+  X
 } from 'lucide-react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -20,6 +25,7 @@ import { Organization, OrgCategory } from '@/types';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAutoHideOnScroll } from '@/hooks';
 import { ORGANIZATIONS } from '@/data/organizationsData';
+import { calculateDistanceKm, formatDistance, getOrgCoordinates } from '@/lib/geoUtils';
 
 export default function OrganizationsPage() {
   const { t } = useLanguage();
@@ -29,6 +35,58 @@ export default function OrganizationsPage() {
   const [categoryFilter, setCategoryFilter] = useState<'all' | OrgCategory>('all');
   const [countyFilter, setCountyFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // "Közelemben" szűrő állapotok
+  const [nearMeActive, setNearMeActive] = useState<boolean>(false);
+  const [userCoords, setUserCoords] = useState<{ lat: number; lon: number } | null>(null);
+  const [radiusKm, setRadiusKm] = useState<number>(20);
+  const [geoLoading, setGeoLoading] = useState<boolean>(false);
+  const [geoError, setGeoError] = useState<string | null>(null);
+
+  const toggleNearMe = () => {
+    if (nearMeActive) {
+      setNearMeActive(false);
+      return;
+    }
+
+    if (userCoords) {
+      setNearMeActive(true);
+      return;
+    }
+
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      setGeoError(t.geoPermissionDenied);
+      return;
+    }
+
+    setGeoLoading(true);
+    setGeoError(null);
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserCoords({
+          lat: pos.coords.latitude,
+          lon: pos.coords.longitude,
+        });
+        setNearMeActive(true);
+        setGeoLoading(false);
+      },
+      (err) => {
+        console.warn('Helymeghatározási hiba:', err);
+        if (err.code === err.PERMISSION_DENIED) {
+          setGeoError(t.geoPermissionDenied);
+        } else {
+          setGeoError(t.geoError || 'Nem sikerült lekérni a pozíciót.');
+        }
+        setGeoLoading(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000,
+      }
+    );
+  };
 
   const {
     isVisible: isFilterVisible,
@@ -63,7 +121,32 @@ export default function OrganizationsPage() {
   }, []);
 
   const filteredOrgs = useMemo(() => {
-    return orgs.filter((org) => {
+    // 1. Koordináták és távolság hozzárendelése minden szervezethez
+    const orgsWithDistance = orgs.map((org) => {
+      const coords = getOrgCoordinates(org);
+      let distanceKm: number | undefined = undefined;
+
+      if (userCoords && coords) {
+        distanceKm = calculateDistanceKm(userCoords.lat, userCoords.lon, coords.lat, coords.lon);
+      }
+
+      return {
+        ...org,
+        lat: org.lat || coords?.lat,
+        lon: org.lon || coords?.lon,
+        distanceKm,
+      };
+    });
+
+    // 2. Szűrés
+    const result = orgsWithDistance.filter((org) => {
+      // Közelemben rádiusz szűrés (10-20-30-50 km-es kör)
+      if (nearMeActive) {
+        if (org.distanceKm === undefined || org.distanceKm > radiusKm) {
+          return false;
+        }
+      }
+
       const kat = (org.kategoria || 'menhely').toLowerCase().trim();
 
       // Kategória szűrés
@@ -92,8 +175,8 @@ export default function OrganizationsPage() {
         }
       }
 
-      // Megye szűrés (rugalmas kisbetűs összehasonlítás)
-      if (countyFilter !== 'all') {
+      // Megye szűrés (csak ha nem a Közelemben van bekapcsolva)
+      if (!nearMeActive && countyFilter !== 'all') {
         const orgMegye = (org.megye || '').toLowerCase().trim();
         const selMegye = countyFilter.toLowerCase().trim();
         if (orgMegye !== selMegye) {
@@ -113,7 +196,14 @@ export default function OrganizationsPage() {
       }
       return true;
     });
-  }, [orgs, categoryFilter, countyFilter, searchQuery]);
+
+    // 3. Rendezés: ha Közelemben aktív, legközelebbi legelöl
+    if (nearMeActive && userCoords) {
+      result.sort((a, b) => (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity));
+    }
+
+    return result;
+  }, [orgs, nearMeActive, userCoords, radiusKm, categoryFilter, countyFilter, searchQuery]);
 
   const getCategoryBadge = (kat?: string) => {
     const normalized = (kat || 'menhely').toLowerCase().trim();
@@ -156,8 +246,28 @@ export default function OrganizationsPage() {
       >
         <div className="p-2.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-2 sm:space-y-3.5">
           
-          {/* Category Pills */}
+          {/* Category & Near Me Filter Buttons */}
           <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 w-full">
+            {/* "Közelemben" GPS filter button */}
+            <button
+              type="button"
+              onClick={toggleNearMe}
+              disabled={geoLoading}
+              className={`px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-light flex items-center gap-1.5 transition-all cursor-pointer ${
+                nearMeActive
+                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm ring-2 ring-emerald-500/25'
+                  : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/20'
+              }`}
+              title={t.nearMeTooltip}
+            >
+              {geoLoading ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Navigation className="w-3.5 h-3.5" />
+              )}
+              <span>{nearMeActive ? t.filterNearMeActive.replace('{radius}', radiusKm.toString()) : t.filterNearMe}</span>
+            </button>
+
             {[
               { id: 'all', label: t.filterAll },
               { id: 'menhely', label: t.catShelter },
@@ -168,7 +278,7 @@ export default function OrganizationsPage() {
               <button
                 key={cat.id}
                 onClick={() => setCategoryFilter(cat.id as any)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-light transition-all ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-light transition-all cursor-pointer ${
                   categoryFilter === cat.id
                     ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm'
                     : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
@@ -179,15 +289,63 @@ export default function OrganizationsPage() {
             ))}
           </div>
 
+          {/* Radius selector (10-20km kör) when Near Me is active */}
+          {nearMeActive && (
+            <div className="flex flex-wrap items-center justify-between gap-2 p-2 sm:p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-xs animate-fadeIn">
+              <div className="flex items-center gap-1.5 text-emerald-800 dark:text-emerald-300 font-light">
+                <Compass className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <span>{t.nearMeLocationActive}</span>
+                <span className="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:inline">
+                  • {t.sortByDistance}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1">
+                <span className="text-[11px] text-slate-600 dark:text-slate-400 mr-1 hidden xs:inline">{t.radiusLabel}</span>
+                {[10, 15, 20, 30, 50].map((r) => (
+                  <button
+                    key={r}
+                    type="button"
+                    onClick={() => setRadiusKm(r)}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-light transition-all cursor-pointer ${
+                      radiusKm === r
+                        ? 'bg-emerald-600 text-white shadow-xs font-normal'
+                        : 'bg-white/80 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+                    }`}
+                  >
+                    {r} km
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Geo error message if denied or unavailable */}
+          {geoError && (
+            <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/25 text-red-600 dark:text-red-400 text-xs flex items-center justify-between gap-2 animate-fadeIn">
+              <span>{geoError}</span>
+              <button
+                type="button"
+                onClick={() => setGeoError(null)}
+                className="p-1 hover:bg-red-500/20 rounded-lg cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+
           {/* County & Search Inputs */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
             <select
               value={countyFilter}
               onChange={(e) => setCountyFilter(e.target.value)}
               onFocus={() => setIsFilterVisible(true)}
-              className="w-full px-3 py-1.5 sm:py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-light text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={nearMeActive}
+              className={`w-full px-3 py-1.5 sm:py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-light text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                nearMeActive ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             >
-              <option value="all">{t.allCounties}</option>
+              <option value="all">{nearMeActive ? `📍 ${t.nearMeLocationActive}` : t.allCounties}</option>
               {MEGYEK.map((m) => (
                 <option key={m} value={m}>
                   {m} {t.countySuffix}
@@ -217,8 +375,25 @@ export default function OrganizationsPage() {
         className="flex-1 min-h-0 overflow-y-auto pr-1 scrollbar-thin pb-2"
       >
         {filteredOrgs.length === 0 ? (
-          <div className="py-16 text-center p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
-            <p className="text-xs font-light text-slate-500">{t.noOrgsFound}</p>
+          <div className="py-12 sm:py-16 text-center p-6 sm:p-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-3">
+            <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto text-slate-400">
+              <Building2 className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-light text-slate-800 dark:text-slate-200">
+              {nearMeActive ? t.noNearOrgsFound.replace('{radius}', radiusKm.toString()) : t.noOrgsFound}
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto font-light">
+              {nearMeActive ? t.expandRadiusPrompt : t.noOrgsFoundSub}
+            </p>
+            {nearMeActive && radiusKm < 50 && (
+              <button
+                type="button"
+                onClick={() => setRadiusKm(50)}
+                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-light text-xs shadow-sm transition-all cursor-pointer"
+              >
+                {t.expandRadiusBtn}
+              </button>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4 content-start">
@@ -234,11 +409,19 @@ export default function OrganizationsPage() {
                       <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-light border ${badge.color}`}>
                         {badge.label}
                       </span>
-                      {org.megye && (
-                        <span className="text-[10px] font-light text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 px-2 py-0.5 rounded-md">
-                          {org.megye}
-                        </span>
-                      )}
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {typeof org.distanceKm === 'number' && (
+                          <span className="text-[10px] font-medium text-emerald-700 dark:text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-md flex items-center gap-1">
+                            <Navigation className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                            <span>{formatDistance(org.distanceKm)}</span>
+                          </span>
+                        )}
+                        {org.megye && (
+                          <span className="text-[10px] font-light text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 px-2 py-0.5 rounded-md">
+                            {org.megye}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     <h3 className="font-medium sm:font-light text-base text-slate-900 dark:text-white leading-snug">
@@ -282,15 +465,29 @@ export default function OrganizationsPage() {
                       </div>
                     )}
 
-                    {org.telefon && !org.telefon.includes('@') && org.email && (
-                      <a
-                        href={`mailto:${org.email}`}
-                        className="w-full flex items-center justify-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors pt-0.5"
-                      >
-                        <Mail className="w-3 h-3" />
-                        <span>{org.email}</span>
-                      </a>
-                    )}
+                    <div className="flex items-center justify-between gap-2 pt-0.5 flex-wrap">
+                      {org.telefon && !org.telefon.includes('@') && org.email ? (
+                        <a
+                          href={`mailto:${org.email}`}
+                          className="inline-flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                        >
+                          <Mail className="w-3 h-3" />
+                          <span>{org.email}</span>
+                        </a>
+                      ) : <span />}
+
+                      {org.cim && (
+                        <a
+                          href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(org.cim)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[11px] text-blue-600 dark:text-blue-400 hover:underline font-light ml-auto"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                          <span>{t.navToOrg}</span>
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
