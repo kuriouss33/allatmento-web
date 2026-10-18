@@ -15,12 +15,12 @@ export const ImageLightboxModal: React.FC<ImageLightboxModalProps> = ({ imageUrl
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 pt-safe pb-safe pl-safe pr-safe bg-black/90 backdrop-blur-md animate-fadeIn"
       onClick={onClose}
     >
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+        className="absolute top-[calc(1rem+env(safe-area-inset-top,0px))] right-[calc(1rem+env(safe-area-inset-right,0px))] p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
       >
         <X className="w-6 h-6" />
       </button>

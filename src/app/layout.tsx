@@ -15,6 +15,11 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
+  viewportFit: 'cover',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#000000' },
+  ],
 };
 
 const basePath = process.env.GITHUB_PAGES === 'true' ? '/allatmento-web' : '';
@@ -23,6 +28,11 @@ export const metadata: Metadata = {
   title: 'Állatmentő Portál - Sürgősségi Segítség & Koordináció',
   description: 'Valós idejű állatmentő és diszpécser koordinációs portál bejelentők és hitelesített mentőszervezetek számára.',
   manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Állatmentő',
+  },
   icons: {
     icon: `${basePath}/logo.png`,
     apple: `${basePath}/logo.png`,
@@ -38,7 +48,12 @@ export default function RootLayout({
     <html lang="hu" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#2563eb" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="Állatmentő" />
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" />
@@ -77,7 +92,7 @@ export default function RootLayout({
                   <ScrollToTop />
                   <Header />
                   <OfflineSyncBar />
-                  <main className="flex-1 min-h-0 flex flex-col overflow-y-auto xl:overflow-visible">
+                  <main className="flex-1 min-h-0 flex flex-col overflow-y-auto xl:overflow-visible pb-safe pl-safe pr-safe">
                     {children}
                   </main>
                   <WelcomeModal />

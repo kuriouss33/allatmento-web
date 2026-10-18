@@ -24,7 +24,7 @@ export const OfflineSyncBar: React.FC = () => {
   }
 
   return (
-    <aside aria-label="Offline hálózati állapot" className="w-full bg-slate-900 border-b border-slate-800 text-white px-3 sm:px-4 py-2 z-[90] transition-all animate-fadeIn">
+    <aside aria-label="Offline hálózati állapot" className="w-full bg-slate-900 border-b border-slate-800 text-white px-3 sm:px-4 py-2 pl-safe pr-safe z-[90] transition-all animate-fadeIn">
       <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2.5 text-xs">
         
         {/* Bal oldal: Státusz ikon és szöveg */}

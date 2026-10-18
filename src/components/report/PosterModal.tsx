@@ -210,7 +210,7 @@ export const PosterModal: React.FC<PosterModalProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-[120] bg-black/75 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto poster-modal-backdrop"
+      className="fixed inset-0 z-[120] bg-black/75 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 pt-safe pb-safe pl-safe pr-safe overflow-y-auto poster-modal-backdrop"
       onClick={onClose}
     >
       <div 
