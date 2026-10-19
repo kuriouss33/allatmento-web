@@ -429,6 +429,9 @@
   .z-\[90\] {
     z-index: 90;
   }
+  .z-\[100\] {
+    z-index: 100;
+  }
   .z-\[120\] {
     z-index: 120;
   }
@@ -4063,7 +4066,7 @@ h1, h2, h3, h4, h5, h6, .font-display, .font-black, .font-extrabold, .font-bold,
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: none;
   }
 }
 .animate-fadeIn {
@@ -4102,6 +4105,12 @@ h1, h2, h3, h4, h5, h6, .font-display, .font-black, .font-extrabold, .font-bold,
   background-color: rgba(0, 0, 0, 0.5);
   -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
+}
+body.has-modal-open header {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
 }
 .dark-invert-white {
   transition: filter 0.2s ease, transform 0.2s ease;

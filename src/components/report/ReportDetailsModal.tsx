@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { addComment, normalizeReport, translateText, translateTextDetailed, detectLanguage } from '@/lib/api';
@@ -122,13 +123,21 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
     return () => unsubscribe();
   }, [report, isOpen, isRescuer]);
 
-  // Háttér görgetés letiltása a modal nyitva tartása alatt
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Háttér görgetés letiltása és navigációs fejléc elrejtése a modal nyitva tartása alatt
   useEffect(() => {
     if (isOpen) {
       const orig = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
+      document.body.classList.add('has-modal-open');
       return () => {
         document.body.style.overflow = orig;
+        document.body.classList.remove('has-modal-open');
       };
     }
   }, [isOpen]);
@@ -206,7 +215,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
     });
   }, [comments, lang, translatedComments]);
 
-  if (!isOpen || !liveReport) return null;
+  if (!isOpen || !liveReport || !mounted) return null;
 
   const isTakenByMe = Boolean(
     liveReport.statusz === 'folyamatban' &&
@@ -283,9 +292,9 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
     }
   };
 
-  return (
+  return createPortal(
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 pt-safe pb-safe pl-safe pr-safe modal-glass-backdrop animate-backdropFade"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 pt-safe pb-safe pl-safe pr-safe modal-glass-backdrop animate-backdropFade"
       onClick={onClose}
     >
       <div 
@@ -818,7 +827,8 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
         isOpen={galleryOpen}
         onClose={() => setGalleryOpen(false)}
       />
-    </div>
+    </div>,
+    document.body
   );
 };
 

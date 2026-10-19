@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, CheckCircle, Upload, AlertCircle, ArrowRight } from 'lucide-react';
 import { Report } from '@/types';
 import { updateReportStatus, uploadImage } from '@/lib/api';
@@ -29,6 +29,15 @@ export const ResolveModal: React.FC<ResolveModalProps> = ({
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('has-modal-open');
+      return () => {
+        document.body.classList.remove('has-modal-open');
+      };
+    }
+  }, [isOpen]);
 
   if (!isOpen || !report) return null;
 

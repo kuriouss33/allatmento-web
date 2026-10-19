@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Trash2, AlertTriangle, ArrowRight } from 'lucide-react';
 import { Report } from '@/types';
 import { deleteReport } from '@/lib/api';
@@ -25,6 +25,15 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
   const { idToken, isAdmin, anonymousUid } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('has-modal-open');
+      return () => {
+        document.body.classList.remove('has-modal-open');
+      };
+    }
+  }, [isOpen]);
 
   if (!isOpen || !report) return null;
 

@@ -116,6 +116,15 @@ export const PosterModal: React.FC<PosterModalProps> = ({
       .catch((err) => console.error('Hiba a QR-kód generálásakor:', err));
   }, [onlineReportUrl]);
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('has-modal-open');
+      return () => {
+        document.body.classList.remove('has-modal-open');
+      };
+    }
+  }, [isOpen]);
+
   if (!isOpen || !activeReport) return null;
 
   const displayAddress = getReportDisplayAddress(activeReport, true) || activeReport.cim || activeReport.megye || 'Magyarország';

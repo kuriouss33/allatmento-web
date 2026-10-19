@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, HeartHandshake, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
 import { Report } from '@/types';
 import { sendHelpOffer } from '@/lib/api';
@@ -25,6 +25,15 @@ export const HelpOfferModal: React.FC<HelpOfferModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('has-modal-open');
+      return () => {
+        document.body.classList.remove('has-modal-open');
+      };
+    }
+  }, [isOpen]);
 
   if (!isOpen || !report) return null;
 
