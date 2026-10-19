@@ -1398,12 +1398,6 @@
       background-color: color-mix(in oklab, var(--color-black) 75%, transparent);
     }
   }
-  .bg-black\/80 {
-    background-color: color-mix(in srgb, #000 80%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-black) 80%, transparent);
-    }
-  }
   .bg-black\/85 {
     background-color: color-mix(in srgb, #000 85%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
@@ -1666,12 +1660,6 @@
     background-color: color-mix(in srgb, oklch(20.8% 0.042 265.755) 60%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
       background-color: color-mix(in oklab, var(--color-slate-900) 60%, transparent);
-    }
-  }
-  .bg-slate-950\/80 {
-    background-color: color-mix(in srgb, oklch(12.9% 0.042 264.695) 80%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-slate-950) 80%, transparent);
     }
   }
   .bg-teal-500\/10 {
@@ -4080,6 +4068,40 @@ h1, h2, h3, h4, h5, h6, .font-display, .font-black, .font-extrabold, .font-bold,
 }
 .animate-fadeIn {
   animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes backdropFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.animate-backdropFade {
+  animation: backdropFadeIn 0.2s ease-out forwards;
+}
+@keyframes modalCardIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+.animate-modalCard {
+  animation: modalCardIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.modal-glass-backdrop {
+  background-color: rgba(15, 23, 42, 0.35);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+:where(.dark, .dark *) .modal-glass-backdrop, html[data-theme="dark"] .modal-glass-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
 }
 .dark-invert-white {
   transition: filter 0.2s ease, transform 0.2s ease;

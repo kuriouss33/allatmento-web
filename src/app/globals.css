@@ -293,6 +293,50 @@ strong {
   animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Modál és Lightbox háttér animációk (CSAK átlátszóság, nincs transform a háttéren) */
+@keyframes backdropFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-backdropFade {
+  animation: backdropFadeIn 0.2s ease-out forwards;
+}
+
+/* Modál ablak finom felbukkanó animációja (a belső kártyán fut, nem a háttéren) */
+@keyframes modalCardIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-modalCard {
+  animation: modalCardIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Modál mögötti elegáns homályosított (frosted glass) háttér */
+.modal-glass-backdrop {
+  background-color: rgba(15, 23, 42, 0.35);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+:where(.dark, .dark *) .modal-glass-backdrop,
+html[data-theme="dark"] .modal-glass-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
 /* Sötét módban tiszta fehérré konvertálja a sötét vonalas PNG ikonokat az átlátszóság megőrzésével */
 .dark-invert-white {
   transition: filter 0.2s ease, transform 0.2s ease;

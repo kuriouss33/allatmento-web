@@ -38,11 +38,11 @@ export const ChipLookupModal: React.FC<ChipLookupModalProps> = ({ isOpen, onClos
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 pt-safe pb-safe pl-safe pr-safe bg-black/80 backdrop-blur-sm animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 pt-safe pb-safe pl-safe pr-safe modal-glass-backdrop animate-backdropFade"
       onClick={onClose}
     >
       <div 
-        className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-6 relative"
+        className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-6 relative animate-modalCard"
         onClick={(e) => e.stopPropagation()}
       >
         <button

@@ -210,11 +210,11 @@ export const PosterModal: React.FC<PosterModalProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-[120] bg-black/75 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 pt-safe pb-safe pl-safe pr-safe overflow-y-auto poster-modal-backdrop"
+      className="fixed inset-0 z-[120] modal-glass-backdrop flex items-center justify-center p-2 sm:p-4 pt-safe pb-safe pl-safe pr-safe overflow-y-auto poster-modal-backdrop animate-backdropFade"
       onClick={onClose}
     >
       <div 
-        className="w-full max-w-4xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl flex flex-col max-h-[96vh] overflow-hidden my-auto"
+        className="w-full max-w-4xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl flex flex-col max-h-[96vh] overflow-hidden my-auto animate-modalCard"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Fejléc és Vezérlők (nyomtatáskor rejtve) */}
