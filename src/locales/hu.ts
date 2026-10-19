@@ -20,7 +20,7 @@ export const hu = {
   navGuide: "Elsősegély",
   navStats: "Statisztikák",
   navAdmin: "Adminisztráció",
-  navTransport: "Fuvarbörze",
+  navTransport: "Fuvarkérés",
   backToHome: "Főoldal",
 
   // Auth & Roles
@@ -240,7 +240,7 @@ export const hu = {
   statsCardAction: "Megtekintés",
   myCasesCardDesc: "Az általad beküldött és elvállalt bejelentések követése.",
   myCasesCardAction: "Megnyitás",
-  transportCardTitle: "Fuvarbörze (Logisztika)",
+  transportCardTitle: "Fuvarkérés (Logisztika)",
   transportCardDesc: "Tervezett állatszállítások menhelyek, befogadók és orvosok között.",
   transportCardAction: "Böngészés",
 
@@ -491,8 +491,8 @@ export const hu = {
   navToOrg: "Útvonal",
   nearMeTooltip: "Közeli menhelyek, állatorvosok, kórházak és hatóságok a tartózkodási helyed alapján",
 
-  // Fuvarbörze (Logisztika)
-  transportTitle: "Fuvarbörze",
+  // Fuvarkérés (Logisztika)
+  transportTitle: "Fuvarkérés",
   transportSubtitle: "Tervezett állatszállítások és mentési logisztika koordinációja",
   transportPostRequest: "Keresek fuvart / Új igény",
   transportStatusOpen: "Nyitott fuvar",

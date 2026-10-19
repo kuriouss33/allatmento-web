@@ -658,8 +658,8 @@ export const NewTransportModal: React.FC<NewTransportModalProps> = ({
                   </span>
                   <p className="text-[11px] sm:text-xs text-slate-600 dark:text-zinc-300 leading-relaxed">
                     {lang === 'en'
-                      ? 'I agree and consent that my name, route locations, and (if provided voluntarily) my phone number and/or email will be displayed on the Transport Board solely for coordinating this animal transport. I understand that direct phone/email are optional and coordination can also take place entirely via the built-in chat. I can mark the request as Solved anytime.'
-                      : 'Kifejezetten hozzájárulok ahhoz, hogy a nevem, a szállítási helyszínek, valamint amennyiben önkéntesen megadtam, a telefonszámom és/vagy email címem megjelenjen a Fuvarbörzén az állatszállítás koordinálása céljából. Tudomásul veszem, hogy a telefonszám vagy email megadása nem kötelező, és a szállítás a beépített belső chaten is egyeztethető. A fuvart bármikor Megoldottá nyilváníthatom.'}
+                      ? 'I agree and consent that my name, route locations, and (if provided voluntarily) my phone number and/or email will be displayed on the Transport Requests board solely for coordinating this animal transport. I understand that direct phone/email are optional and coordination can also take place entirely via the built-in chat. I can mark the request as Solved anytime.'
+                      : 'Kifejezetten hozzájárulok ahhoz, hogy a nevem, a szállítási helyszínek, valamint amennyiben önkéntesen megadtam, a telefonszámom és/vagy email címem megjelenjen a Fuvarkérés felületen az állatszállítás koordinálása céljából. Tudomásul veszem, hogy a telefonszám vagy email megadása nem kötelező, és a szállítás a beépített belső chaten is egyeztethető. A fuvart bármikor Megoldottá nyilváníthatom.'}
                   </p>
                   <p className="text-[11px] text-amber-700 dark:text-amber-400/90 font-medium">
                     🛡️ {lang === 'en'

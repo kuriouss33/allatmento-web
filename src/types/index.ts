@@ -101,7 +101,7 @@ export interface FirstAidGuideItem {
   surgos?: boolean;
 }
 
-// --- FUVARBÖRZE / SZÁLLÍTÁSI TÍPUSOK ---
+// --- FUVARKÉRÉS / SZÁLLÍTÁSI TÍPUSOK ---
 export type TransportStatus = 'nyitott' | 'megoldva' | 'elvallalva' | 'folyamatban' | 'teljesitve';
 export type TransportUrgency = 'normal' | 'surgos' | 'fix_idopont';
 export type TransportCargoType = 'kutya' | 'macska' | 'egyeb_allat' | 'adomany_tap';

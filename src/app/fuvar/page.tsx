@@ -202,7 +202,7 @@ export default function TransportBoardPage() {
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                {lang === 'en' ? 'Animal Transport Board' : 'Fuvarbörze'}
+                {t.transportTitle || (lang === 'en' ? 'Transport Requests' : 'Fuvarkérés')}
               </h1>
               <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25">
                 {lang === 'en' ? 'Planned Logistics' : 'Tervezett logisztika'}

@@ -22,7 +22,7 @@ export const en: typeof hu = {
   navGuide: "First Aid",
   navStats: "Statistics",
   navAdmin: "Administration",
-  navTransport: "Transport Board",
+  navTransport: "Transport Requests",
   backToHome: "Home",
 
   // Auth & Roles
@@ -242,7 +242,7 @@ export const en: typeof hu = {
   statsCardAction: "View",
   myCasesCardDesc: "Track incidents submitted by you and rescue missions accepted.",
   myCasesCardAction: "Open",
-  transportCardTitle: "Transport Board (Logistics)",
+  transportCardTitle: "Transport Requests (Logistics)",
   transportCardDesc: "Planned animal transport coordination between shelters, fosters and vet clinics.",
   transportCardAction: "Browse rides",
 
@@ -493,8 +493,8 @@ export const en: typeof hu = {
   navToOrg: "Directions",
   nearMeTooltip: "Nearby shelters, vets, hospitals, and wildlife rescues based on your GPS",
 
-  // Transport Board (Logistics)
-  transportTitle: "Animal Transport Board",
+  // Transport Requests (Logistics)
+  transportTitle: "Transport Requests",
   transportSubtitle: "Planned animal transport coordination and supply logistics",
   transportPostRequest: "Post Transport Request",
   transportStatusOpen: "Open ride",
