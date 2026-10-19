@@ -14,7 +14,8 @@ import {
   Box, 
   ArrowRight,
   ShieldCheck,
-  Check
+  Check,
+  Trash2
 } from 'lucide-react';
 import { TransportJob, TransportStatus } from '@/types';
 import { useLanguage } from '@/context/LanguageContext';
@@ -23,19 +24,23 @@ import { useAuth } from '@/context/AuthContext';
 interface TransportCardProps {
   job: TransportJob;
   isSelected?: boolean;
+  isAdmin?: boolean;
   onSelect?: () => void;
   onOpenDetails: (job: TransportJob) => void;
   onTakeJob: (job: TransportJob) => void;
   onAdvanceStatus: (job: TransportJob, nextStatus: TransportStatus) => void;
+  onDelete?: (job: TransportJob) => void;
 }
 
 export const TransportCard: React.FC<TransportCardProps> = ({
   job,
   isSelected,
+  isAdmin,
   onSelect,
   onOpenDetails,
   onTakeJob,
   onAdvanceStatus,
+  onDelete,
 }) => {
   const { t, lang } = useLanguage();
   const { firebaseUser } = useAuth();
@@ -142,11 +147,35 @@ export const TransportCard: React.FC<TransportCardProps> = ({
           {getUrgencyBadge()}
         </div>
 
-        {job.tavolsagKm && (
-          <span className="text-xs font-bold font-mono px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200/80 dark:border-zinc-700/80">
-            ~{job.tavolsagKm} km
-          </span>
-        )}
+        <div className="flex items-center gap-1.5">
+          {job.tavolsagKm && (
+            <span className="text-xs font-bold font-mono px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200/80 dark:border-zinc-700/80">
+              ~{job.tavolsagKm} km
+            </span>
+          )}
+
+          {isAdmin && onDelete && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                const confirmed = window.confirm(
+                  lang === 'en'
+                    ? `Are you sure you want to delete transport "${job.honnanVaros} ➔ ${job.hovaVaros}"?`
+                    : `Biztosan törölni szeretnéd a(z) "${job.honnanVaros} ➔ ${job.hovaVaros}" fuvart?`
+                );
+                if (confirmed) {
+                  onDelete(job);
+                }
+              }}
+              className="min-h-[44px] min-w-[44px] p-2 rounded-xl text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-transparent hover:border-rose-200 dark:hover:border-rose-900/60 transition-colors flex items-center justify-center shrink-0"
+              title={lang === 'en' ? 'Delete transport (Super Admin)' : 'Fuvar törlése (Super Admin)'}
+              aria-label={lang === 'en' ? 'Delete transport' : 'Fuvar törlése'}
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* 2. Útvonal: Honnan -> Hova vizualizáció */}

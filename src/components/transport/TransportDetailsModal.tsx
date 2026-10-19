@@ -18,7 +18,8 @@ import {
   User,
   Building2,
   Check,
-  MessageSquare
+  MessageSquare,
+  Trash2
 } from 'lucide-react';
 import { TransportJob, TransportStatus } from '@/types';
 import { useLanguage } from '@/context/LanguageContext';
@@ -30,6 +31,7 @@ interface TransportDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   onJobUpdated?: (updatedJob: TransportJob) => void;
+  onDelete?: (job: TransportJob) => void;
 }
 
 export const TransportDetailsModal: React.FC<TransportDetailsModalProps> = ({
@@ -37,9 +39,10 @@ export const TransportDetailsModal: React.FC<TransportDetailsModalProps> = ({
   isOpen,
   onClose,
   onJobUpdated,
+  onDelete,
 }) => {
   const { t, lang } = useLanguage();
-  const { firebaseUser, isRescuer } = useAuth();
+  const { firebaseUser, isRescuer, isAdmin } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [newMsgText, setNewMsgText] = useState('');
   const [isSending, setIsSending] = useState(false);
@@ -77,12 +80,6 @@ export const TransportDetailsModal: React.FC<TransportDetailsModalProps> = ({
     const driverId = firebaseUser?.uid || `guest-${Date.now()}`;
     const driverPhone = firebaseUser?.phoneNumber || '';
 
-    await updateTransportStatus(currentJob.id, 'elvallalva', {
-      driverId,
-      driverName,
-      driverPhone
-    });
-
     const updated = {
       ...currentJob,
       statusz: 'elvallalva' as TransportStatus,
@@ -93,17 +90,46 @@ export const TransportDetailsModal: React.FC<TransportDetailsModalProps> = ({
     };
     setCurrentJob(updated);
     if (onJobUpdated) onJobUpdated(updated);
+
+    try {
+      await updateTransportStatus(currentJob.id, 'elvallalva', {
+        driverId,
+        driverName,
+        driverPhone
+      });
+    } catch (err) {
+      console.error('Error in handleTakeJob:', err);
+    }
   };
 
   const handleStatusChange = async (nextStatus: TransportStatus) => {
-    await updateTransportStatus(currentJob.id, nextStatus);
     const updated = {
       ...currentJob,
       statusz: nextStatus,
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
+      ...(nextStatus === 'teljesitve' ? { teljesitveAt: new Date().toISOString() } : {})
     };
     setCurrentJob(updated);
     if (onJobUpdated) onJobUpdated(updated);
+
+    try {
+      await updateTransportStatus(currentJob.id, nextStatus);
+    } catch (err) {
+      console.error('Error in handleStatusChange:', err);
+    }
+  };
+
+  const handleDelete = () => {
+    if (!onDelete || !currentJob) return;
+    const confirmed = window.confirm(
+      lang === 'en'
+        ? `Are you sure you want to delete transport "${currentJob.honnanVaros} ➔ ${currentJob.hovaVaros}"?`
+        : `Biztosan törölni szeretnéd a(z) "${currentJob.honnanVaros} ➔ ${currentJob.hovaVaros}" fuvart?`
+    );
+    if (confirmed) {
+      onDelete(currentJob);
+      onClose();
+    }
   };
 
   const handleSendMessage = async (e: React.FormEvent) => {
@@ -170,14 +196,28 @@ export const TransportDetailsModal: React.FC<TransportDetailsModalProps> = ({
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="min-h-[48px] min-w-[48px] flex items-center justify-center rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors shrink-0"
-            title={lang === 'en' ? 'Close' : 'Bezárás'}
-            aria-label={lang === 'en' ? 'Close' : 'Bezárás'}
-          >
-            <X className="w-5 h-5 stroke-[2.2]" />
-          </button>
+          <div className="flex items-center gap-1 shrink-0">
+            {isAdmin && onDelete && (
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="min-h-[48px] min-w-[48px] flex items-center justify-center rounded-xl text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+                title={lang === 'en' ? 'Delete transport (Super Admin)' : 'Fuvar törlése (Super Admin)'}
+                aria-label={lang === 'en' ? 'Delete transport' : 'Fuvar törlése'}
+              >
+                <Trash2 className="w-5 h-5" />
+              </button>
+            )}
+
+            <button
+              onClick={onClose}
+              className="min-h-[48px] min-w-[48px] flex items-center justify-center rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors shrink-0"
+              title={lang === 'en' ? 'Close' : 'Bezárás'}
+              aria-label={lang === 'en' ? 'Close' : 'Bezárás'}
+            >
+              <X className="w-5 h-5 stroke-[2.2]" />
+            </button>
+          </div>
         </div>
 
         {/* Görgethető tartalom */}
@@ -448,6 +488,27 @@ export const TransportDetailsModal: React.FC<TransportDetailsModalProps> = ({
               </button>
             </form>
           </div>
+
+          {/* 6. Super Admin Fuvar Törlése Szekció */}
+          {isAdmin && onDelete && (
+            <div className="pt-4 mt-2 border-t border-slate-200 dark:border-zinc-800 flex items-center justify-between gap-3 p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20">
+              <div className="flex items-center gap-2 text-rose-700 dark:text-rose-300 text-xs">
+                <Trash2 className="w-4 h-4 shrink-0" />
+                <span className="font-semibold">
+                  {lang === 'en'
+                    ? 'Super Admin privilege: permanently delete this transport request.'
+                    : 'Super Admin jogosultság: fuvarozási igény végleges törlése.'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="min-h-[44px] px-3.5 rounded-xl bg-rose-600 hover:bg-rose-700 active:scale-[0.98] text-white text-xs font-bold transition-all shrink-0 shadow-sm"
+              >
+                {lang === 'en' ? 'Delete Ride' : 'Fuvar törlése'}
+              </button>
+            </div>
+          )}
 
         </div>
       </div>

@@ -4,6 +4,7 @@ import {
   getDocs, 
   setDoc, 
   updateDoc, 
+  deleteDoc,
   onSnapshot, 
   query, 
   orderBy, 
@@ -224,54 +225,81 @@ export function saveLocalTransports(jobs: TransportJob[]) {
   } catch {}
 }
 
+const activeListeners = new Set<(jobs: TransportJob[]) => void>();
+
+export function notifyTransportSubscribers(jobs: TransportJob[]) {
+  saveLocalTransports(jobs);
+  activeListeners.forEach((listener) => {
+    try {
+      listener(jobs);
+    } catch (e) {
+      console.error('Error notifying transport subscriber:', e);
+    }
+  });
+}
+
 /**
  * Valós idejű szállítási feladat feliratkozás (Firestore + Local fallback)
  */
 export function subscribeTransports(callback: (jobs: TransportJob[]) => void): () => void {
+  activeListeners.add(callback);
+
   // Elsőként a helyi gyorsítótárat adjuk vissza a 0 ms-os betöltéshez
   const cached = getLocalTransports();
   callback(cached);
 
-  if (!db) {
-    return () => {};
-  }
+  let unsubscribeFirestore = () => {};
 
-  try {
-    const colRef = collection(db, 'transports');
-    const q = query(colRef, orderBy('createdAt', 'desc'));
+  if (db) {
+    try {
+      const colRef = collection(db, 'transports');
+      const q = query(colRef, orderBy('createdAt', 'desc'));
 
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        if (!snapshot.empty) {
-          const list: TransportJob[] = [];
-          snapshot.forEach((docSnap) => {
-            const data = docSnap.data();
-            list.push({
-              id: docSnap.id,
-              ...data,
-              createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : (data.createdAt || new Date().toISOString())
-            } as TransportJob);
-          });
-          saveLocalTransports(list);
-          callback(list);
-        } else {
-          // Ha a felhő kollekció még üres, a kezdeti adatokkal dolgozunk
-          saveLocalTransports(INITIAL_TRANSPORTS);
-          callback(INITIAL_TRANSPORTS);
+      unsubscribeFirestore = onSnapshot(
+        q,
+        (snapshot) => {
+          if (!snapshot.empty) {
+            const list: TransportJob[] = [];
+            snapshot.forEach((docSnap) => {
+              const data = docSnap.data();
+              list.push({
+                id: docSnap.id,
+                ...data,
+                createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : (data.createdAt || new Date().toISOString())
+              } as TransportJob);
+            });
+            notifyTransportSubscribers(list);
+          } else {
+            // Ha a felhő kollekció még üres, a helyi adatokat megtartjuk és seedeljük a felhőt
+            const current = getLocalTransports();
+            const toSeed = current.length > 0 ? current : INITIAL_TRANSPORTS;
+            notifyTransportSubscribers(toSeed);
+            toSeed.forEach(async (job) => {
+              try {
+                if (db) {
+                  await setDoc(doc(db, 'transports', job.id), {
+                    ...job,
+                    createdAt: serverTimestamp()
+                  }, { merge: true });
+                }
+              } catch {}
+            });
+          }
+        },
+        (err) => {
+          console.warn('Firestore transports subscription fallback to local cache:', err);
+          notifyTransportSubscribers(getLocalTransports());
         }
-      },
-      (err) => {
-        console.warn('Firestore transports subscription fallback to local cache:', err);
-        callback(getLocalTransports());
-      }
-    );
-
-    return unsubscribe;
-  } catch (err) {
-    console.warn('Error setting up Firestore transport listener:', err);
-    return () => {};
+      );
+    } catch (err) {
+      console.warn('Error setting up Firestore transport listener:', err);
+    }
   }
+
+  return () => {
+    activeListeners.delete(callback);
+    unsubscribeFirestore();
+  };
 }
 
 /**
@@ -334,10 +362,10 @@ export async function createTransport(data: {
     messages: []
   };
 
-  // Frissítjük a helyi tárat azonnal
+  // Frissítjük a helyi tárat azonnal és értesítjük a feliratkozókat
   const current = getLocalTransports();
   const updated = [newJob, ...current];
-  saveLocalTransports(updated);
+  notifyTransportSubscribers(updated);
 
   // Felhőbe mentés
   if (db) {
@@ -346,7 +374,7 @@ export async function createTransport(data: {
       await setDoc(docRef, {
         ...newJob,
         createdAt: serverTimestamp()
-      });
+      }, { merge: true });
     } catch (err) {
       console.warn('Firestore create transport failed, kept locally:', err);
     }
@@ -385,7 +413,7 @@ export async function updateTransportStatus(
     };
 
     current[index] = updatedJob;
-    saveLocalTransports([...current]);
+    notifyTransportSubscribers([...current]);
   }
 
   if (db) {
@@ -404,7 +432,7 @@ export async function updateTransportStatus(
       if (newStatus === 'teljesitve') {
         updateData.teljesitveAt = serverTimestamp();
       }
-      await updateDoc(docRef, updateData);
+      await setDoc(docRef, updateData, { merge: true });
     } catch (err) {
       console.warn('Firestore updateTransportStatus error, kept locally:', err);
     }
@@ -441,18 +469,36 @@ export async function addTransportMessage(
       messages: [...msgs, newMsg],
       updatedAt: new Date().toISOString()
     };
-    saveLocalTransports([...current]);
+    notifyTransportSubscribers([...current]);
   }
 
   if (db) {
     try {
       const docRef = doc(db, 'transports', id);
-      await updateDoc(docRef, {
+      await setDoc(docRef, {
         messages: arrayUnion(newMsg),
         updatedAt: serverTimestamp()
-      });
+      }, { merge: true });
     } catch (err) {
       console.warn('Firestore addTransportMessage error:', err);
+    }
+  }
+}
+
+/**
+ * Fuvar törlése (kizárólag super_admin számára)
+ */
+export async function deleteTransport(id: string): Promise<void> {
+  const current = getLocalTransports();
+  const updated = current.filter((j) => j.id !== id);
+  notifyTransportSubscribers(updated);
+
+  if (db) {
+    try {
+      const docRef = doc(db, 'transports', id);
+      await deleteDoc(docRef);
+    } catch (err) {
+      console.warn('Firestore deleteTransport error:', err);
     }
   }
 }

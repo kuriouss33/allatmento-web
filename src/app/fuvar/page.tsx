@@ -32,6 +32,7 @@ import {
 import { 
   subscribeTransports, 
   updateTransportStatus, 
+  deleteTransport,
   getLocalTransports 
 } from '@/lib/transportApi';
 import { useAuth } from '@/context/AuthContext';
@@ -61,7 +62,7 @@ type ViewMode = 'list' | 'map' | 'split';
 
 export default function TransportBoardPage() {
   const { t, lang } = useLanguage();
-  const { firebaseUser, profile, isRescuer } = useAuth();
+  const { firebaseUser, profile, isRescuer, isAdmin } = useAuth();
 
   const [jobs, setJobs] = useState<TransportJob[]>(() => getLocalTransports());
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
@@ -166,21 +167,25 @@ export default function TransportBoardPage() {
     const driverId = firebaseUser?.uid || `anon-rescuer-${Date.now()}`;
     const driverPhone = firebaseUser?.phoneNumber || '';
 
+    const updated: TransportJob = {
+      ...job,
+      statusz: 'elvallalva',
+      driverId,
+      driverName,
+      driverPhone,
+      elvallalvaAt: new Date().toISOString()
+    };
+
+    // Optimista helyi frissítés azonnal a reaktív felülethez
+    setJobs((prev) => prev.map((j) => (j.id === job.id ? updated : j)));
+    setActiveDetailsJob(updated);
+
     try {
       await updateTransportStatus(job.id, 'elvallalva', {
         driverId,
         driverName,
         driverPhone,
       });
-      // Nyissuk meg a modalt a részletekhez és közvetlen híváshoz
-      const updated = {
-        ...job,
-        statusz: 'elvallalva' as TransportStatus,
-        driverId,
-        driverName,
-        driverPhone
-      };
-      setActiveDetailsJob(updated);
     } catch (err) {
       console.error('Hiba a fuvar felvételénél:', err);
     }
@@ -188,10 +193,39 @@ export default function TransportBoardPage() {
 
   // Státusz léptetése (pl. Útra keltem -> Teljesítve)
   const handleAdvanceStatus = async (job: TransportJob, nextStatus: TransportStatus) => {
+    const updated: TransportJob = {
+      ...job,
+      statusz: nextStatus,
+      updatedAt: new Date().toISOString(),
+      ...(nextStatus === 'teljesitve' ? { teljesitveAt: new Date().toISOString() } : {})
+    };
+
+    // Optimista helyi frissítés azonnal a reaktív felülethez
+    setJobs((prev) => prev.map((j) => (j.id === job.id ? updated : j)));
+    setActiveDetailsJob((prev) => (prev?.id === job.id ? updated : prev));
+
     try {
       await updateTransportStatus(job.id, nextStatus);
     } catch (err) {
       console.error('Hiba a státusz léptetésénél:', err);
+    }
+  };
+
+  // Fuvar törlése (kizárólag super_admin)
+  const handleDeleteJob = async (job: TransportJob) => {
+    // Optimista helyi törlés azonnal
+    setJobs((prev) => prev.filter((j) => j.id !== job.id));
+    if (activeDetailsJob?.id === job.id) {
+      setActiveDetailsJob(null);
+    }
+    if (selectedJobId === job.id) {
+      setSelectedJobId(null);
+    }
+
+    try {
+      await deleteTransport(job.id);
+    } catch (err) {
+      console.error('Hiba a fuvar törlésénél:', err);
     }
   };
 
@@ -456,10 +490,12 @@ export default function TransportBoardPage() {
                     <TransportCard
                       job={target}
                       isSelected={true}
+                      isAdmin={isAdmin}
                       onSelect={() => setSelectedJobId(target.id)}
                       onOpenDetails={handleOpenDetails}
                       onTakeJob={handleTakeJob}
                       onAdvanceStatus={handleAdvanceStatus}
+                      onDelete={handleDeleteJob}
                     />
                   </div>
                 );
@@ -500,10 +536,12 @@ export default function TransportBoardPage() {
                   key={job.id}
                   job={job}
                   isSelected={selectedJobId === job.id}
+                  isAdmin={isAdmin}
                   onSelect={() => setSelectedJobId(job.id)}
                   onOpenDetails={handleOpenDetails}
                   onTakeJob={handleTakeJob}
                   onAdvanceStatus={handleAdvanceStatus}
+                  onDelete={handleDeleteJob}
                 />
               ))}
             </div>
@@ -520,6 +558,7 @@ export default function TransportBoardPage() {
           setActiveDetailsJob(updated);
           setJobs((prev) => prev.map((j) => (j.id === updated.id ? updated : j)));
         }}
+        onDelete={handleDeleteJob}
       />
 
       <NewTransportModal
