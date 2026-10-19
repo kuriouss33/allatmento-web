@@ -11,11 +11,34 @@ import {
   arrayUnion,
   serverTimestamp 
 } from 'firebase/firestore';
-import { db } from './firebase';
+import { db, auth } from './firebase';
+import { BACKEND_URL } from './constants';
 import { TransportJob, TransportStatus, TransportMessage } from '@/types';
 import { resolveLocation, calculateDistanceKm } from './transportGeo';
 
 const STORAGE_KEY = 'allatmento_transports_cache';
+const DELETED_TRANSPORTS_KEY = 'allatmento_deleted_transports';
+
+export function getDeletedTransportIds(): Set<string> {
+  if (typeof window === 'undefined') return new Set();
+  try {
+    const raw = localStorage.getItem(DELETED_TRANSPORTS_KEY);
+    if (!raw) return new Set();
+    const list = JSON.parse(raw);
+    return new Set(Array.isArray(list) ? list : []);
+  } catch {
+    return new Set();
+  }
+}
+
+export function addDeletedTransportId(id: string) {
+  if (typeof window === 'undefined' || !id) return;
+  try {
+    const deleted = getDeletedTransportIds();
+    deleted.add(id);
+    localStorage.setItem(DELETED_TRANSPORTS_KEY, JSON.stringify(Array.from(deleted)));
+  } catch {}
+}
 
 // Kezdeti valósághű szállítási minták (amennyiben az adatbázis még üres)
 export const INITIAL_TRANSPORTS: TransportJob[] = [
@@ -171,16 +194,21 @@ export const INITIAL_TRANSPORTS: TransportJob[] = [
 // Helyi gyorsítótár kezelése
 export function getLocalTransports(): TransportJob[] {
   if (typeof window === 'undefined') return INITIAL_TRANSPORTS;
+  const deletedIds = getDeletedTransportIds();
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_TRANSPORTS));
-      return INITIAL_TRANSPORTS;
+    if (raw === null) {
+      const initial = INITIAL_TRANSPORTS.filter(j => !deletedIds.has(j.id));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
+      return initial;
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_TRANSPORTS;
+    if (Array.isArray(parsed)) {
+      return parsed.filter(j => !deletedIds.has(j.id));
+    }
+    return [];
   } catch {
-    return INITIAL_TRANSPORTS;
+    return INITIAL_TRANSPORTS.filter(j => !deletedIds.has(j.id));
   }
 }
 
@@ -205,15 +233,30 @@ export function notifyTransportSubscribers(jobs: TransportJob[]) {
 }
 
 /**
- * Valós idejű szállítási feladat feliratkozás (Firestore + Local fallback)
+ * Valós idejű szállítási feladat feliratkozás (Backend API + Firestore + Local fallback)
  */
 export function subscribeTransports(callback: (jobs: TransportJob[]) => void): () => void {
   activeListeners.add(callback);
 
-  // Elsőként a helyi gyorsítótárat adjuk vissza a 0 ms-os betöltéshez
+  // 1. Helyi gyorsítótár azonnali betöltése (0 ms)
   const cached = getLocalTransports();
   callback(cached);
 
+  // 2. Adatbázis szinkronizáció a Backend REST API-n keresztül (garantáltan működik Firestore admin jogokkal)
+  fetch(`${BACKEND_URL}/transports`)
+    .then((res) => res.json())
+    .then((resData) => {
+      if (resData?.success && Array.isArray(resData.transports)) {
+        const deletedIds = getDeletedTransportIds();
+        const valid = resData.transports.filter((j: any) => !deletedIds.has(j.id));
+        notifyTransportSubscribers(valid);
+      }
+    })
+    .catch((err) => {
+      console.warn('Backend GET /transports figyelmeztetés:', err);
+    });
+
+  // 3. Valós idejű Firestore onSnapshot figyelő
   let unsubscribeFirestore = () => {};
 
   if (db) {
@@ -224,9 +267,11 @@ export function subscribeTransports(callback: (jobs: TransportJob[]) => void): (
       unsubscribeFirestore = onSnapshot(
         q,
         (snapshot) => {
+          const deletedIds = getDeletedTransportIds();
           if (!snapshot.empty) {
             const list: TransportJob[] = [];
             snapshot.forEach((docSnap) => {
+              if (deletedIds.has(docSnap.id)) return;
               const data = docSnap.data();
               list.push({
                 id: docSnap.id,
@@ -235,21 +280,6 @@ export function subscribeTransports(callback: (jobs: TransportJob[]) => void): (
               } as TransportJob);
             });
             notifyTransportSubscribers(list);
-          } else {
-            // Ha a felhő kollekció még üres, a helyi adatokat megtartjuk és seedeljük a felhőt
-            const current = getLocalTransports();
-            const toSeed = current.length > 0 ? current : INITIAL_TRANSPORTS;
-            notifyTransportSubscribers(toSeed);
-            toSeed.forEach(async (job) => {
-              try {
-                if (db) {
-                  await setDoc(doc(db, 'transports', job.id), {
-                    ...job,
-                    createdAt: serverTimestamp()
-                  }, { merge: true });
-                }
-              } catch {}
-            });
           }
         },
         (err) => {
@@ -335,7 +365,18 @@ export async function createTransport(data: {
   const updated = [newJob, ...current];
   notifyTransportSubscribers(updated);
 
-  // Felhőbe mentés
+  // 1. Mentés Backend API-n keresztül (garantált Firebase Admin SDK perzisztencia az adatbázisban)
+  try {
+    await fetch(`${BACKEND_URL}/transports`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newJob)
+    });
+  } catch (err) {
+    console.warn('Backend POST /transports hiba:', err);
+  }
+
+  // 2. Felhőbe mentés Firestore kliensen
   if (db) {
     try {
       const docRef = doc(db, 'transports', newId);
@@ -385,6 +426,18 @@ export async function updateTransportStatus(
     notifyTransportSubscribers([...current]);
   }
 
+  // 1. Backend REST API hívás (garantált Admin SDK frissítés)
+  try {
+    await fetch(`${BACKEND_URL}/transports/${id}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ statusz: newStatus })
+    });
+  } catch (err) {
+    console.warn('Backend PATCH /transports/:id/status hiba:', err);
+  }
+
+  // 2. Firestore kliens frissítés
   if (db) {
     try {
       const docRef = doc(db, 'transports', id);
@@ -454,13 +507,44 @@ export async function addTransportMessage(
 }
 
 /**
- * Fuvar törlése (kizárólag super_admin számára)
+ * Fuvar törlése (kizárólag super_admin vagy a hirdetés feladója számára)
  */
-export async function deleteTransport(id: string): Promise<void> {
+export async function deleteTransport(id: string, idToken?: string | null): Promise<void> {
+  // 1. Megjegyezzük a törölt azonosítót, hogy se helyi tároló, se mock lista ne élessze újra
+  addDeletedTransportId(id);
+
+  // 2. Azonnali helyi optimista törlés
   const current = getLocalTransports();
   const updated = current.filter((j) => j.id !== id);
   notifyTransportSubscribers(updated);
 
+  // 3. Token beszerzése a jogosult törléshez
+  let token = idToken;
+  if (!token && auth?.currentUser) {
+    try {
+      token = await auth.currentUser.getIdToken();
+    } catch {}
+  }
+
+  // 4. Elsődleges végleges törlés a Backend REST API-n keresztül (Firebase Admin SDK)
+  if (token) {
+    try {
+      const res = await fetch(`${BACKEND_URL}/transports/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        console.warn('Backend DELETE /transports/:id hiba:', errJson);
+      }
+    } catch (err) {
+      console.warn('Backend DELETE /transports/:id hálózati hiba:', err);
+    }
+  }
+
+  // 5. Másodlagos közvetlen törlés Firestore Client SDK-n keresztül
   if (db) {
     try {
       const docRef = doc(db, 'transports', id);

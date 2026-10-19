@@ -38,7 +38,7 @@ type StatusFilterTab = 'mind' | 'nyitott' | 'megoldva' | 'sajat';
 
 export default function TransportBoardPage() {
   const { t, lang } = useLanguage();
-  const { firebaseUser, profile, isAdmin } = useAuth();
+  const { firebaseUser, profile, isAdmin, idToken } = useAuth();
 
   const [jobs, setJobs] = useState<TransportJob[]>(() => getLocalTransports());
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
@@ -169,7 +169,7 @@ export default function TransportBoardPage() {
     }
 
     try {
-      await deleteTransport(job.id);
+      await deleteTransport(job.id, idToken);
     } catch (err) {
       console.error('Hiba a fuvar törlésénél:', err);
     }
