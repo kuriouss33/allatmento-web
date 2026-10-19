@@ -23,7 +23,10 @@ import {
   Printer,
   WifiOff,
   CloudUpload,
-  RefreshCw
+  RefreshCw,
+  Plus,
+  Star,
+  Images
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { MEGYEK } from '@/lib/constants';
@@ -69,8 +72,9 @@ export default function ReportWizardPage() {
   const [gpsLoading, setGpsLoading] = useState<boolean>(false);
   const [locationStatus, setLocationStatus] = useState<string>('Válassz a fenti lehetőségek közül!');
 
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
+  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
+  const photoPreview = photoPreviews[0] || null;
 
   // Step 3: Leírás, Telefon, GDPR
   const [leiras, setLeiras] = useState<string>('');
@@ -134,18 +138,48 @@ export default function ReportWizardPage() {
     );
   };
 
-  // Fotó választás
+  // Fotók választása (akár több kép is, max. 5)
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setPhotoFile(file);
-      setPhotoPreview(URL.createObjectURL(file));
+    if (!e.target.files) return;
+    const incoming = Array.from(e.target.files).filter((file) => file.type.startsWith('image/'));
+    if (incoming.length === 0) return;
+
+    const remainingSlots = 5 - photoFiles.length;
+    if (remainingSlots <= 0) {
+      setError(t.maxPhotosReached || 'Legfeljebb 5 fotó tölthető fel.');
+      e.target.value = '';
+      return;
     }
+
+    const toAdd = incoming.slice(0, remainingSlots);
+    const newPreviews = toAdd.map((file) => URL.createObjectURL(file));
+
+    setPhotoFiles((prev) => [...prev, ...toAdd]);
+    setPhotoPreviews((prev) => [...prev, ...newPreviews]);
+    e.target.value = '';
   };
 
-  const handleRemovePhoto = () => {
-    setPhotoFile(null);
-    setPhotoPreview(null);
+  const handleRemovePhoto = (index: number) => {
+    setPhotoFiles((prev) => prev.filter((_, i) => i !== index));
+    setPhotoPreviews((prev) => {
+      const removed = prev[index];
+      if (removed) URL.revokeObjectURL(removed);
+      return prev.filter((_, i) => i !== index);
+    });
+  };
+
+  const handleSetCoverPhoto = (index: number) => {
+    if (index === 0) return;
+    setPhotoFiles((prev) => {
+      const selected = prev[index];
+      const others = prev.filter((_, i) => i !== index);
+      return [selected, ...others];
+    });
+    setPhotoPreviews((prev) => {
+      const selected = prev[index];
+      const others = prev.filter((_, i) => i !== index);
+      return [selected, ...others];
+    });
   };
 
   // Beküldés
@@ -161,15 +195,16 @@ export default function ReportWizardPage() {
 
     const createrId = firebaseUser?.uid || getAnonymousUserId();
     const finalCounty = megye || detectCounty(null, address) || 'Budapest';
-    let compressedBlob: Blob | null = null;
+    const compressedBlobs: Blob[] = [];
 
-    // 1. Kép tömörítése terepen (100 ms alatt 150-350 KB méretre optimalizálva)
-    if (photoFile) {
+    // 1. Képek tömörítése terepen (egyessével, max 5 fotó)
+    for (const file of photoFiles) {
       try {
-        compressedBlob = await compressImage(photoFile);
+        const blob = await compressImage(file);
+        compressedBlobs.push(blob);
       } catch (uploadErr: any) {
         console.warn('Képtömörítési hiba, kísérlet az eredeti fájllal:', uploadErr);
-        compressedBlob = photoFile;
+        compressedBlobs.push(file);
       }
     }
 
@@ -185,8 +220,10 @@ export default function ReportWizardPage() {
           lat,
           lon,
           createrId,
-          photoBlob: compressedBlob,
-          photoFileName: photoFile?.name || 'field-report.jpg',
+          photoBlob: compressedBlobs[0] || null,
+          photoFileName: photoFiles[0]?.name || 'field-report.jpg',
+          photoBlobs: compressedBlobs,
+          photoFileNames: photoFiles.map((f, i) => f.name || `field-report-${i}.jpg`),
         });
 
         setIsOfflineSubmitted(true);
@@ -203,11 +240,16 @@ export default function ReportWizardPage() {
 
     // 3. Online beküldés
     try {
-      let uploadedPhotoUrl: string | undefined = undefined;
+      const uploadedPhotoUrls: string[] = [];
 
-      if (compressedBlob) {
-        uploadedPhotoUrl = await uploadImage(compressedBlob, photoFile?.name || 'report-photo.jpg');
+      for (let i = 0; i < compressedBlobs.length; i++) {
+        const blob = compressedBlobs[i];
+        const file = photoFiles[i];
+        const url = await uploadImage(blob, file?.name || `report-photo-${i}.jpg`);
+        uploadedPhotoUrls.push(url);
       }
+
+      const primaryUrl = uploadedPhotoUrls.length > 0 ? uploadedPhotoUrls[0] : undefined;
 
       const result = await createReport({
         fajta,
@@ -217,7 +259,8 @@ export default function ReportWizardPage() {
         telefon: telefon.trim() || undefined,
         lat,
         lon,
-        fotoUrl: uploadedPhotoUrl,
+        fotoUrl: primaryUrl,
+        kepek: uploadedPhotoUrls,
         createrId,
       });
 
@@ -245,8 +288,10 @@ export default function ReportWizardPage() {
             lat,
             lon,
             createrId,
-            photoBlob: compressedBlob,
-            photoFileName: photoFile?.name || 'field-report.jpg',
+            photoBlob: compressedBlobs[0] || null,
+            photoFileName: photoFiles[0]?.name || 'field-report.jpg',
+            photoBlobs: compressedBlobs,
+            photoFileNames: photoFiles.map((f, i) => f.name || `field-report-${i}.jpg`),
           });
 
           setIsOfflineSubmitted(true);
@@ -475,39 +520,125 @@ export default function ReportWizardPage() {
           </div>
 
           {/* Photo Upload Section */}
-          <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3 text-center flex flex-col items-center">
-            <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center justify-center gap-1.5 text-center">
-              <Camera className="w-4 h-4 text-blue-500" />
-              <span>{t.photoTitle}</span>
-            </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 text-center">
-              {t.photoSub}
-            </p>
+          <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3.5 text-center flex flex-col items-center">
+            <div className="space-y-1">
+              <h3 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white flex items-center justify-center gap-1.5 text-center">
+                <Camera className="w-4 h-4 text-blue-500" />
+                <span>{t.photosMultiTitle || 'Fényképek csatolása (akár több fotó is)'}</span>
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 text-center max-w-md mx-auto">
+                {t.photosMultiSub || 'Tölts fel 1–5 fotót az állatról és a helyszínről! Az első fotó lesz a fő borítókép.'}
+              </p>
+            </div>
 
-            {photoPreview ? (
-              <div className="relative w-full h-48 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800">
-                <img src={photoPreview} alt={t.photoPreview} className="w-full h-full object-cover" />
-                <button
-                  type="button"
-                  onClick={handleRemovePhoto}
-                  className="absolute top-2 right-2 p-1.5 rounded-lg bg-red-600 text-white shadow hover:bg-red-700 transition-colors"
-                  title={t.removePhoto}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+            {photoPreviews.length > 0 ? (
+              <div className="w-full space-y-3">
+                {/* Fotó számláló és gyors hozzáadás gomb */}
+                <div className="flex items-center justify-between text-xs px-1 text-slate-600 dark:text-slate-300">
+                  <span className="font-medium flex items-center gap-1">
+                    <Images className="w-3.5 h-3.5 text-blue-500" />
+                    <span>{photoPreviews.length} / 5 {t.photoCountUnit || 'kép'}</span>
+                  </span>
+                  {photoPreviews.length < 5 && (
+                    <label className="text-blue-600 dark:text-blue-400 font-semibold cursor-pointer hover:underline flex items-center gap-1">
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>{t.addMorePhotos || 'További fotó hozzáadása'}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handlePhotoSelect}
+                        className="hidden"
+                      />
+                    </label>
+                  )}
+                </div>
+
+                {/* Fotó rács */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
+                  {photoPreviews.map((previewUrl, index) => (
+                    <div 
+                      key={`${previewUrl}-${index}`}
+                      className={`relative rounded-xl overflow-hidden border bg-slate-100 dark:bg-slate-800 aspect-4/3 group/item shadow-xs ${
+                        index === 0 
+                          ? 'ring-2 ring-blue-500 border-blue-500/50' 
+                          : 'border-slate-200 dark:border-slate-700'
+                      }`}
+                    >
+                      <img 
+                        src={previewUrl} 
+                        alt={`${t.photoPreview} #${index + 1}`} 
+                        className="w-full h-full object-cover" 
+                      />
+
+                      {/* Fő kép jelvény vagy beállítás fő képként gomb */}
+                      {index === 0 ? (
+                        <div className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-lg bg-blue-600/90 text-white text-[10px] font-bold flex items-center gap-1 shadow-sm backdrop-blur-xs">
+                          <Star className="w-3 h-3 fill-amber-300 text-amber-300" />
+                          <span>{t.coverPhotoBadge || 'Fő kép'}</span>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleSetCoverPhoto(index)}
+                          className="absolute top-1.5 left-1.5 opacity-90 sm:opacity-0 group-hover/item:opacity-100 transition-opacity px-2 py-0.5 rounded-lg bg-black/75 hover:bg-black/90 text-white text-[10px] font-medium flex items-center gap-1 backdrop-blur-xs cursor-pointer"
+                          title={t.setAsCover || 'Legyen ez a fő kép'}
+                        >
+                          <Star className="w-3 h-3 text-amber-400" />
+                          <span>{t.setAsCover || 'Fő kép'}</span>
+                        </button>
+                      )}
+
+                      {/* Törlés gomb */}
+                      <button
+                        type="button"
+                        onClick={() => handleRemovePhoto(index)}
+                        className="absolute top-1.5 right-1.5 p-1.5 rounded-lg bg-red-600/90 hover:bg-red-700 text-white shadow-sm transition-all hover:scale-105 active:scale-95 cursor-pointer backdrop-blur-xs"
+                        title={t.removePhoto}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))}
+
+                  {/* Kép hozzáadása csempe (ha kevesebb mint 5 kép van) */}
+                  {photoPreviews.length < 5 && (
+                    <label className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition-colors aspect-4/3 text-center p-2 group/add">
+                      <div className="w-8 h-8 rounded-full bg-blue-50 dark:bg-zinc-800 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-1 group-hover/add:scale-110 transition-transform">
+                        <Plus className="w-4 h-4" />
+                      </div>
+                      <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 leading-tight">
+                        {t.addMorePhotos || 'További fotó'}
+                      </span>
+                      <span className="text-[9px] text-slate-400 mt-0.5">
+                        (max. {5 - photoPreviews.length} db)
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handlePhotoSelect}
+                        className="hidden"
+                      />
+                    </label>
+                  )}
+                </div>
               </div>
             ) : (
-              <label className="flex flex-col items-center justify-center p-6 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition-colors text-center">
-                <Upload className="w-8 h-8 text-slate-400 mb-2" />
-                <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
+              <label className="w-full flex flex-col items-center justify-center p-6 sm:p-7 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition-all text-center group/empty">
+                <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-zinc-800 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-2 group-hover/empty:scale-105 transition-transform shadow-xs">
+                  <Upload className="w-6 h-6" />
+                </div>
+                <span className="text-xs sm:text-sm font-bold text-blue-600 dark:text-blue-400">
                   {t.uploadBtn}
                 </span>
-                <span className="text-[11px] text-slate-400 mt-1">
-                  {t.photoFormatHint}
+                <span className="text-[11px] text-slate-400 dark:text-slate-500 mt-1 max-w-xs">
+                  {t.photoFormatHint || 'Több fotó is kiválasztható (JPG, PNG, max. 5 db)'}
                 </span>
                 <input
                   type="file"
                   accept="image/*"
+                  multiple
                   onChange={handlePhotoSelect}
                   className="hidden"
                 />

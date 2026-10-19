@@ -25,9 +25,12 @@ import {
   AlertTriangle, 
   ExternalLink,
   Languages,
-  Printer
+  Printer,
+  Images,
+  ZoomIn
 } from 'lucide-react';
 import { PosterModal } from './PosterModal';
+import { ImageLightboxModal } from '@/components/common/ImageLightboxModal';
 
 interface ReportDetailsModalProps {
   report: Report | null;
@@ -61,6 +64,23 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
   const [sending, setSending] = useState(false);
   const [liveReport, setLiveReport] = useState<Report | null>(report ? normalizeReport(report) : null);
   const [posterModalOpen, setPosterModalOpen] = useState(false);
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [selectedGalleryIndex, setSelectedGalleryIndex] = useState(0);
+
+  const allImages = useMemo(() => {
+    if (!liveReport) return [];
+    const list: string[] = [];
+    if (Array.isArray(liveReport.kepek) && liveReport.kepek.length > 0) {
+      list.push(...liveReport.kepek.filter((k) => typeof k === 'string' && k.trim().length > 0));
+    } else if (Array.isArray(liveReport.kepekUrl) && liveReport.kepekUrl.length > 0) {
+      list.push(...liveReport.kepekUrl.filter((k) => typeof k === 'string' && k.trim().length > 0));
+    }
+    const single = liveReport.fotoUrl || liveReport.kepUrl;
+    if (single && !list.includes(single)) {
+      list.unshift(single);
+    }
+    return list;
+  }, [liveReport]);
 
   // Automatikus fordítás állapotok (kommentek, leírás, lezárás)
   const [translatedComments, setTranslatedComments] = useState<Record<string, string>>({});
@@ -282,24 +302,84 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-5 scrollbar-thin">
           
-          {/* Uploaded Photo */}
-          {(liveReport.fotoUrl || liveReport.kepUrl) && (
-            <div 
-              onClick={() => {
-                if (onImageClick) {
-                  onImageClick((liveReport.fotoUrl || liveReport.kepUrl)!);
-                }
-              }}
-              className="relative w-full h-48 sm:h-64 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 group/img cursor-pointer"
-            >
-              <img 
-                src={liveReport.fotoUrl || liveReport.kepUrl} 
-                alt={liveReport.fajta} 
-                className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300" 
-              />
-              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-light backdrop-blur-[2px]">
-                {t.zoomImage}
+          {/* Uploaded Photos Section */}
+          {allImages.length > 0 && (
+            <div className="space-y-2">
+              {/* Fő borítókép */}
+              <div 
+                onClick={() => {
+                  setSelectedGalleryIndex(0);
+                  setGalleryOpen(true);
+                  if (onImageClick) {
+                    onImageClick(allImages[0]);
+                  }
+                }}
+                className="relative w-full h-52 sm:h-72 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 group/img cursor-pointer shadow-xs"
+              >
+                <img 
+                  src={allImages[0]} 
+                  alt={liveReport.fajta} 
+                  className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300" 
+                />
+                
+                {/* Badge: Fotók száma */}
+                {allImages.length > 1 && (
+                  <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-black/75 backdrop-blur-md text-white text-xs font-medium border border-white/15 shadow-sm">
+                    <Images className="w-3.5 h-3.5 text-blue-400" />
+                    <span>1 / {allImages.length} {t.photoCountUnit || 'kép'}</span>
+                  </div>
+                )}
+
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-black/25 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-light backdrop-blur-[2px] gap-1.5">
+                  <ZoomIn className="w-4 h-4" />
+                  <span>{allImages.length > 1 ? (t.viewAllPhotos || 'Galéria megnyitása') : (t.zoomImage || 'Nagyítás')}</span>
+                </div>
               </div>
+
+              {/* Több kép esetén: Bélyegkép sáv & Galéria gomb */}
+              {allImages.length > 1 && (
+                <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+                  {allImages.map((imgUrl, idx) => (
+                    <button
+                      key={`${imgUrl}-${idx}`}
+                      type="button"
+                      onClick={() => {
+                        setSelectedGalleryIndex(idx);
+                        setGalleryOpen(true);
+                        if (onImageClick) {
+                          onImageClick(imgUrl);
+                        }
+                      }}
+                      className="group/thumb relative w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:scale-105 transition-all shadow-xs cursor-pointer"
+                      title={`${idx + 1}. kép megtekintése`}
+                    >
+                      <img 
+                        src={imgUrl} 
+                        alt="" 
+                        className="w-full h-full object-cover group-hover/thumb:brightness-110 transition-all" 
+                      />
+                      {idx === 0 && (
+                        <span className="absolute bottom-0 inset-x-0 bg-black/75 text-[9px] text-center text-white py-0.5 truncate font-medium">
+                          {t.coverPhotoBadge || 'Fő kép'}
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                  
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedGalleryIndex(0);
+                      setGalleryOpen(true);
+                    }}
+                    className="shrink-0 h-16 sm:h-20 px-3 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-light flex flex-col items-center justify-center gap-1 transition-colors cursor-pointer"
+                  >
+                    <Images className="w-4 h-4 text-blue-500" />
+                    <span>{t.viewAllPhotos || 'Összes fotó'}</span>
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -727,6 +807,13 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
         isOpen={posterModalOpen}
         onClose={() => setPosterModalOpen(false)}
         report={liveReport}
+      />
+
+      <ImageLightboxModal
+        images={allImages}
+        initialIndex={selectedGalleryIndex}
+        isOpen={galleryOpen}
+        onClose={() => setGalleryOpen(false)}
       />
     </div>
   );

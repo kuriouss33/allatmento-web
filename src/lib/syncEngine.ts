@@ -58,15 +58,32 @@ export async function syncOfflineReports(): Promise<SyncResult> {
       try {
         await updateOfflineReportStatus(item.id, 'syncing');
 
-        let uploadedPhotoUrl: string | undefined = undefined;
+        const uploadedPhotoUrls: string[] = [];
 
-        // 1. Kép feltöltése (ha van tárolt Blob)
-        if (item.photoBlob) {
+        // 1. Képek feltöltése (több kép támogatása)
+        if (item.photoBlobs && item.photoBlobs.length > 0) {
+          for (let i = 0; i < item.photoBlobs.length; i++) {
+            const blob = item.photoBlobs[i];
+            const fname = (item.photoFileNames && item.photoFileNames[i]) || `field-report-${item.id}-${i}.jpg`;
+            try {
+              const url = await uploadImage(blob, fname);
+              uploadedPhotoUrls.push(url);
+            } catch (uploadErr: any) {
+              if (isNetworkError(uploadErr)) {
+                await updateOfflineReportStatus(item.id, 'pending');
+                errors.push(`Képfeltöltés hálózati megszakadása: ${uploadErr.message}`);
+                break;
+              }
+              console.warn('[Sync] Képfeltöltési hiba részleges képnél:', uploadErr);
+            }
+          }
+        } else if (item.photoBlob) {
           try {
-            uploadedPhotoUrl = await uploadImage(
+            const url = await uploadImage(
               item.photoBlob, 
               item.photoFileName || `field-report-${item.id}.jpg`
             );
+            uploadedPhotoUrls.push(url);
           } catch (uploadErr: any) {
             if (isNetworkError(uploadErr)) {
               // Hálózat ismét megszakadt, leállítjuk a további próbálkozást
@@ -78,6 +95,8 @@ export async function syncOfflineReports(): Promise<SyncResult> {
           }
         }
 
+        const primaryPhotoUrl = uploadedPhotoUrls.length > 0 ? uploadedPhotoUrls[0] : undefined;
+
         // 2. Bejelentés létrehozása az API-n
         const createResult = await createReport({
           fajta: item.fajta,
@@ -87,7 +106,8 @@ export async function syncOfflineReports(): Promise<SyncResult> {
           telefon: item.telefon,
           lat: item.lat,
           lon: item.lon,
-          fotoUrl: uploadedPhotoUrl,
+          fotoUrl: primaryPhotoUrl,
+          kepek: uploadedPhotoUrls,
           createrId: item.createrId,
         });
 

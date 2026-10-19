@@ -33,7 +33,18 @@ export function normalizeReport(raw: any): Report {
   const fajta = data.fajta || data.allatFajta || 'Ismeretlen állat';
   const leiras = data.leiras || data.helyszinLeiras || data.megjegyzes || '';
   const telefon = data.telefon || data.bejelentoTelefon || '';
-  const fotoUrl = data.fotoUrl || data.kepUrl || undefined;
+
+  // Képek normalizálása (több kép támogatása, első kép a fő kép)
+  const rawKepek = Array.isArray(data.kepek)
+    ? data.kepek
+    : (Array.isArray(data.kepekUrl) ? data.kepekUrl : []);
+  const singlePhoto = data.fotoUrl || data.kepUrl || undefined;
+  const kepek: string[] = rawKepek.filter((k: any) => typeof k === 'string' && k.trim().length > 0);
+  if (singlePhoto && !kepek.includes(singlePhoto)) {
+    kepek.unshift(singlePhoto);
+  }
+  const fotoUrl = kepek.length > 0 ? kepek[0] : singlePhoto;
+
   const megoldasFotoUrl = data.megoldasFotoUrl || data.lezarasFotoUrl || undefined;
   const megoldasLeiras = data.megoldasLeiras || data.lezarasMegjegyzes || undefined;
   const rescuerId = data.rescuerId || data.rescuerUid || data.vallaloId || undefined;
@@ -59,6 +70,8 @@ export function normalizeReport(raw: any): Report {
     status: statusz,
     fotoUrl,
     kepUrl: fotoUrl,
+    kepek,
+    kepekUrl: kepek,
     megoldasFotoUrl,
     lezarasFotoUrl: megoldasFotoUrl,
     megoldasLeiras,
@@ -99,15 +112,24 @@ export async function createReport(data: {
   lat: number | null;
   lon: number | null;
   fotoUrl?: string;
+  kepek?: string[];
   createrId?: string;
 }): Promise<{ success: boolean; id: string; deleteToken: string; data?: any }> {
+  const kepekList = Array.isArray(data.kepek) && data.kepek.length > 0
+    ? data.kepek
+    : (data.fotoUrl ? [data.fotoUrl] : []);
+  const primaryFotoUrl = data.fotoUrl || (kepekList.length > 0 ? kepekList[0] : null);
+
   const payload = {
     ...data,
     allatFajta: data.fajta,
     helyszinLeiras: data.leiras || '',
     megjegyzes: data.leiras || '',
     bejelentoTelefon: data.telefon || '',
-    kepUrl: data.fotoUrl || null,
+    fotoUrl: primaryFotoUrl,
+    kepUrl: primaryFotoUrl,
+    kepek: kepekList,
+    kepekUrl: kepekList,
     lng: data.lon,
   };
 

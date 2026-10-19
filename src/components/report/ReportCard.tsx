@@ -106,11 +106,18 @@ export const ReportCard: React.FC<ReportCardProps> = ({
         className="relative w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-xl overflow-hidden border border-black/5 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 flex items-center justify-center group/img shadow-2xs"
       >
         {imageUrl ? (
-          <img
-            src={imageUrl}
-            alt={report.fajta}
-            className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300"
-          />
+          <>
+            <img
+              src={imageUrl}
+              alt={report.fajta}
+              className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300"
+            />
+            {report.kepek && report.kepek.length > 1 && (
+              <span className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded-md bg-black/75 backdrop-blur-xs text-white text-[9px] font-semibold flex items-center gap-0.5 border border-white/20 shadow-xs">
+                📷 {report.kepek.length}
+              </span>
+            )}
+          </>
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-1 p-1.5 text-center bg-white/50 dark:bg-slate-800/80">
             <ImageIcon className="w-5 h-5 opacity-50" />

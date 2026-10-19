@@ -44,6 +44,8 @@ export interface Report {
   status?: string;
   fotoUrl?: string;
   kepUrl?: string;
+  kepek?: string[];
+  kepekUrl?: string[];
   megoldasFotoUrl?: string;
   lezarasFotoUrl?: string;
   megoldasLeiras?: string;

@@ -19,6 +19,8 @@ export interface QueuedOfflineReport {
   createdAt: string;
   photoBlob?: Blob | null;
   photoFileName?: string;
+  photoBlobs?: Blob[];
+  photoFileNames?: string[];
   status: 'pending' | 'syncing' | 'failed';
   retryCount: number;
   lastError?: string;
