@@ -17,7 +17,8 @@ import {
   Cat, 
   Package, 
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  ShieldCheck
 } from 'lucide-react';
 import { 
   TransportCargoType, 
@@ -26,6 +27,7 @@ import {
   TransportUrgency 
 } from '@/types';
 import { createTransport } from '@/lib/transportApi';
+import { saveMyTransportId } from '@/lib/storage';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -78,6 +80,7 @@ export const NewTransportModal: React.FC<NewTransportModalProps> = ({
   const [feladoNev, setFeladoNev] = useState('');
   const [feladoTelefon, setFeladoTelefon] = useState('+36 ');
   const [feladoSzervezet, setFeladoSzervezet] = useState('');
+  const [consentGiven, setConsentGiven] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -139,6 +142,14 @@ export const NewTransportModal: React.FC<NewTransportModalProps> = ({
       setErrorMsg(lang === 'en' ? 'Please provide a valid phone number!' : 'Kérlek adj meg egy érvényes telefonszámot!');
       return;
     }
+    if (!consentGiven) {
+      setErrorMsg(
+        lang === 'en'
+          ? 'Please accept the consent terms regarding the publication of your contact details.'
+          : 'Kérlek fogadd el a kapcsolattartási adatok közzétételére vonatkozó nyilatkozatot!'
+      );
+      return;
+    }
 
     try {
       setIsSubmitting(true);
@@ -160,7 +171,11 @@ export const NewTransportModal: React.FC<NewTransportModalProps> = ({
         feladoTelefon: feladoTelefon.trim(),
         feladoSzervezet: feladoSzervezet.trim() || undefined,
         feladoUserId: firebaseUser?.uid,
+        consentGiven: true,
       });
+
+      // Saját eszközkulcs / feladás regisztrálása, hogy bejelentkezés nélkül is kezelhesse
+      saveMyTransportId(newId);
 
       onCreated?.(newId);
       onClose();
@@ -568,6 +583,36 @@ export const NewTransportModal: React.FC<NewTransportModalProps> = ({
                   className="w-full min-h-[44px] px-3.5 py-2 rounded-xl border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
+            </div>
+
+            {/* 5. JOGI NYILATKOZAT ÉS ADATVÉDELMI HOZZÁJÁRULÁS */}
+            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 dark:bg-amber-950/20 dark:border-amber-800/40 space-y-2.5">
+              <label className="flex items-start gap-3 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={consentGiven}
+                  onChange={(e) => setConsentGiven(e.target.checked)}
+                  className="mt-1 w-5 h-5 rounded border-amber-400 text-emerald-600 focus:ring-emerald-500 shrink-0 cursor-pointer"
+                  required
+                />
+                <div className="space-y-1">
+                  <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-amber-200 block leading-snug">
+                    {lang === 'en'
+                      ? 'Consent to public contact display for transport coordination *'
+                      : 'Kifejezett hozzájárulás az elérhetőségek közzétételéhez *'}
+                  </span>
+                  <p className="text-[11px] sm:text-xs text-slate-600 dark:text-zinc-300 leading-relaxed">
+                    {lang === 'en'
+                      ? 'I agree and consent that my phone number and specified cities/locations will be publicly displayed on the Transport Board so volunteer drivers can directly call and coordinate with me. Once the transport is solved, I can mark it as solved anytime.'
+                      : 'Kifejezetten hozzájárulok ahhoz, hogy a megadott telefonszámom és településeim/címhelyem nyilvánosan megjelenjen a Fuvarbörzén az állatszállítás lebonyolítása és a fuvarozókkal való közvetlen telefonos kapcsolatfelvétel céljából. Tudomásul veszem, hogy a fuvar teljesülésekor az oldalon a hirdetésemet bármikor Megoldottá nyilváníthatom.'}
+                  </p>
+                  <p className="text-[11px] text-amber-700 dark:text-amber-400/90 font-medium">
+                    🛡️ {lang === 'en'
+                      ? 'Privacy tip: Stating only the city or a public meeting point (e.g. clinic parking) is sufficient instead of exact apartment details.'
+                      : 'Adatvédelmi tipp: Nem szükséges pontos lakcímet megadni (pl. emelet/ajtó), elegendő a város vagy egy megbeszélt találkozási pont (pl. rendelő parkolója).'}
+                  </p>
+                </div>
+              </label>
             </div>
 
             {/* Modal Actions */}

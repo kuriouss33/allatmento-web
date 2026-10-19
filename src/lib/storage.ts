@@ -73,3 +73,41 @@ export function removeDeleteToken(reportId: string): void {
     console.error('Hiba a deleteToken törlésekor:', err);
   }
 }
+
+// --- Saját feladott fuvarok azonosítása (bejelentkezés nélkül is) ---
+export function saveMyTransportId(transportId: string): void {
+  if (typeof window === 'undefined' || !transportId) return;
+  try {
+    const raw = localStorage.getItem('sajat_fuvarok') || '[]';
+    const list: string[] = JSON.parse(raw);
+    if (!list.includes(transportId)) {
+      list.push(transportId);
+      localStorage.setItem('sajat_fuvarok', JSON.stringify(list));
+    }
+  } catch (err) {
+    console.error('Hiba a saját fuvar mentésekor:', err);
+  }
+}
+
+export function getMyTransportIds(): string[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem('sajat_fuvarok') || '[]';
+    const list = JSON.parse(raw);
+    return Array.isArray(list) ? list : [];
+  } catch {
+    return [];
+  }
+}
+
+export function isMyTransport(transportId: string, feladoUserId?: string, currentUid?: string): boolean {
+  if (currentUid && feladoUserId && currentUid === feladoUserId) return true;
+  if (typeof window === 'undefined' || !transportId) return false;
+  try {
+    const ids = getMyTransportIds();
+    return ids.includes(transportId);
+  } catch {
+    return false;
+  }
+}
+

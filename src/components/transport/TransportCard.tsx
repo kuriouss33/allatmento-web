@@ -7,7 +7,6 @@ import {
   Calendar, 
   Clock, 
   Phone, 
-  MessageCircle, 
   CheckCircle2, 
   AlertCircle, 
   Package, 
@@ -15,7 +14,9 @@ import {
   ArrowRight,
   ShieldCheck,
   Check,
-  Trash2
+  Trash2,
+  RotateCcw,
+  Info
 } from 'lucide-react';
 import { TransportJob, TransportStatus } from '@/types';
 import { useLanguage } from '@/context/LanguageContext';
@@ -25,21 +26,23 @@ interface TransportCardProps {
   job: TransportJob;
   isSelected?: boolean;
   isAdmin?: boolean;
+  isCreator?: boolean;
   onSelect?: () => void;
   onOpenDetails: (job: TransportJob) => void;
-  onTakeJob: (job: TransportJob) => void;
-  onAdvanceStatus: (job: TransportJob, nextStatus: TransportStatus) => void;
+  onToggleSolved?: (job: TransportJob) => void;
   onDelete?: (job: TransportJob) => void;
+  onTakeJob?: (job: TransportJob) => void;
+  onAdvanceStatus?: (job: TransportJob, nextStatus: TransportStatus) => void;
 }
 
 export const TransportCard: React.FC<TransportCardProps> = ({
   job,
   isSelected,
   isAdmin,
+  isCreator,
   onSelect,
   onOpenDetails,
-  onTakeJob,
-  onAdvanceStatus,
+  onToggleSolved,
   onDelete,
 }) => {
   const { t, lang } = useLanguage();
@@ -75,38 +78,24 @@ export const TransportCard: React.FC<TransportCardProps> = ({
     }
   };
 
-  // Státusz jelvény
+  const isSolved = job.statusz === 'megoldva' || job.statusz === 'teljesitve';
+
+  // Státusz jelvény (Egyszerűsített: Keres fuvart vs Megoldódott)
   const getStatusBadge = () => {
-    switch (job.statusz) {
-      case 'nyitott':
-        return (
-          <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            {lang === 'en' ? 'Open ride' : 'Nyitott fuvar'}
-          </span>
-        );
-      case 'elvallalva':
-        return (
-          <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 flex items-center gap-1">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            {lang === 'en' ? 'Accepted' : 'Elvállalva'}
-          </span>
-        );
-      case 'folyamatban':
-        return (
-          <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/25 flex items-center gap-1">
-            <Truck className="w-3.5 h-3.5" />
-            {lang === 'en' ? 'In transit' : 'Úton van'}
-          </span>
-        );
-      case 'teljesitve':
-        return (
-          <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20 flex items-center gap-1">
-            <CheckCircle2 className="w-3.5 h-3.5" />
-            {lang === 'en' ? 'Completed' : 'Teljesítve'}
-          </span>
-        );
+    if (isSolved) {
+      return (
+        <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20 flex items-center gap-1.5">
+          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+          {lang === 'en' ? 'Solved' : 'Megoldódott'}
+        </span>
+      );
     }
+    return (
+      <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
+        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+        {lang === 'en' ? 'Looking for ride' : 'Keres fuvart'}
+      </span>
+    );
   };
 
   // Doboz igény jelvény
@@ -263,66 +252,69 @@ export const TransportCard: React.FC<TransportCardProps> = ({
         className="flex items-center gap-2 pt-1"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Ha a fuvar még NYITOTT: Egykattintásos elvállalás */}
-        {job.statusz === 'nyitott' && (
+        {/* Ha a feladó (vagy super_admin) nézi: Megoldottá tétel / Újra megnyitás gomb */}
+        {(isCreator || isAdmin) && onToggleSolved ? (
           <button
             type="button"
-            onClick={() => onTakeJob(job)}
-            className="flex-1 min-h-[48px] px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-all"
-            aria-label={lang === 'en' ? 'Accept ride' : 'Fuvar elvállalása'}
+            onClick={() => onToggleSolved(job)}
+            className={`flex-1 min-h-[48px] px-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition-all active:scale-[0.98] ${
+              isSolved
+                ? 'border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 hover:bg-slate-50 dark:hover:bg-zinc-700'
+                : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/20'
+            }`}
+            title={
+              isSolved
+                ? (lang === 'en' ? 'Reopen transport request' : 'Fuvarigény újra megnyitása')
+                : (lang === 'en' ? 'Mark transport as solved' : 'Fuvar megjelölése megoldottként')
+            }
           >
-            <Check className="w-4 h-4 stroke-[3]" />
-            <span>{lang === 'en' ? 'Accept ride' : 'Fuvar elvállalása'}</span>
+            {isSolved ? (
+              <>
+                <RotateCcw className="w-4 h-4" />
+                <span>{lang === 'en' ? 'Reopen request' : 'Újra megnyitás'}</span>
+              </>
+            ) : (
+              <>
+                <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
+                <span>{lang === 'en' ? 'Mark Solved' : 'Megoldódott'}</span>
+              </>
+            )}
           </button>
+        ) : (
+          /* Ha önkéntes fuvarozó / látogató nézi: Közvetlen egykattintásos hívás gomb! (Nem kell bejelentkezni!) */
+          job.feladoTelefon ? (
+            <a
+              href={`tel:${job.feladoTelefon.replace(/\s+/g, '')}`}
+              className="flex-1 min-h-[48px] px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm shadow-emerald-600/20 active:scale-[0.98] transition-all"
+              title={`${lang === 'en' ? 'Call sender directly' : 'Közvetlen hívás'}: ${job.feladoTelefon}`}
+            >
+              <Phone className="w-4 h-4 shrink-0" />
+              <span className="truncate">{lang === 'en' ? 'Call' : 'Hívás'}: {job.feladoTelefon}</span>
+            </a>
+          ) : null
         )}
 
-        {/* Ha a fuvar ELVÁLLALVA: Útnak indulás gomb */}
-        {job.statusz === 'elvallalva' && (
-          <button
-            type="button"
-            onClick={() => onAdvanceStatus(job, 'folyamatban')}
-            className="flex-1 min-h-[48px] px-4 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-[0.98] text-slate-950 font-black text-sm flex items-center justify-center gap-2 shadow-sm transition-all"
-            aria-label={lang === 'en' ? 'Started transit' : 'Útnak indultam'}
-          >
-            <Truck className="w-4 h-4" />
-            <span>{lang === 'en' ? 'Started transit' : 'Útnak indultam'}</span>
-          </button>
-        )}
-
-        {/* Ha a fuvar FOLYAMATBAN: Megérkeztem / Teljesítve */}
-        {job.statusz === 'folyamatban' && (
-          <button
-            type="button"
-            onClick={() => onAdvanceStatus(job, 'teljesitve')}
-            className="flex-1 min-h-[48px] px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-all"
-            aria-label={lang === 'en' ? 'Arrived (Complete)' : 'Megérkeztem (Kész)'}
-          >
-            <CheckCircle2 className="w-4 h-4" />
-            <span>{lang === 'en' ? 'Arrived (Complete)' : 'Megérkeztem (Kész)'}</span>
-          </button>
-        )}
-
-        {/* Közvetlen Hívás gomb a feladóhoz (min. 48x48 px érintőfelület) */}
-        {job.feladoTelefon && (
+        {/* Ha a feladó az és van telefonja, egy kis hívás gomb is elérhető */}
+        {(isCreator || isAdmin) && job.feladoTelefon && (
           <a
             href={`tel:${job.feladoTelefon.replace(/\s+/g, '')}`}
-            className="min-h-[48px] min-w-[48px] px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-slate-700 dark:text-zinc-200 hover:bg-blue-50 dark:hover:bg-zinc-800 hover:text-blue-600 dark:hover:text-blue-400 flex items-center justify-center transition-colors shrink-0 shadow-2xs"
+            className="min-h-[48px] min-w-[48px] px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-slate-700 dark:text-zinc-200 hover:bg-emerald-50 dark:hover:bg-zinc-800 hover:text-emerald-600 flex items-center justify-center transition-colors shrink-0 shadow-2xs"
             title={`${lang === 'en' ? 'Call' : 'Hívás'}: ${job.feladoTelefon}`}
             aria-label={lang === 'en' ? 'Call sender' : 'Feladó hívása'}
           >
-            <Phone className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <Phone className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
           </a>
         )}
 
-        {/* Részletek & Koordinációs Chat gomb (min. 48px magas) */}
+        {/* Részletek gomb (min. 48px magas) */}
         <button
           type="button"
           onClick={() => onOpenDetails(job)}
           className="min-h-[48px] px-3.5 sm:px-4 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-200 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors shrink-0"
-          title={lang === 'en' ? 'Details and Chat' : 'Részletek és Koordináció'}
-          aria-label={lang === 'en' ? 'Details and Chat' : 'Részletek és Koordináció'}
+          title={lang === 'en' ? 'Details' : 'Részletek'}
+          aria-label={lang === 'en' ? 'Details' : 'Részletek'}
         >
-          <MessageCircle className="w-4 h-4 text-blue-500" />
+          <Info className="w-4 h-4 text-blue-500" />
           <span className="hidden sm:inline">{lang === 'en' ? 'Details' : 'Részletek'}</span>
         </button>
       </div>

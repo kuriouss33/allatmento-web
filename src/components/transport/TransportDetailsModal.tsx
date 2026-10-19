@@ -19,7 +19,8 @@ import {
   Building2,
   Check,
   MessageSquare,
-  Trash2
+  Trash2,
+  RotateCcw
 } from 'lucide-react';
 import { TransportJob, TransportStatus } from '@/types';
 import { useLanguage } from '@/context/LanguageContext';
@@ -29,16 +30,20 @@ import { addTransportMessage, updateTransportStatus } from '@/lib/transportApi';
 interface TransportDetailsModalProps {
   job: TransportJob | null;
   isOpen: boolean;
+  isCreator?: boolean;
   onClose: () => void;
   onJobUpdated?: (updatedJob: TransportJob) => void;
+  onToggleSolved?: (job: TransportJob) => void;
   onDelete?: (job: TransportJob) => void;
 }
 
 export const TransportDetailsModal: React.FC<TransportDetailsModalProps> = ({
   job,
   isOpen,
+  isCreator,
   onClose,
   onJobUpdated,
+  onToggleSolved,
   onDelete,
 }) => {
   const { t, lang } = useLanguage();
@@ -75,47 +80,27 @@ export const TransportDetailsModal: React.FC<TransportDetailsModalProps> = ({
     firebaseUser && currentJob.driverId === firebaseUser.uid
   );
 
-  const handleTakeJob = async () => {
-    const driverName = firebaseUser?.displayName || (isRescuer ? 'Hitelesített Mentő' : 'Önkéntes Fuvarozó');
-    const driverId = firebaseUser?.uid || `guest-${Date.now()}`;
-    const driverPhone = firebaseUser?.phoneNumber || '';
+  const isSolved = currentJob.statusz === 'megoldva' || currentJob.statusz === 'teljesitve';
 
-    const updated = {
-      ...currentJob,
-      statusz: 'elvallalva' as TransportStatus,
-      driverId,
-      driverName,
-      driverPhone,
-      elvallalvaAt: new Date().toISOString()
-    };
-    setCurrentJob(updated);
-    if (onJobUpdated) onJobUpdated(updated);
-
-    try {
-      await updateTransportStatus(currentJob.id, 'elvallalva', {
-        driverId,
-        driverName,
-        driverPhone
-      });
-    } catch (err) {
-      console.error('Error in handleTakeJob:', err);
-    }
-  };
-
-  const handleStatusChange = async (nextStatus: TransportStatus) => {
+  const handleToggleSolved = async () => {
+    if (!currentJob) return;
+    const nextStatus: TransportStatus = isSolved ? 'nyitott' : 'megoldva';
     const updated = {
       ...currentJob,
       statusz: nextStatus,
       updatedAt: new Date().toISOString(),
-      ...(nextStatus === 'teljesitve' ? { teljesitveAt: new Date().toISOString() } : {})
+      ...(nextStatus === 'megoldva' ? { megoldvaAt: new Date().toISOString() } : {})
     };
     setCurrentJob(updated);
     if (onJobUpdated) onJobUpdated(updated);
-
-    try {
-      await updateTransportStatus(currentJob.id, nextStatus);
-    } catch (err) {
-      console.error('Error in handleStatusChange:', err);
+    if (onToggleSolved) {
+      onToggleSolved(currentJob);
+    } else {
+      try {
+        await updateTransportStatus(currentJob.id, nextStatus);
+      } catch (err) {
+        console.error('Error toggling solved in modal:', err);
+      }
     }
   };
 
@@ -230,10 +215,22 @@ export const TransportDetailsModal: React.FC<TransportDetailsModalProps> = ({
                 <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">
                   {lang === 'en' ? 'Current status:' : 'Jelenlegi állapot:'}
                 </span>
-                <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300">
-                  {currentJob.statusz === 'nyitott' ? (lang === 'en' ? 'Open ride request' : 'Nyitott fuvarozási igény') :
-                   currentJob.statusz === 'elvallalva' ? (lang === 'en' ? 'Accepted (Driver assigned)' : 'Elvállalva (Sofőr kijelölve)') :
-                   currentJob.statusz === 'folyamatban' ? (lang === 'en' ? 'In transit / En route' : 'Folyamatban / Úton van') : (lang === 'en' ? 'Completed' : 'Teljesítve')}
+                <span className={`text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 ${
+                  isSolved
+                    ? 'bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300'
+                    : 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300'
+                }`}>
+                  {isSolved ? (
+                    <>
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                      <span>{lang === 'en' ? 'Solved' : 'Megoldódott'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                      <span>{lang === 'en' ? 'Looking for ride' : 'Keres fuvart'}</span>
+                    </>
+                  )}
                 </span>
               </div>
 
@@ -247,50 +244,38 @@ export const TransportDetailsModal: React.FC<TransportDetailsModalProps> = ({
               )}
             </div>
 
-            {/* 1-kattintásos terepi akciógombok (min. 48px magas!) */}
-            <div className="flex items-center gap-2 pt-1 flex-wrap sm:flex-nowrap">
-              {currentJob.statusz === 'nyitott' && (
+            {/* Feladó / Admin jogosultságú gomb */}
+            {(isCreator || isAdmin) ? (
+              <div className="pt-1">
                 <button
                   type="button"
-                  onClick={handleTakeJob}
-                  className="w-full min-h-[48px] px-5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-all"
+                  onClick={handleToggleSolved}
+                  className={`w-full min-h-[48px] px-5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-all active:scale-[0.98] ${
+                    isSolved
+                      ? 'border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-750'
+                      : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/20'
+                  }`}
                 >
-                  <Check className="w-4 h-4 stroke-[3]" />
-                  <span>{lang === 'en' ? 'Accept ride now' : 'Fuvar elvállalása most'}</span>
+                  {isSolved ? (
+                    <>
+                      <RotateCcw className="w-4 h-4" />
+                      <span>{lang === 'en' ? 'Reopen request (Looking for ride)' : 'Fuvarigény újra megnyitása (Keres fuvart)'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
+                      <span>{lang === 'en' ? 'Mark as Solved' : 'Megjelölés Megoldottként'}</span>
+                    </>
+                  )}
                 </button>
-              )}
-
-              {currentJob.statusz === 'elvallalva' && (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => handleStatusChange('folyamatban')}
-                    className="flex-1 min-h-[48px] px-4 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-[0.98] text-slate-950 font-black text-sm flex items-center justify-center gap-2 shadow-sm transition-all"
-                  >
-                    <Truck className="w-4 h-4" />
-                    <span>{lang === 'en' ? 'Started transit (En route)' : 'Útnak indultam (Folyamatban)'}</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleStatusChange('nyitott')}
-                    className="min-h-[48px] px-3.5 rounded-xl border border-slate-300 dark:border-zinc-700 text-slate-600 dark:text-slate-300 text-xs font-medium hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
-                  >
-                    {lang === 'en' ? 'Withdraw' : 'Visszalépés'}
-                  </button>
-                </>
-              )}
-
-              {currentJob.statusz === 'folyamatban' && (
-                <button
-                  type="button"
-                  onClick={() => handleStatusChange('teljesitve')}
-                  className="w-full min-h-[48px] px-5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-all"
-                >
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>{lang === 'en' ? 'Arrived / Ride complete' : 'Megérkeztem / Fuvar teljesítve'}</span>
-                </button>
-              )}
-            </div>
+              </div>
+            ) : (
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                {lang === 'en'
+                  ? 'Volunteer driver: Call the sender directly to arrange pickup. No registration needed!'
+                  : 'Önkéntes fuvarozóként hívd közvetlenül a feladót az egyeztetéshez. Nincs szükség regisztrációra!'}
+              </p>
+            )}
           </div>
 
           {/* 2. Útvonal és Részletek */}
@@ -430,6 +415,18 @@ export const TransportDetailsModal: React.FC<TransportDetailsModalProps> = ({
                 )}
               </div>
             )}
+
+            {/* Jogi és Adatkezelési tájékoztató */}
+            <div className="mt-3 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-[11px] sm:text-xs text-amber-950 dark:text-amber-200/90 space-y-1">
+              <span className="font-bold flex items-center gap-1.5 text-xs">
+                🛡️ {lang === 'en' ? 'Privacy & Coordination Notice:' : 'Adatkezelési és kapcsolattartási tájékoztató:'}
+              </span>
+              <p className="leading-relaxed opacity-95">
+                {lang === 'en'
+                  ? 'The requester has consented to make their phone number and locations publicly visible solely for coordinating this animal transport. Please use the contact details exclusively for this purpose.'
+                  : 'A hirdetés feladója kifejezetten hozzájárult a telefonszám és helyszínek közzétételéhez az állatszállítás egyeztetése céljából. Kérjük, hogy az elérhetőséget kizárólag a fuvarozással összefüggésben használd fel.'}
+              </p>
+            </div>
           </div>
 
           {/* 5. Belső Koordinációs Chat / Üzenőfal */}

@@ -133,31 +133,10 @@ export const INITIAL_TRANSPORTS: TransportJob[] = [
     datum: '2026-10-21',
     idosav: 'Pontosan 10:00 órára',
     urgency: 'fix_idopont',
-    statusz: 'elvallalva',
+    statusz: 'nyitott',
     feladoNev: 'Szabó Péter',
     feladoTelefon: '+36 30 111 2233',
-    driverId: 'sofor-1',
-    driverName: 'Horváth Tamás (Önkéntes mentő)',
-    driverPhone: '+36 70 555 4321',
-    elvallalvaAt: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
-    messages: [
-      {
-        id: 'm2',
-        senderId: 'sofor-1',
-        senderName: 'Horváth Tamás',
-        text: 'Reggel 8:15-kor érkezem a győri menhelyre, tágas kombim van és biztonsági hámom.',
-        createdAt: new Date(Date.now() - 1000 * 60 * 40).toISOString(),
-        isDriver: true
-      },
-      {
-        id: 'm3',
-        senderId: 'felado-4',
-        senderName: 'Szabó Péter',
-        text: 'Köszönjük szépen! Maxot reggel nem etetjük meg, hogy ne legyen rosszul az autóban.',
-        createdAt: new Date(Date.now() - 1000 * 60 * 25).toISOString(),
-      }
-    ]
   },
   {
     id: 'fuvar-5',
@@ -176,29 +155,16 @@ export const INITIAL_TRANSPORTS: TransportJob[] = [
     cargoSize: 'kicsi',
     allatNev: 'Cirmi (kiscica)',
     allatFajta: 'Európai rövidszőrű',
-    leiras: 'Sérült kiscica átadása specialistának Veszprémben.',
+    leiras: 'Sérült kiscica átadása specialistának Veszprémben. Sikeresen megérkezett a fogadó orvoshoz.',
     crateRequirement: 'sajat_box_van',
     datum: '2026-10-20',
     idosav: '13:00 - 15:00',
     urgency: 'surgos',
-    statusz: 'folyamatban',
+    statusz: 'megoldva',
+    megoldvaAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
     feladoNev: 'Tóth Ildikó',
     feladoTelefon: '+36 30 888 9900',
-    driverId: 'sofor-2',
-    driverName: 'Kiss Béla',
-    driverPhone: '+36 20 444 3322',
-    elvallalvaAt: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 30).toISOString(),
-    messages: [
-      {
-        id: 'm4',
-        senderId: 'sofor-2',
-        senderName: 'Kiss Béla',
-        text: 'Felvettem Cirmit Székesfehérváron, elindultam Veszprém felé!',
-        createdAt: new Date(Date.now() - 1000 * 60 * 20).toISOString(),
-        isDriver: true
-      }
-    ]
   }
 ];
 
@@ -325,6 +291,7 @@ export async function createTransport(data: {
   feladoTelefon: string;
   feladoSzervezet?: string;
   feladoUserId?: string;
+  consentGiven?: boolean;
 }): Promise<string> {
   const fromGeo = resolveLocation(data.honnanVaros, data.honnanMegye);
   const toGeo = resolveLocation(data.hovaVaros, data.hovaMegye);
@@ -358,6 +325,7 @@ export async function createTransport(data: {
     feladoTelefon: data.feladoTelefon,
     feladoSzervezet: data.feladoSzervezet,
     feladoUserId: data.feladoUserId,
+    consentGiven: Boolean(data.consentGiven),
     createdAt: new Date().toISOString(),
     messages: []
   };
@@ -384,7 +352,7 @@ export async function createTransport(data: {
 }
 
 /**
- * Fuvar státusz frissítése és feladatvállalás
+ * Fuvar státusz frissítése (pl. Nyitott <-> Megoldva)
  */
 export async function updateTransportStatus(
   id: string,
@@ -399,17 +367,18 @@ export async function updateTransportStatus(
   const index = current.findIndex((j) => j.id === id);
 
   if (index !== -1) {
+    const isSolved = newStatus === 'megoldva' || newStatus === 'teljesitve';
     const updatedJob: TransportJob = {
       ...current[index],
       statusz: newStatus,
       updatedAt: new Date().toISOString(),
+      ...(isSolved ? { megoldvaAt: new Date().toISOString() } : { megoldvaAt: undefined }),
       ...(driverInfo ? {
         driverId: driverInfo.driverId,
         driverName: driverInfo.driverName,
         driverPhone: driverInfo.driverPhone || current[index].driverPhone,
         elvallalvaAt: current[index].elvallalvaAt || new Date().toISOString()
-      } : {}),
-      ...(newStatus === 'teljesitve' ? { teljesitveAt: new Date().toISOString() } : {})
+      } : {})
     };
 
     current[index] = updatedJob;
@@ -419,18 +388,17 @@ export async function updateTransportStatus(
   if (db) {
     try {
       const docRef = doc(db, 'transports', id);
+      const isSolved = newStatus === 'megoldva' || newStatus === 'teljesitve';
       const updateData: any = {
         statusz: newStatus,
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
+        megoldvaAt: isSolved ? serverTimestamp() : null
       };
       if (driverInfo) {
         updateData.driverId = driverInfo.driverId;
         updateData.driverName = driverInfo.driverName;
         if (driverInfo.driverPhone) updateData.driverPhone = driverInfo.driverPhone;
         updateData.elvallalvaAt = serverTimestamp();
-      }
-      if (newStatus === 'teljesitve') {
-        updateData.teljesitveAt = serverTimestamp();
       }
       await setDoc(docRef, updateData, { merge: true });
     } catch (err) {

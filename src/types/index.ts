@@ -102,7 +102,7 @@ export interface FirstAidGuideItem {
 }
 
 // --- FUVARBÖRZE / SZÁLLÍTÁSI TÍPUSOK ---
-export type TransportStatus = 'nyitott' | 'elvallalva' | 'folyamatban' | 'teljesitve';
+export type TransportStatus = 'nyitott' | 'megoldva' | 'elvallalva' | 'folyamatban' | 'teljesitve';
 export type TransportUrgency = 'normal' | 'surgos' | 'fix_idopont';
 export type TransportCargoType = 'kutya' | 'macska' | 'egyeb_allat' | 'adomany_tap';
 export type TransportCargoSize = 'kicsi' | 'kozepes' | 'nagy' | 'tobb_allat' | 'csomag';
@@ -150,12 +150,14 @@ export interface TransportJob {
   feladoTelefon: string;
   feladoSzervezet?: string;
   feladoUserId?: string;
+  consentGiven?: boolean;
 
   driverId?: string;
   driverName?: string;
   driverPhone?: string;
   elvallalvaAt?: string;
   teljesitveAt?: string;
+  megoldvaAt?: string;
 
   messages?: TransportMessage[];
 
