@@ -5,6 +5,7 @@ import { X, HeartHandshake, CheckCircle2, AlertCircle, ArrowRight } from 'lucide
 import { Report } from '@/types';
 import { sendHelpOffer } from '@/lib/api';
 import { useLanguage } from '@/context/LanguageContext';
+import { getTranslatedSpecies } from '@/lib/speciesUtils';
 
 interface HelpOfferModalProps {
   report: Report | null;
@@ -17,7 +18,7 @@ export const HelpOfferModal: React.FC<HelpOfferModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [nev, setNev] = useState('');
   const [telefon, setTelefon] = useState('');
   const [uzenet, setUzenet] = useState('');
@@ -90,7 +91,7 @@ export const HelpOfferModal: React.FC<HelpOfferModalProps> = ({
               {t.helpOfferTitle}
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              {report.fajta} – {report.cim || report.megye}
+              {getTranslatedSpecies(report.fajta, lang)} – {report.cim || report.megye}
             </p>
           </div>
         </div>

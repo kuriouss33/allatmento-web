@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Report } from '@/types';
 import { canUserSeeExactReport, getReportDisplayLocation, getReportDisplayAddress } from '@/lib/privacy';
 import { useLanguage } from '@/context/LanguageContext';
+import { getTranslatedSpecies } from '@/lib/speciesUtils';
 
 interface DispatchMapProps {
   reports: Report[];
@@ -28,7 +29,7 @@ export const DispatchMap: React.FC<DispatchMapProps> = ({
   isRegistered,
   currentUserId,
 }) => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const clusterGroupRef = useRef<any>(null);
@@ -118,7 +119,7 @@ export const DispatchMap: React.FC<DispatchMapProps> = ({
 
       popupContent.innerHTML = `
         <div class="flex items-center justify-between gap-1.5 mb-1.5">
-          <span class="font-bold text-sm text-slate-900 dark:text-white">${report.fajta}</span>
+          <span class="font-bold text-sm text-slate-900 dark:text-white">${getTranslatedSpecies(report.fajta, lang)}</span>
           <div class="flex items-center gap-1">
             ${exactBadgeHtml}
             <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${badgeBg}">

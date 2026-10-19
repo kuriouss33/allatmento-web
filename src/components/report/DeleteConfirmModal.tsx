@@ -7,6 +7,7 @@ import { deleteReport } from '@/lib/api';
 import { getDeleteToken, removeDeleteToken } from '@/lib/storage';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
+import { getTranslatedSpecies } from '@/lib/speciesUtils';
 
 interface DeleteConfirmModalProps {
   report: Report | null;
@@ -21,7 +22,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { idToken, isAdmin, anonymousUid } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -82,7 +83,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
           {t.deleteConfirmTitle}
         </h3>
         <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">
-          {report.fajta} – {report.cim || report.megye}
+          {getTranslatedSpecies(report.fajta, lang)} – {report.cim || report.megye}
           <br />
           {t.deleteConfirmDesc}
         </p>

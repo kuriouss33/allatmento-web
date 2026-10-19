@@ -20,6 +20,7 @@ import { MEGYEK } from '@/lib/constants';
 import { Report, ReportStatus } from '@/types';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
+import { getTranslatedSpecies } from '@/lib/speciesUtils';
 import { ReportCard } from '@/components/report/ReportCard';
 import { ReportDetailsModal } from '@/components/report/ReportDetailsModal';
 import { HelpOfferModal } from '@/components/report/HelpOfferModal';
@@ -44,7 +45,7 @@ const DispatchMap = dynamic(
 );
 
 export default function DispatchPage() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { idToken, isRescuer, isAdmin, firebaseUser } = useAuth();
 
   // Gyors gyorsítótárazott kezdeti állapot (SWR minta a 0 ms-os hidegindításhoz)
@@ -167,7 +168,7 @@ export default function DispatchPage() {
       // Szöveges keresés
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase().trim();
-        const inSpecies = (r.fajta || '').toLowerCase().includes(query);
+        const inSpecies = (r.fajta || '').toLowerCase().includes(query) || getTranslatedSpecies(r.fajta, lang).toLowerCase().includes(query);
         const inDesc = (r.leiras || '').toLowerCase().includes(query);
         const inCity = (r.cim || '').toLowerCase().includes(query);
         const inPhone = (r.telefon || '').includes(query);
@@ -177,7 +178,7 @@ export default function DispatchPage() {
       }
       return true;
     });
-  }, [reports, statusFilter, countyFilter, searchQuery]);
+  }, [reports, statusFilter, countyFilter, searchQuery, lang]);
 
   // Aktív esetek száma: dinamikusan kiszűrve a megoldott ügyeket
   const activeReportsCount = useMemo(() => {
@@ -187,7 +188,7 @@ export default function DispatchPage() {
         if (countyFilter !== 'all' && r.megye !== countyFilter) return false;
         if (searchQuery.trim()) {
           const query = searchQuery.toLowerCase().trim();
-          const inSpecies = (r.fajta || '').toLowerCase().includes(query);
+          const inSpecies = (r.fajta || '').toLowerCase().includes(query) || getTranslatedSpecies(r.fajta, lang).toLowerCase().includes(query);
           const inDesc = (r.leiras || '').toLowerCase().includes(query);
           const inCity = (r.cim || '').toLowerCase().includes(query);
           const inPhone = (r.telefon || '').includes(query);

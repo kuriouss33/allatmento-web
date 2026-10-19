@@ -24,6 +24,7 @@ import {
 import { Report } from '@/types';
 import { useLanguage } from '@/context/LanguageContext';
 import { getReportDisplayAddress } from '@/lib/privacy';
+import { getTranslatedSpecies } from '@/lib/speciesUtils';
 
 export interface PosterModalProps {
   isOpen: boolean;
@@ -79,6 +80,8 @@ export const PosterModal: React.FC<PosterModalProps> = ({
     }
     return null;
   }, [report, initialData]);
+
+  const displaySpecies = activeReport ? getTranslatedSpecies(activeReport.fajta, lang) : '';
 
   // Alapértelmezett típus és telefonszám beállítása a bejelentés adatai alapján
   useEffect(() => {
@@ -406,7 +409,7 @@ export const PosterModal: React.FC<PosterModalProps> = ({
                 {animalImage ? (
                   <img
                     src={animalImage}
-                    alt={activeReport.fajta}
+                    alt={displaySpecies}
                     crossOrigin="anonymous"
                     className="w-full h-full object-cover"
                   />
@@ -414,7 +417,7 @@ export const PosterModal: React.FC<PosterModalProps> = ({
                   <div className="flex flex-col items-center justify-center text-slate-400 gap-2 p-4 text-center">
                     <ImageIcon className="w-12 h-12 text-slate-400" />
                     <span style={{ fontWeight: 700 }} className="poster-semibold text-sm text-slate-600">
-                      {activeReport.fajta}
+                      {displaySpecies}
                     </span>
                     <span className="text-xs text-slate-400">({t.noPhoto})</span>
                   </div>
@@ -425,7 +428,7 @@ export const PosterModal: React.FC<PosterModalProps> = ({
                   style={{ fontWeight: 900 }}
                   className="poster-black absolute bottom-2 left-2 bg-black/85 text-white text-xs sm:text-sm px-3 py-1 rounded-lg uppercase tracking-wide backdrop-blur-xs"
                 >
-                  {activeReport.fajta}
+                  {displaySpecies}
                 </div>
               </div>
 
@@ -549,7 +552,7 @@ export const PosterModal: React.FC<PosterModalProps> = ({
                         {posterType === 'lost' ? 'ELTŰNT' : 'TALÁLT'}
                       </span>
                       <span className="text-[8px] font-semibold text-slate-700 block truncate max-w-full">
-                        {activeReport.fajta}
+                        {displaySpecies}
                       </span>
                       <span style={{ fontWeight: 900 }} className="poster-black text-[9px] text-black tracking-tighter leading-tight block break-all my-0.5">
                         {effectivePhone || 'Adatlap'}
@@ -568,7 +571,7 @@ export const PosterModal: React.FC<PosterModalProps> = ({
                         {posterType === 'lost' ? 'ELTŰNT' : 'TALÁLT'}
                       </span>
                       <span className="text-[8px] font-semibold text-slate-700 block truncate max-w-full">
-                        {activeReport.fajta}
+                        {displaySpecies}
                       </span>
                       <span style={{ fontWeight: 900 }} className="poster-black text-[9px] text-black tracking-tighter leading-tight block break-all my-0.5">
                         {effectivePhone || 'Adatlap'}

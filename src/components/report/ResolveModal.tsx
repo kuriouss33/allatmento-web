@@ -7,6 +7,7 @@ import { updateReportStatus, uploadImage } from '@/lib/api';
 import { compressImage } from '@/lib/image';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
+import { getTranslatedSpecies } from '@/lib/speciesUtils';
 
 interface ResolveModalProps {
   report: Report | null;
@@ -21,7 +22,7 @@ export const ResolveModal: React.FC<ResolveModalProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { idToken } = useAuth();
 
   const [notes, setNotes] = useState('');
@@ -112,7 +113,7 @@ export const ResolveModal: React.FC<ResolveModalProps> = ({
               {t.resolveTitle}
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              {report.fajta} – {report.cim || report.megye}
+              {getTranslatedSpecies(report.fajta, lang)} – {report.cim || report.megye}
             </p>
           </div>
         </div>

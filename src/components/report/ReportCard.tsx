@@ -11,6 +11,7 @@ import { Report } from '@/types';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
 import { canUserSeeExactReport, getReportDisplayAddress } from '@/lib/privacy';
+import { getTranslatedSpecies } from '@/lib/speciesUtils';
 
 interface ReportCardProps {
   report: Report;
@@ -33,7 +34,8 @@ export const ReportCard: React.FC<ReportCardProps> = ({
   onOpenDetails,
 }) => {
   const { firebaseUser, isRescuer, isAdmin } = useAuth();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const displaySpecies = getTranslatedSpecies(report.fajta, lang);
 
   const getCardStatusClasses = () => {
     switch (report.statusz) {
@@ -109,7 +111,7 @@ export const ReportCard: React.FC<ReportCardProps> = ({
           <>
             <img
               src={imageUrl}
-              alt={report.fajta}
+              alt={displaySpecies}
               className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300"
             />
             {report.kepek && report.kepek.length > 1 && (
@@ -133,7 +135,7 @@ export const ReportCard: React.FC<ReportCardProps> = ({
         <div className="space-y-1">
           <div className="flex items-start justify-between gap-1.5">
             <h3 className="font-light text-sm sm:text-base text-slate-900 dark:text-white truncate">
-              {report.fajta}
+              {displaySpecies}
             </h3>
             {statusBadge()}
           </div>

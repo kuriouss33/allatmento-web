@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { PosterModal } from './PosterModal';
 import { ImageLightboxModal } from '@/components/common/ImageLightboxModal';
+import { getTranslatedSpecies } from '@/lib/speciesUtils';
 
 interface ReportDetailsModalProps {
   report: Report | null;
@@ -217,6 +218,8 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
 
   if (!isOpen || !liveReport || !mounted) return null;
 
+  const displaySpecies = getTranslatedSpecies(liveReport.fajta, lang);
+
   const isTakenByMe = Boolean(
     liveReport.statusz === 'folyamatban' &&
     firebaseUser &&
@@ -305,7 +308,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
         <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
             <span className="font-light text-lg sm:text-xl text-slate-900 dark:text-white">
-              {liveReport.fajta}
+              {displaySpecies}
             </span>
 
             {liveReport.megye && (
@@ -339,7 +342,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
               >
                 <img 
                   src={allImages[0]} 
-                  alt={liveReport.fajta} 
+                  alt={displaySpecies} 
                   className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300" 
                 />
                 
