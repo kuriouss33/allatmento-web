@@ -12,19 +12,19 @@ import {
   Info,
   ShieldAlert,
   ArrowRight,
-  ALargeSmall,
-  Layers
+  ALargeSmall
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
-import { useFontSize, FontSize } from '@/context/FontSizeContext';
+import { useFontSize } from '@/context/FontSizeContext';
 import { useAuth } from '@/context/AuthContext';
 
 interface SettingOption {
   id: string;
   icon: React.ReactNode;
   title: string;
-  desc: string;
+  titleClassName?: string;
+  desc?: string;
   badge?: string;
   isActive: boolean;
   onClick: () => void;
@@ -36,8 +36,17 @@ export default function SettingsPage() {
   const { fontSize, setFontSize } = useFontSize();
   const { isAdmin } = useAuth();
 
-  // 1. Nyelv beállítási opciók (egységes 3-as lista)
+  // 1. Nyelv beállítási opciók
+  // Sorrend: 1. Automatikus 2. Magyar (HU) 3. English (EN)
   const languageOptions: SettingOption[] = [
+    {
+      id: 'auto',
+      icon: <Smartphone className="w-4 h-4 text-blue-600 dark:text-blue-400" />,
+      title: t.settingsLangAuto,
+      desc: t.settingsLangAutoDesc,
+      isActive: isSystemLang,
+      onClick: resetToSystemLang,
+    },
     {
       id: 'hu',
       icon: <span className="text-lg leading-none" role="img" aria-label="Magyarország">🇭🇺</span>,
@@ -54,17 +63,10 @@ export default function SettingsPage() {
       isActive: lang === 'en' && !isSystemLang,
       onClick: () => setLang('en'),
     },
-    {
-      id: 'auto',
-      icon: <Smartphone className="w-4 h-4 text-blue-600 dark:text-blue-400" />,
-      title: t.settingsLangAuto,
-      desc: t.settingsLangAutoDesc,
-      isActive: isSystemLang,
-      onClick: resetToSystemLang,
-    },
   ];
 
-  // 2. Megjelenés és téma opciók (egységes 3-as lista)
+  // 2. Megjelenés és téma opciók
+  // Sorrend: 1. Automatikus 2. Világos mód 3. Sötét mód
   const themeOptions: SettingOption[] = [
     {
       id: 'system',
@@ -92,7 +94,8 @@ export default function SettingsPage() {
     },
   ];
 
-  // 3. Betűméret skálázás opciók (egységes 3-as lista)
+  // 3. Betűméret skálázás opciók
+  // Magyarázó szövegek nélkül, azonos container dobozmérettel, a szövegméretekkel demonstrálva a hatást
   const fontSizeOptions: SettingOption[] = [
     {
       id: 'normal',
@@ -102,7 +105,7 @@ export default function SettingsPage() {
         </span>
       ),
       title: t.fontSizeNormal,
-      desc: t.fontSizeNormalDesc,
+      titleClassName: 'text-xs sm:text-sm font-semibold',
       isActive: fontSize === 'normal',
       onClick: () => setFontSize('normal'),
     },
@@ -114,7 +117,7 @@ export default function SettingsPage() {
         </span>
       ),
       title: t.fontSizeLarge,
-      desc: t.fontSizeLargeDesc,
+      titleClassName: 'text-sm sm:text-base font-bold',
       isActive: fontSize === 'large',
       onClick: () => setFontSize('large'),
     },
@@ -126,7 +129,7 @@ export default function SettingsPage() {
         </span>
       ),
       title: t.fontSizeLarger,
-      desc: t.fontSizeLargerDesc,
+      titleClassName: 'text-base sm:text-lg font-bold',
       badge: t.settingsAutoBadge,
       isActive: fontSize === 'larger',
       onClick: () => setFontSize('larger'),
@@ -135,11 +138,11 @@ export default function SettingsPage() {
 
   // Aktuális állapot címkék a kártyák fejlécéhez
   const currentLangLabel = isSystemLang 
-    ? `${t.activeBadge}: Auto (${lang.toUpperCase()})`
+    ? `${t.activeBadge}: ${t.settingsLangAuto}`
     : lang === 'hu' ? 'Magyar 🇭🇺' : 'English 🇬🇧';
 
   const currentThemeLabel = themePreference === 'system'
-    ? `${t.activeBadge}: Auto (${theme === 'dark' ? 'Sötét' : 'Világos'})`
+    ? `${t.activeBadge}: ${t.settingsThemeSystem}`
     : themePreference === 'dark' ? t.settingsThemeDark : t.settingsThemeLight;
 
   const currentFontSizeLabel = fontSize === 'normal' 
@@ -181,7 +184,7 @@ export default function SettingsPage() {
           </span>
         </div>
 
-        {/* 3 Egységes Választó Kapcsoló */}
+        {/* 3 Egységes Választó Kapcsoló (Sorrend: Automatikus, Magyar, English) */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 pt-1">
           {languageOptions.map((opt) => renderSettingTile(opt))}
         </div>
@@ -209,7 +212,7 @@ export default function SettingsPage() {
           </span>
         </div>
 
-        {/* 3 Egységes Választó Kapcsoló */}
+        {/* 3 Egységes Választó Kapcsoló (Sorrend: Automatikus, Világos, Sötét) */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 pt-1">
           {themeOptions.map((opt) => renderSettingTile(opt))}
         </div>
@@ -237,19 +240,9 @@ export default function SettingsPage() {
           </span>
         </div>
 
-        {/* 3 Egységes Választó Kapcsoló */}
+        {/* 3 Egységes Választó Kapcsoló a betűméret demonstrálásával */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 pt-1">
           {fontSizeOptions.map((opt) => renderSettingTile(opt))}
-        </div>
-
-        {/* Élő előnézet minta */}
-        <div className="p-3 rounded-xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200/80 dark:border-zinc-800 flex items-center justify-between gap-3">
-          <span className="font-semibold text-[11px] text-slate-400 dark:text-zinc-500 uppercase tracking-wider shrink-0">
-            {t.fontSizePreviewTitle}:
-          </span>
-          <span className="font-medium text-xs sm:text-sm text-slate-700 dark:text-zinc-300 text-right truncate">
-            {t.fontSizePreviewSample}
-          </span>
         </div>
       </div>
 
@@ -329,31 +322,37 @@ export default function SettingsPage() {
 
 /**
  * Egységesített Választó Kapcsoló Kártya
- * Mind a 3 szekcióban (Nyelv, Megjelenés, Betűméret) pontosan ugyanolyan mérettel,
- * felépítéssel és kapcsoló-indikátorral rendelkezik.
+ * Mind a 3 szekcióban (Nyelv, Megjelenés, Betűméret) pontosan azonos mérettel
+ * és megbízható, túlcsordulás-mentes (no-overflow) elrendezéssel rendelkezik.
  */
 function renderSettingTile(opt: SettingOption) {
+  const hasDesc = Boolean(opt.desc && opt.desc.trim().length > 0);
+
   return (
     <button
       key={opt.id}
       type="button"
       onClick={opt.onClick}
-      className={`group relative p-3 sm:p-4 rounded-xl border text-left transition-all flex flex-row sm:flex-col justify-between items-center sm:items-stretch gap-3 ${
+      className={`group relative w-full p-3 sm:p-4 rounded-xl border text-left transition-all flex flex-row sm:flex-col justify-between items-center sm:items-stretch gap-2.5 sm:gap-3 min-h-[64px] sm:min-h-[104px] overflow-hidden ${
         opt.isActive
           ? 'border-blue-600 dark:border-blue-500 bg-blue-50/70 dark:bg-zinc-800/90 shadow-sm ring-1 ring-blue-500/30 text-slate-900 dark:text-white'
           : 'border-slate-200 dark:border-zinc-800/80 bg-slate-50/50 dark:bg-zinc-900/60 hover:bg-slate-100 dark:hover:bg-zinc-800/60 hover:border-slate-300 dark:hover:border-zinc-700 text-slate-700 dark:text-zinc-300'
       }`}
     >
-      {/* Mobilon bal oldal / Asztali gépen felső sáv */}
-      <div className="flex items-center gap-3 sm:justify-between sm:w-full">
+      {/* Mobilon bal oldal / Asztali gépen felső sor */}
+      <div className="flex items-center gap-2.5 sm:gap-3 sm:justify-between sm:w-full min-w-0 flex-1">
         <div className="w-8 h-8 rounded-lg bg-slate-200/60 dark:bg-zinc-800 flex items-center justify-center shrink-0">
           {opt.icon}
         </div>
 
         {/* Mobilos középső szövegblokk */}
         <div className="sm:hidden flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <span className="font-bold text-sm block text-slate-900 dark:text-white truncate">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span
+              className={`block truncate text-slate-900 dark:text-white ${
+                opt.titleClassName || 'font-bold text-sm'
+              }`}
+            >
               {opt.title}
             </span>
             {opt.badge && (
@@ -362,14 +361,16 @@ function renderSettingTile(opt: SettingOption) {
               </span>
             )}
           </div>
-          <span className="text-xs text-slate-500 dark:text-slate-400 block truncate">
-            {opt.desc}
-          </span>
+          {hasDesc && (
+            <span className="text-xs text-slate-500 dark:text-slate-400 block truncate mt-0.5">
+              {opt.desc}
+            </span>
+          )}
         </div>
 
-        {/* Asztali gépes rádiógomb / kapcsoló indikátor */}
+        {/* Asztali gépes rádiógomb / kapcsoló indikátor (jobb felül) */}
         <div
-          className={`hidden sm:flex w-5 h-5 rounded-full items-center justify-center transition-all ${
+          className={`hidden sm:flex w-5 h-5 rounded-full items-center justify-center shrink-0 transition-all ${
             opt.isActive
               ? 'bg-blue-600 dark:bg-blue-500 text-white shadow-xs ring-2 ring-blue-500/20'
               : 'border-2 border-slate-300 dark:border-zinc-700 group-hover:border-slate-400 dark:group-hover:border-zinc-600'
@@ -380,9 +381,13 @@ function renderSettingTile(opt: SettingOption) {
       </div>
 
       {/* Asztali gépes alsó szövegblokk */}
-      <div className="hidden sm:block space-y-0.5 mt-2">
-        <div className="flex items-center gap-1.5">
-          <span className="font-bold text-sm block text-slate-900 dark:text-white">
+      <div className="hidden sm:block space-y-0.5 mt-auto">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <span
+            className={`block truncate text-slate-900 dark:text-white ${
+              opt.titleClassName || 'font-bold text-sm'
+            }`}
+          >
             {opt.title}
           </span>
           {opt.badge && (
@@ -391,14 +396,16 @@ function renderSettingTile(opt: SettingOption) {
             </span>
           )}
         </div>
-        <span className="text-xs text-slate-500 dark:text-slate-400 block line-clamp-1">
-          {opt.desc}
-        </span>
+        {hasDesc && (
+          <span className="text-xs text-slate-500 dark:text-slate-400 block truncate">
+            {opt.desc}
+          </span>
+        )}
       </div>
 
       {/* Mobilos jobb oldali kapcsoló indikátor */}
       <div
-        className={`sm:hidden w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-all ${
+        className={`sm:hidden w-5 h-5 rounded-full flex items-center justify-center shrink-0 ml-1.5 transition-all ${
           opt.isActive
             ? 'bg-blue-600 dark:bg-blue-500 text-white shadow-xs ring-2 ring-blue-500/20'
             : 'border-2 border-slate-300 dark:border-zinc-700 group-hover:border-slate-400 dark:group-hover:border-zinc-600'
