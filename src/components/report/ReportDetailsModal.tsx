@@ -64,8 +64,15 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
   const [sending, setSending] = useState(false);
   const [liveReport, setLiveReport] = useState<Report | null>(report ? normalizeReport(report) : null);
   const [posterModalOpen, setPosterModalOpen] = useState(false);
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [selectedGalleryIndex, setSelectedGalleryIndex] = useState(0);
+
+  const openGallery = (imgs: string[], index: number = 0) => {
+    setGalleryImages(imgs);
+    setSelectedGalleryIndex(index);
+    setGalleryOpen(true);
+  };
 
   const allImages = useMemo(() => {
     if (!liveReport) return [];
@@ -307,13 +314,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
             <div className="space-y-2">
               {/* Fő borítókép */}
               <div 
-                onClick={() => {
-                  setSelectedGalleryIndex(0);
-                  setGalleryOpen(true);
-                  if (onImageClick) {
-                    onImageClick(allImages[0]);
-                  }
-                }}
+                onClick={() => openGallery(allImages, 0)}
                 className="relative w-full h-52 sm:h-72 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 group/img cursor-pointer shadow-xs"
               >
                 <img 
@@ -344,13 +345,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                     <button
                       key={`${imgUrl}-${idx}`}
                       type="button"
-                      onClick={() => {
-                        setSelectedGalleryIndex(idx);
-                        setGalleryOpen(true);
-                        if (onImageClick) {
-                          onImageClick(imgUrl);
-                        }
-                      }}
+                      onClick={() => openGallery(allImages, idx)}
                       className="group/thumb relative w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:scale-105 transition-all shadow-xs cursor-pointer"
                       title={`${idx + 1}. kép megtekintése`}
                     >
@@ -369,10 +364,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                   
                   <button
                     type="button"
-                    onClick={() => {
-                      setSelectedGalleryIndex(0);
-                      setGalleryOpen(true);
-                    }}
+                    onClick={() => openGallery(allImages, 0)}
                     className="shrink-0 h-16 sm:h-20 px-3 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-light flex flex-col items-center justify-center gap-1 transition-colors cursor-pointer"
                   >
                     <Images className="w-4 h-4 text-blue-500" />
@@ -554,18 +546,18 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                 <p>{displayRes}</p>
                 {(liveReport.megoldasFotoUrl || liveReport.lezarasFotoUrl) && (
                   <div 
-                    onClick={() => {
-                      if (onImageClick) {
-                        onImageClick((liveReport.megoldasFotoUrl || liveReport.lezarasFotoUrl)!);
-                      }
-                    }}
-                    className="w-44 h-32 rounded-xl overflow-hidden border border-emerald-300 dark:border-emerald-800 mt-2 cursor-pointer"
+                    onClick={() => openGallery([(liveReport.megoldasFotoUrl || liveReport.lezarasFotoUrl)!], 0)}
+                    className="w-44 h-32 rounded-xl overflow-hidden border border-emerald-300 dark:border-emerald-800 mt-2 cursor-pointer group/closure relative"
+                    title={t.closurePhoto}
                   >
                     <img 
                       src={liveReport.megoldasFotoUrl || liveReport.lezarasFotoUrl} 
                       alt={t.closurePhoto} 
-                      className="w-full h-full object-cover" 
+                      className="w-full h-full object-cover group-hover/closure:scale-105 transition-transform duration-300" 
                     />
+                    <div className="absolute inset-0 bg-black/25 opacity-0 group-hover/closure:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-light backdrop-blur-[2px]">
+                      <ZoomIn className="w-4 h-4" />
+                    </div>
                   </div>
                 )}
               </div>
@@ -810,7 +802,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
       />
 
       <ImageLightboxModal
-        images={allImages}
+        images={galleryImages.length > 0 ? galleryImages : allImages}
         initialIndex={selectedGalleryIndex}
         isOpen={galleryOpen}
         onClose={() => setGalleryOpen(false)}

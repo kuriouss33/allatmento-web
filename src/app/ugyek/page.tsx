@@ -23,7 +23,6 @@ import { ReportDetailsModal } from '@/components/report/ReportDetailsModal';
 import { HelpOfferModal } from '@/components/report/HelpOfferModal';
 import { ResolveModal } from '@/components/report/ResolveModal';
 import { DeleteConfirmModal } from '@/components/report/DeleteConfirmModal';
-import { ImageLightboxModal } from '@/components/common/ImageLightboxModal';
 
 export default function MyCasesPage() {
   const { t } = useLanguage();
@@ -38,7 +37,6 @@ export default function MyCasesPage() {
   const [activeHelpReport, setActiveHelpReport] = useState<Report | null>(null);
   const [activeResolveReport, setActiveResolveReport] = useState<Report | null>(null);
   const [activeDeleteReport, setActiveDeleteReport] = useState<Report | null>(null);
-  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
   useEffect(() => {
     let unsubscribe: () => void = () => {};
@@ -235,7 +233,6 @@ export default function MyCasesPage() {
           setActiveDetailsReport(null);
           setActiveDeleteReport(r);
         }}
-        onImageClick={(url) => setLightboxImage(url)}
       />
 
       <HelpOfferModal
@@ -260,11 +257,6 @@ export default function MyCasesPage() {
             setReports((prev) => prev.filter((r) => r.id !== activeDeleteReport.id));
           }
         }}
-      />
-
-      <ImageLightboxModal
-        imageUrl={lightboxImage}
-        onClose={() => setLightboxImage(null)}
       />
     </div>
   );

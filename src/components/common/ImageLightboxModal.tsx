@@ -36,12 +36,14 @@ export const ImageLightboxModal: React.FC<ImageLightboxModalProps> = ({
 
   // Sync index when initialIndex changes or modal opens
   useEffect(() => {
-    if (initialIndex >= 0 && initialIndex < imageList.length) {
-      setCurrentIndex(initialIndex);
-    } else {
-      setCurrentIndex(0);
+    if (isOpen !== false) {
+      if (initialIndex >= 0 && initialIndex < imageList.length) {
+        setCurrentIndex(initialIndex);
+      } else {
+        setCurrentIndex(0);
+      }
     }
-  }, [initialIndex, imageList.length]);
+  }, [isOpen, initialIndex, imageList.length]);
 
   const shouldRender = isOpen !== undefined ? isOpen && imageList.length > 0 : imageList.length > 0;
 
@@ -61,6 +63,7 @@ export const ImageLightboxModal: React.FC<ImageLightboxModalProps> = ({
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        e.stopPropagation();
         onClose();
       } else if (e.key === 'ArrowLeft') {
         handlePrev();
@@ -111,7 +114,10 @@ export const ImageLightboxModal: React.FC<ImageLightboxModalProps> = ({
   return (
     <div 
       className="fixed inset-0 z-[150] flex flex-col items-center justify-between p-3 sm:p-5 pt-safe pb-safe pl-safe pr-safe bg-black/95 backdrop-blur-md animate-fadeIn select-none"
-      onClick={onClose}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClose();
+      }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       role="dialog"
@@ -140,7 +146,10 @@ export const ImageLightboxModal: React.FC<ImageLightboxModalProps> = ({
 
         <button
           type="button"
-          onClick={onClose}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
           className="p-2 sm:p-2.5 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-white transition-all cursor-pointer"
           title={t.close || "Bezárás"}
           aria-label={t.close || "Bezárás"}

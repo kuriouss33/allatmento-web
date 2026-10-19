@@ -2572,6 +2572,15 @@
       --tw-scale-z: 110%;
       scale: var(--tw-scale-x) var(--tw-scale-y);
     }
+    .group-hover\/closure\:scale-105:is(:where(.group\/closure):hover *) {
+      --tw-scale-x: 105%;
+      --tw-scale-y: 105%;
+      --tw-scale-z: 105%;
+      scale: var(--tw-scale-x) var(--tw-scale-y);
+    }
+    .group-hover\/closure\:opacity-100:is(:where(.group\/closure):hover *) {
+      opacity: 100%;
+    }
     .group-hover\/empty\:scale-105:is(:where(.group\/empty):hover *) {
       --tw-scale-x: 105%;
       --tw-scale-y: 105%;

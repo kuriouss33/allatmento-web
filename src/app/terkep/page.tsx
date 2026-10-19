@@ -25,7 +25,6 @@ import { ReportDetailsModal } from '@/components/report/ReportDetailsModal';
 import { HelpOfferModal } from '@/components/report/HelpOfferModal';
 import { ResolveModal } from '@/components/report/ResolveModal';
 import { DeleteConfirmModal } from '@/components/report/DeleteConfirmModal';
-import { ImageLightboxModal } from '@/components/common/ImageLightboxModal';
 import { useAutoHideOnScroll } from '@/hooks';
 
 // SSR-safe dinamikus Leaflet betöltés
@@ -102,7 +101,6 @@ export default function DispatchPage() {
   const [activeHelpReport, setActiveHelpReport] = useState<Report | null>(null);
   const [activeResolveReport, setActiveResolveReport] = useState<Report | null>(null);
   const [activeDeleteReport, setActiveDeleteReport] = useState<Report | null>(null);
-  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
   // Valós idejű szinkronizáció (mentőknek Firestore, vendégeknek biztonságos REST API)
   useEffect(() => {
@@ -437,7 +435,6 @@ export default function DispatchPage() {
           setActiveDetailsReport(null);
           setActiveDeleteReport(r);
         }}
-        onImageClick={(url) => setLightboxImage(url)}
       />
 
       <HelpOfferModal
@@ -465,11 +462,6 @@ export default function DispatchPage() {
             }
           }
         }}
-      />
-
-      <ImageLightboxModal
-        imageUrl={lightboxImage}
-        onClose={() => setLightboxImage(null)}
       />
     </div>
   );
