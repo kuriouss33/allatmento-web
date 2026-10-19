@@ -7,6 +7,8 @@ import {
   Calendar, 
   Clock, 
   Phone, 
+  Mail,
+  MessageSquare,
   CheckCircle2, 
   AlertCircle, 
   Package, 
@@ -214,6 +216,10 @@ export const TransportCard: React.FC<TransportCardProps> = ({
               <span>{job.idosav}</span>
             </div>
           )}
+          <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate max-w-[180px]">
+            👤 {job.feladoNev}
+            {job.feladoSzervezet ? ` (${job.feladoSzervezet})` : ''}
+          </div>
         </div>
       </div>
 
@@ -281,7 +287,7 @@ export const TransportCard: React.FC<TransportCardProps> = ({
             )}
           </button>
         ) : (
-          /* Ha önkéntes fuvarozó / látogató nézi: Közvetlen egykattintásos hívás gomb! (Nem kell bejelentkezni!) */
+          /* Ha önkéntes fuvarozó / látogató nézi: Hívás, Email vagy Egyeztetés (Chat) */
           job.feladoTelefon ? (
             <a
               href={`tel:${job.feladoTelefon.replace(/\s+/g, '')}`}
@@ -291,10 +297,40 @@ export const TransportCard: React.FC<TransportCardProps> = ({
               <Phone className="w-4 h-4 shrink-0" />
               <span className="truncate">{lang === 'en' ? 'Call' : 'Hívás'}: {job.feladoTelefon}</span>
             </a>
-          ) : null
+          ) : job.feladoEmail ? (
+            <div className="flex-1 flex items-center gap-1.5">
+              <a
+                href={`mailto:${job.feladoEmail}?subject=${encodeURIComponent(lang === 'en' ? `Animal transport: ${job.honnanVaros} -> ${job.hovaVaros}` : `Állatszállítás: ${job.honnanVaros} -> ${job.hovaVaros}`)}`}
+                className="flex-1 min-h-[48px] px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm shadow-emerald-600/20 active:scale-[0.98] transition-all truncate"
+                title={`${lang === 'en' ? 'Send email' : 'Email küldése'}: ${job.feladoEmail}`}
+              >
+                <Mail className="w-4 h-4 shrink-0" />
+                <span className="truncate">{lang === 'en' ? 'Email sender' : 'Email küldése'}</span>
+              </a>
+              <button
+                type="button"
+                onClick={() => onOpenDetails(job)}
+                className="min-h-[48px] px-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98] transition-all shrink-0"
+                title={lang === 'en' ? 'Open chat' : 'Belső chat megnyitása'}
+              >
+                <MessageSquare className="w-4 h-4 shrink-0" />
+                <span>Chat</span>
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => onOpenDetails(job)}
+              className="flex-1 min-h-[48px] px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm shadow-emerald-600/20 active:scale-[0.98] transition-all"
+              title={lang === 'en' ? 'Coordinate via internal chat' : 'Egyeztetés a belső koordinációs chaten'}
+            >
+              <MessageSquare className="w-4 h-4 shrink-0" />
+              <span>{lang === 'en' ? 'Coordinate (Chat)' : 'Egyeztetés (Chat)'}</span>
+            </button>
+          )
         )}
 
-        {/* Ha a feladó az és van telefonja, egy kis hívás gomb is elérhető */}
+        {/* Ha a feladó / admin nézi és van telefonja, egy kis hívás gomb is elérhető */}
         {(isCreator || isAdmin) && job.feladoTelefon && (
           <a
             href={`tel:${job.feladoTelefon.replace(/\s+/g, '')}`}
@@ -303,6 +339,18 @@ export const TransportCard: React.FC<TransportCardProps> = ({
             aria-label={lang === 'en' ? 'Call sender' : 'Feladó hívása'}
           >
             <Phone className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+          </a>
+        )}
+
+        {/* Ha a feladó / admin nézi és nincs telefonja de van emailje */}
+        {(isCreator || isAdmin) && !job.feladoTelefon && job.feladoEmail && (
+          <a
+            href={`mailto:${job.feladoEmail}`}
+            className="min-h-[48px] min-w-[48px] px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-slate-700 dark:text-zinc-200 hover:bg-emerald-50 dark:hover:bg-zinc-800 hover:text-emerald-600 flex items-center justify-center transition-colors shrink-0 shadow-2xs"
+            title={`${lang === 'en' ? 'Email' : 'Email'}: ${job.feladoEmail}`}
+            aria-label={lang === 'en' ? 'Email sender' : 'Feladó email'}
+          >
+            <Mail className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
           </a>
         )}
 

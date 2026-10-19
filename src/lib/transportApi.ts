@@ -318,7 +318,8 @@ export async function createTransport(data: {
   idosav?: string;
   urgency: TransportJob['urgency'];
   feladoNev: string;
-  feladoTelefon: string;
+  feladoTelefon?: string;
+  feladoEmail?: string;
   feladoSzervezet?: string;
   feladoUserId?: string;
   consentGiven?: boolean;
@@ -352,7 +353,8 @@ export async function createTransport(data: {
     urgency: data.urgency,
     statusz: 'nyitott',
     feladoNev: data.feladoNev,
-    feladoTelefon: data.feladoTelefon,
+    feladoTelefon: data.feladoTelefon || undefined,
+    feladoEmail: data.feladoEmail || undefined,
     feladoSzervezet: data.feladoSzervezet,
     feladoUserId: data.feladoUserId,
     consentGiven: Boolean(data.consentGiven),
@@ -380,8 +382,11 @@ export async function createTransport(data: {
   if (db) {
     try {
       const docRef = doc(db, 'transports', newId);
+      const cleanData = Object.fromEntries(
+        Object.entries(newJob).filter(([_, v]) => v !== undefined)
+      );
       await setDoc(docRef, {
-        ...newJob,
+        ...cleanData,
         createdAt: serverTimestamp()
       }, { merge: true });
     } catch (err) {

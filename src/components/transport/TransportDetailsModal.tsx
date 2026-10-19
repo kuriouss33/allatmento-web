@@ -9,6 +9,7 @@ import {
   Calendar, 
   Clock, 
   Phone, 
+  Mail,
   Send, 
   CheckCircle2, 
   AlertCircle, 
@@ -271,9 +272,17 @@ export const TransportDetailsModal: React.FC<TransportDetailsModalProps> = ({
               </div>
             ) : (
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                {lang === 'en'
-                  ? 'Volunteer driver: Call the sender directly to arrange pickup. No registration needed!'
-                  : 'Önkéntes fuvarozóként hívd közvetlenül a feladót az egyeztetéshez. Nincs szükség regisztrációra!'}
+                {currentJob.feladoTelefon
+                  ? (lang === 'en'
+                      ? 'Volunteer driver: Call the sender directly to arrange pickup. No registration needed!'
+                      : 'Önkéntes fuvarozóként hívd közvetlenül a feladót az egyeztetéshez. Nincs szükség regisztrációra!')
+                  : currentJob.feladoEmail
+                  ? (lang === 'en'
+                      ? 'Volunteer driver: Contact the sender via email or the coordination chat below!'
+                      : 'Önkéntes segítőként írj emailt a feladónak vagy egyeztess vele a lenti belső chaten!')
+                  : (lang === 'en'
+                      ? 'Volunteer driver: Coordinate the transport with the sender via the coordination chat below!'
+                      : 'Önkéntes segítőként a lenti belső koordinációs chaten tudsz egyeztetni a feladóval!')}
               </p>
             )}
           </div>
@@ -347,7 +356,7 @@ export const TransportDetailsModal: React.FC<TransportDetailsModalProps> = ({
             </div>
           </div>
 
-          {/* 4. Kapcsolattartás (Közvetlen Hívás Gomb) */}
+          {/* 4. Kapcsolattartás */}
           <div className="p-4 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 space-y-3">
             <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               {lang === 'en' ? 'Contacts' : 'Kapcsolattartók'}
@@ -374,17 +383,42 @@ export const TransportDetailsModal: React.FC<TransportDetailsModalProps> = ({
                 </div>
               </div>
 
-              {currentJob.feladoTelefon && (
-                <a
-                  href={`tel:${currentJob.feladoTelefon.replace(/\s+/g, '')}`}
-                  className="min-h-[48px] px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all"
-                  aria-label={lang === 'en' ? 'Call sender' : 'Feladó hívása'}
-                >
-                  <Phone className="w-4 h-4" />
-                  <span>{lang === 'en' ? 'Call now' : 'Hívás most'} ({currentJob.feladoTelefon})</span>
-                </a>
-              )}
+              <div className="flex items-center gap-2 flex-wrap">
+                {currentJob.feladoTelefon && (
+                  <a
+                    href={`tel:${currentJob.feladoTelefon.replace(/\s+/g, '')}`}
+                    className="min-h-[48px] px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all"
+                    aria-label={lang === 'en' ? 'Call sender' : 'Feladó hívása'}
+                  >
+                    <Phone className="w-4 h-4" />
+                    <span>{lang === 'en' ? 'Call now' : 'Hívás most'} ({currentJob.feladoTelefon})</span>
+                  </a>
+                )}
+
+                {currentJob.feladoEmail && (
+                  <a
+                    href={`mailto:${currentJob.feladoEmail}?subject=${encodeURIComponent(lang === 'en' ? `Animal transport: ${currentJob.honnanVaros} -> ${currentJob.hovaVaros}` : `Állatszállítás: ${currentJob.honnanVaros} -> ${currentJob.hovaVaros}`)}`}
+                    className="min-h-[48px] px-4 rounded-xl bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 active:scale-[0.98] text-slate-800 dark:text-zinc-200 font-bold text-xs flex items-center gap-1.5 border border-slate-300 dark:border-zinc-700 shadow-2xs transition-all"
+                    aria-label={lang === 'en' ? 'Email sender' : 'Email írása a feladónak'}
+                  >
+                    <Mail className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    <span>{currentJob.feladoEmail}</span>
+                  </a>
+                )}
+              </div>
             </div>
+
+            {/* Ha a feladó sem telefont, sem emailt nem adott meg */}
+            {!currentJob.feladoTelefon && !currentJob.feladoEmail && (
+              <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-900 dark:text-blue-200 flex items-center gap-2">
+                <MessageSquare className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+                <span>
+                  {lang === 'en'
+                    ? 'The sender did not provide a direct phone number or email. You can coordinate the transport directly via the internal chat below!'
+                    : 'A feladó nem adott meg közvetlen telefonszámot vagy emailt. Az egyeztetés teljes egészében a lenti belső koordinációs chaten zajlik!'}
+                </span>
+              </div>
+            )}
 
             {/* Sofőr adatai ha van */}
             {currentJob.driverName && (
@@ -419,12 +453,12 @@ export const TransportDetailsModal: React.FC<TransportDetailsModalProps> = ({
             {/* Jogi és Adatkezelési tájékoztató */}
             <div className="mt-3 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-[11px] sm:text-xs text-amber-950 dark:text-amber-200/90 space-y-1">
               <span className="font-bold flex items-center gap-1.5 text-xs">
-                🛡️ {lang === 'en' ? 'Privacy & Coordination Notice:' : 'Adatkezelési és kapcsolattartási tájékoztató:'}
+                🛡️ {lang === 'en' ? 'Privacy & Coordination Notice:' : 'Adatkezelési és koordinációs tájékoztató:'}
               </span>
               <p className="leading-relaxed opacity-95">
                 {lang === 'en'
-                  ? 'The requester has consented to make their phone number and locations publicly visible solely for coordinating this animal transport. Please use the contact details exclusively for this purpose.'
-                  : 'A hirdetés feladója kifejezetten hozzájárult a telefonszám és helyszínek közzétételéhez az állatszállítás egyeztetése céljából. Kérjük, hogy az elérhetőséget kizárólag a fuvarozással összefüggésben használd fel.'}
+                  ? 'The requester has consented to display their name, route locations, and (if provided) voluntary contact details solely for coordinating this animal transport. If direct contact details were omitted, coordination takes place securely via the built-in chat.'
+                  : 'A hirdetés feladója kifejezetten hozzájárult a neve, a szállítási helyszínek, valamint amennyiben önkéntesen megadta, a telefonszáma és/vagy email címe közzétételéhez az állatszállítás koordinálása céljából. Amennyiben nem adott meg közvetlen elérhetőséget, a kapcsolatfelvétel a lenti beépített belső chaten keresztül zajlik.'}
               </p>
             </div>
           </div>

@@ -9,6 +9,7 @@ import {
   Calendar, 
   Clock, 
   Phone, 
+  Mail,
   AlertCircle, 
   Box, 
   User, 
@@ -78,7 +79,8 @@ export const NewTransportModal: React.FC<NewTransportModalProps> = ({
   const [urgency, setUrgency] = useState<TransportUrgency>('normal');
 
   const [feladoNev, setFeladoNev] = useState('');
-  const [feladoTelefon, setFeladoTelefon] = useState('+36 ');
+  const [feladoTelefon, setFeladoTelefon] = useState('');
+  const [feladoEmail, setFeladoEmail] = useState('');
   const [feladoSzervezet, setFeladoSzervezet] = useState('');
   const [consentGiven, setConsentGiven] = useState(false);
 
@@ -95,8 +97,11 @@ export const NewTransportModal: React.FC<NewTransportModalProps> = ({
       if (firebaseUser.displayName && !feladoNev) {
         setFeladoNev(firebaseUser.displayName);
       }
-      if (firebaseUser.phoneNumber && feladoTelefon === '+36 ') {
+      if (firebaseUser.phoneNumber && !feladoTelefon) {
         setFeladoTelefon(firebaseUser.phoneNumber);
+      }
+      if (firebaseUser.email && !feladoEmail) {
+        setFeladoEmail(firebaseUser.email);
       }
     }
   }, [firebaseUser]);
@@ -138,15 +143,19 @@ export const NewTransportModal: React.FC<NewTransportModalProps> = ({
       setErrorMsg(lang === 'en' ? 'Please provide contact person name!' : 'Kérlek add meg a kapcsolattartó nevét!');
       return;
     }
-    if (!feladoTelefon.trim() || feladoTelefon.trim().length < 8) {
-      setErrorMsg(lang === 'en' ? 'Please provide a valid phone number!' : 'Kérlek adj meg egy érvényes telefonszámot!');
+    if (feladoTelefon.trim() && feladoTelefon.trim().length < 6) {
+      setErrorMsg(lang === 'en' ? 'Please provide a valid phone number or leave it blank!' : 'Kérlek adj meg egy érvényes telefonszámot, vagy hagyd üresen!');
+      return;
+    }
+    if (feladoEmail.trim() && !feladoEmail.includes('@')) {
+      setErrorMsg(lang === 'en' ? 'Please provide a valid email address or leave it blank!' : 'Kérlek adj meg egy érvényes email címet, vagy hagyd üresen!');
       return;
     }
     if (!consentGiven) {
       setErrorMsg(
         lang === 'en'
           ? 'Please accept the consent terms regarding the publication of your contact details.'
-          : 'Kérlek fogadd el a kapcsolattartási adatok közzétételére vonatkozó nyilatkozatot!'
+          : 'Kérlek fogadd el az adatok közzétételére vonatkozó nyilatkozatot!'
       );
       return;
     }
@@ -168,7 +177,8 @@ export const NewTransportModal: React.FC<NewTransportModalProps> = ({
         idosav: idosav.trim() || undefined,
         urgency,
         feladoNev: feladoNev.trim(),
-        feladoTelefon: feladoTelefon.trim(),
+        feladoTelefon: feladoTelefon.trim() || undefined,
+        feladoEmail: feladoEmail.trim() || undefined,
         feladoSzervezet: feladoSzervezet.trim() || undefined,
         feladoUserId: firebaseUser?.uid,
         consentGiven: true,
@@ -534,9 +544,24 @@ export const NewTransportModal: React.FC<NewTransportModalProps> = ({
 
             {/* 4. KAPCSOLATTARTÓ ADATAI */}
             <div className="space-y-3.5 p-3.5 sm:p-4 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800">
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                <User className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                <span>{lang === 'en' ? 'Contact Details' : 'Kapcsolattartó adatai'}</span>
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  <User className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  <span>{lang === 'en' ? 'Contact Details' : 'Kapcsolattartó adatai'}</span>
+                </div>
+                <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                  {lang === 'en' ? 'Only Name is mandatory' : 'Csak a név kötelező'}
+                </span>
+              </div>
+
+              {/* Tájékoztatás a bizalmas adatok védelméről és a beépített chatről */}
+              <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-[11px] sm:text-xs text-blue-900 dark:text-blue-200 flex items-start gap-2.5">
+                <ShieldCheck className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+                <p className="leading-relaxed">
+                  {lang === 'en'
+                    ? 'Your privacy is protected: phone number and email are completely optional. If not provided, volunteers and rescuers can coordinate the transport with you entirely via the platform\'s built-in chat.'
+                    : 'Nem szükséges bizalmas személyes adatokat megadnod: a telefonszám és az email megadása opcionális. Ha nem adsz meg közvetlen elérhetőséget, a fuvarozás a felület beépített koordinációs chatjén keresztül is lebonyolítható.'}
+                </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -555,13 +580,17 @@ export const NewTransportModal: React.FC<NewTransportModalProps> = ({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-700 dark:text-zinc-300 flex items-center gap-1.5">
-                    <Phone className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                    <span>{lang === 'en' ? 'Phone Number *' : 'Telefonszám *'}</span>
+                  <label className="text-xs font-bold text-slate-700 dark:text-zinc-300 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5">
+                      <Phone className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                      <span>{lang === 'en' ? 'Phone Number' : 'Telefonszám'}</span>
+                    </span>
+                    <span className="text-[10px] text-slate-400 font-normal">
+                      {lang === 'en' ? '(optional)' : '(opcionális)'}
+                    </span>
                   </label>
                   <input
                     type="tel"
-                    required
                     placeholder="+36 30 123 4567"
                     value={feladoTelefon}
                     onChange={(e) => setFeladoTelefon(e.target.value)}
@@ -570,18 +599,44 @@ export const NewTransportModal: React.FC<NewTransportModalProps> = ({
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-600 dark:text-zinc-400 flex items-center gap-1.5">
-                  <Building2 className="w-3.5 h-3.5" />
-                  <span>{lang === 'en' ? 'Organization / Shelter (optional)' : 'Szervezet / Menhely neve (opcionális)'}</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder={lang === 'en' ? 'e.g. Animal Rescue Foundation' : 'pl. Állatmentő Liget Debrecen'}
-                  value={feladoSzervezet}
-                  onChange={(e) => setFeladoSzervezet(e.target.value)}
-                  className="w-full min-h-[44px] px-3.5 py-2 rounded-xl border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-600 dark:text-zinc-400 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5">
+                      <Mail className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                      <span>{lang === 'en' ? 'Email Address' : 'Email cím'}</span>
+                    </span>
+                    <span className="text-[10px] text-slate-400 font-normal">
+                      {lang === 'en' ? '(optional)' : '(opcionális)'}
+                    </span>
+                  </label>
+                  <input
+                    type="email"
+                    placeholder={lang === 'en' ? 'e.g. contact@example.com' : 'pl. kapcsolat@menhely.hu'}
+                    value={feladoEmail}
+                    onChange={(e) => setFeladoEmail(e.target.value)}
+                    className="w-full min-h-[48px] px-3.5 py-2 rounded-xl border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-600 dark:text-zinc-400 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5">
+                      <Building2 className="w-3.5 h-3.5" />
+                      <span>{lang === 'en' ? 'Organization / Shelter' : 'Szervezet / Menhely'}</span>
+                    </span>
+                    <span className="text-[10px] text-slate-400 font-normal">
+                      {lang === 'en' ? '(optional)' : '(opcionális)'}
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={lang === 'en' ? 'e.g. Animal Rescue Foundation' : 'pl. Állatmentő Liget Debrecen'}
+                    value={feladoSzervezet}
+                    onChange={(e) => setFeladoSzervezet(e.target.value)}
+                    className="w-full min-h-[44px] px-3.5 py-2 rounded-xl border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                </div>
               </div>
             </div>
 
@@ -598,18 +653,18 @@ export const NewTransportModal: React.FC<NewTransportModalProps> = ({
                 <div className="space-y-1">
                   <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-amber-200 block leading-snug">
                     {lang === 'en'
-                      ? 'Consent to public contact display for transport coordination *'
-                      : 'Kifejezett hozzájárulás az elérhetőségek közzétételéhez *'}
+                      ? 'Consent to data display for transport coordination *'
+                      : 'Kifejezett hozzájárulás az adatok közzétételéhez *'}
                   </span>
                   <p className="text-[11px] sm:text-xs text-slate-600 dark:text-zinc-300 leading-relaxed">
                     {lang === 'en'
-                      ? 'I agree and consent that my phone number and specified cities/locations will be publicly displayed on the Transport Board so volunteer drivers can directly call and coordinate with me. Once the transport is solved, I can mark it as solved anytime.'
-                      : 'Kifejezetten hozzájárulok ahhoz, hogy a megadott telefonszámom és településeim/címhelyem nyilvánosan megjelenjen a Fuvarbörzén az állatszállítás lebonyolítása és a fuvarozókkal való közvetlen telefonos kapcsolatfelvétel céljából. Tudomásul veszem, hogy a fuvar teljesülésekor az oldalon a hirdetésemet bármikor Megoldottá nyilváníthatom.'}
+                      ? 'I agree and consent that my name, route locations, and (if provided voluntarily) my phone number and/or email will be displayed on the Transport Board solely for coordinating this animal transport. I understand that direct phone/email are optional and coordination can also take place entirely via the built-in chat. I can mark the request as Solved anytime.'
+                      : 'Kifejezetten hozzájárulok ahhoz, hogy a nevem, a szállítási helyszínek, valamint amennyiben önkéntesen megadtam, a telefonszámom és/vagy email címem megjelenjen a Fuvarbörzén az állatszállítás koordinálása céljából. Tudomásul veszem, hogy a telefonszám vagy email megadása nem kötelező, és a szállítás a beépített belső chaten is egyeztethető. A fuvart bármikor Megoldottá nyilváníthatom.'}
                   </p>
                   <p className="text-[11px] text-amber-700 dark:text-amber-400/90 font-medium">
                     🛡️ {lang === 'en'
-                      ? 'Privacy tip: Stating only the city or a public meeting point (e.g. clinic parking) is sufficient instead of exact apartment details.'
-                      : 'Adatvédelmi tipp: Nem szükséges pontos lakcímet megadni (pl. emelet/ajtó), elegendő a város vagy egy megbeszélt találkozási pont (pl. rendelő parkolója).'}
+                      ? 'Privacy tip: Never disclose exact private apartment addresses publicly! Entering only the city or a public meeting point (e.g. clinic parking lot) is sufficient.'
+                      : 'Adatvédelmi garancia: Soha ne adj meg pontos magánlakcímet nyilvánosan! Elegendő a város vagy egy nyilvános találkozási pont (pl. rendelő parkolója).'}
                   </p>
                 </div>
               </label>
