@@ -20,6 +20,7 @@ export const hu = {
   navGuide: "Elsősegély",
   navStats: "Statisztikák",
   navAdmin: "Adminisztráció",
+  navTransport: "Fuvarbörze",
   backToHome: "Főoldal",
 
   // Auth & Roles
@@ -239,6 +240,9 @@ export const hu = {
   statsCardAction: "Megtekintés",
   myCasesCardDesc: "Az általad beküldött és elvállalt bejelentések követése.",
   myCasesCardAction: "Megnyitás",
+  transportCardTitle: "Fuvarbörze (Logisztika)",
+  transportCardDesc: "Tervezett állatszállítások menhelyek, befogadók és orvosok között.",
+  transportCardAction: "Böngészés",
 
   // Header & Badges
   badgeRescuer: "Mentő",
@@ -486,4 +490,25 @@ export const hu = {
   noOrgsFoundSub: "Próbálj meg más kategóriát vagy vármegyét választani!",
   navToOrg: "Útvonal",
   nearMeTooltip: "Közeli menhelyek, állatorvosok, kórházak és hatóságok a tartózkodási helyed alapján",
+
+  // Fuvarbörze (Logisztika)
+  transportTitle: "Fuvarbörze",
+  transportSubtitle: "Tervezett állatszállítások és mentési logisztika koordinációja",
+  transportPostRequest: "Keresek fuvart / Új igény",
+  transportStatusOpen: "Nyitott fuvar",
+  transportStatusAccepted: "Elvállalva",
+  transportStatusInProg: "Úton van",
+  transportStatusCompleted: "Teljesítve",
+  transportUrgencyNormal: "Normál",
+  transportUrgencyUrgent: "Sürgős",
+  transportUrgencyFixed: "Fix időpont",
+  transportTakeJob: "Fuvar elvállalása",
+  transportDeparted: "Útnak indultam",
+  transportArrived: "Megérkeztem (Kész)",
+  transportDriver: "Vállaló sofőr",
+  transportCallDriver: "Sofőr hívása",
+  transportCallSender: "Feladó hívása",
+  transportBoxNeeded: "Box szükséges!",
+  transportBoxProvided: "Box biztosított",
+  transportBoxNotNeeded: "Nem szükséges",
 };

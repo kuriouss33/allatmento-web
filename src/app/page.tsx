@@ -11,7 +11,8 @@ import {
   ClipboardList, 
   BarChart3, 
   ArrowRight,
-  ShieldAlert
+  ShieldAlert,
+  Truck
 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
@@ -30,6 +31,13 @@ export default function HomePage() {
       description: t.myCasesCardDesc,
       icon: ClipboardList,
       actionText: t.myCasesCardAction,
+    },
+    {
+      href: '/fuvar',
+      title: t.transportCardTitle || t.navTransport,
+      description: t.transportCardDesc,
+      icon: Truck,
+      actionText: t.transportCardAction,
     },
     {
       href: '/szervezetek',

@@ -1,0 +1,458 @@
+import { 
+  collection, 
+  doc, 
+  getDocs, 
+  setDoc, 
+  updateDoc, 
+  onSnapshot, 
+  query, 
+  orderBy, 
+  arrayUnion,
+  serverTimestamp 
+} from 'firebase/firestore';
+import { db } from './firebase';
+import { TransportJob, TransportStatus, TransportMessage } from '@/types';
+import { resolveLocation, calculateDistanceKm } from './transportGeo';
+
+const STORAGE_KEY = 'allatmento_transports_cache';
+
+// Kezdeti valósághű szállítási minták (amennyiben az adatbázis még üres)
+export const INITIAL_TRANSPORTS: TransportJob[] = [
+  {
+    id: 'fuvar-1',
+    honnanVaros: 'Debrecen',
+    honnanCim: 'Állatmentő Liget Menhely',
+    honnanMegye: 'Hajdú-Bihar',
+    honnanLat: 47.5316,
+    honnanLon: 21.6273,
+    hovaVaros: 'Budapest',
+    hovaCim: 'Állatorvostudományi Egyetem Klinika',
+    hovaMegye: 'Budapest',
+    hovaLat: 47.4979,
+    hovaLon: 19.0402,
+    tavolsagKm: 231,
+    cargoType: 'kutya',
+    cargoSize: 'kozepes',
+    allatNev: 'Barni',
+    allatFajta: 'Keverék kutya',
+    leiras: 'Csípőműtét utáni kontrollvizsgálatra kell feljuttatni Budapestre. Szelíd, autóban nyugodt kutya.',
+    crateRequirement: 'box_szukseges',
+    datum: '2026-10-21',
+    idosav: 'Délelőtt (09:00 - 11:30)',
+    urgency: 'surgos',
+    statusz: 'nyitott',
+    feladoNev: 'Kovács Andrea (Liget Alapítvány)',
+    feladoTelefon: '+36 30 456 7891',
+    feladoSzervezet: 'Állatmentő Liget Debrecen',
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
+    messages: [
+      {
+        id: 'm1',
+        senderId: 'felado-1',
+        senderName: 'Kovács Andrea',
+        text: 'A kutya kísérőpapírjai és oltási könyve a nyakörvére lesz készítve. Hordozóboxra szükség van!',
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+      }
+    ]
+  },
+  {
+    id: 'fuvar-2',
+    honnanVaros: 'Szeged',
+    honnanCim: 'Tappancs Tanya',
+    honnanMegye: 'Csongrád-Csanád',
+    honnanLat: 46.2530,
+    honnanLon: 20.1414,
+    hovaVaros: 'Pécs',
+    hovaCim: 'Misina Természetvédő Egyesület',
+    hovaMegye: 'Baranya',
+    hovaLat: 46.0727,
+    hovaLon: 18.2323,
+    tavolsagKm: 189,
+    cargoType: 'macska',
+    cargoSize: 'kicsi',
+    allatNev: 'Mici és Samu (2 cica)',
+    allatFajta: 'Házimacska (kölykök)',
+    leiras: 'Ideiglenes befogadóhoz szállítás Pécsre. Saját műanyag boxban utaznak, teljesen szobatiszták.',
+    crateRequirement: 'sajat_box_van',
+    datum: '2026-10-22',
+    idosav: 'Délután (14:00 - 18:00)',
+    urgency: 'normal',
+    statusz: 'nyitott',
+    feladoNev: 'Molnár Gábor',
+    feladoTelefon: '+36 20 892 1123',
+    feladoSzervezet: 'Tappancs Alapítvány',
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 6).toISOString(),
+  },
+  {
+    id: 'fuvar-3',
+    honnanVaros: 'Miskolc',
+    honnanCim: 'Miskolci Állategészségügyi Telep',
+    honnanMegye: 'Borsod-Abaúj-Zemplén',
+    honnanLat: 48.1035,
+    honnanLon: 20.7784,
+    hovaVaros: 'Eger',
+    hovaCim: 'Egri Macska- és Kutyamentők',
+    hovaMegye: 'Heves',
+    hovaLat: 47.9026,
+    hovaLon: 20.3772,
+    tavolsagKm: 58,
+    cargoType: 'adomany_tap',
+    cargoSize: 'csomag',
+    allatNev: '8 zsák prémium száraztáp + kötszerek',
+    leiras: 'Németországi adománycsomag továbbítása az egri menhely számára. Egy kombi vagy ferdehátú autó csomagtartójában elfér.',
+    crateRequirement: 'nem_szukseges',
+    datum: '2026-10-23',
+    idosav: 'Rugalmas (egész nap)',
+    urgency: 'normal',
+    statusz: 'nyitott',
+    feladoNev: 'Varga Zsolt',
+    feladoTelefon: '+36 70 334 5566',
+    feladoSzervezet: 'Miskolci Mentőcsapat',
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString(),
+  },
+  {
+    id: 'fuvar-4',
+    honnanVaros: 'Győr',
+    honnanCim: 'Győri Állatmenhely',
+    honnanMegye: 'Győr-Moson-Sopron',
+    honnanLat: 47.6875,
+    honnanLon: 17.6504,
+    hovaVaros: 'Budapest',
+    hovaCim: 'Noé Állatotthon Alapítvány (XVII. kerület)',
+    hovaMegye: 'Budapest',
+    hovaLat: 47.4810,
+    hovaLon: 19.2450,
+    tavolsagKm: 135,
+    cargoType: 'kutya',
+    cargoSize: 'nagy',
+    allatNev: 'Max (idős labrador)',
+    allatFajta: 'Labrador retriever',
+    leiras: 'Látássérült idős labrador rehabilitációra és fizioterápiára szállítása a Noé Állatotthonba.',
+    crateRequirement: 'nem_szukseges',
+    datum: '2026-10-21',
+    idosav: 'Pontosan 10:00 órára',
+    urgency: 'fix_idopont',
+    statusz: 'elvallalva',
+    feladoNev: 'Szabó Péter',
+    feladoTelefon: '+36 30 111 2233',
+    driverId: 'sofor-1',
+    driverName: 'Horváth Tamás (Önkéntes mentő)',
+    driverPhone: '+36 70 555 4321',
+    elvallalvaAt: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+    messages: [
+      {
+        id: 'm2',
+        senderId: 'sofor-1',
+        senderName: 'Horváth Tamás',
+        text: 'Reggel 8:15-kor érkezem a győri menhelyre, tágas kombim van és biztonsági hámom.',
+        createdAt: new Date(Date.now() - 1000 * 60 * 40).toISOString(),
+        isDriver: true
+      },
+      {
+        id: 'm3',
+        senderId: 'felado-4',
+        senderName: 'Szabó Péter',
+        text: 'Köszönjük szépen! Maxot reggel nem etetjük meg, hogy ne legyen rosszul az autóban.',
+        createdAt: new Date(Date.now() - 1000 * 60 * 25).toISOString(),
+      }
+    ]
+  },
+  {
+    id: 'fuvar-5',
+    honnanVaros: 'Székesfehérvár',
+    honnanCim: 'Herosz Állatotthon',
+    honnanMegye: 'Fejér',
+    honnanLat: 47.1899,
+    honnanLon: 18.4103,
+    hovaVaros: 'Veszprém',
+    hovaCim: 'Veszprémi Állatvédő Egyesület',
+    hovaMegye: 'Veszprém',
+    hovaLat: 47.0933,
+    hovaLon: 17.9133,
+    tavolsagKm: 44,
+    cargoType: 'macska',
+    cargoSize: 'kicsi',
+    allatNev: 'Cirmi (kiscica)',
+    allatFajta: 'Európai rövidszőrű',
+    leiras: 'Sérült kiscica átadása specialistának Veszprémben.',
+    crateRequirement: 'sajat_box_van',
+    datum: '2026-10-20',
+    idosav: '13:00 - 15:00',
+    urgency: 'surgos',
+    statusz: 'folyamatban',
+    feladoNev: 'Tóth Ildikó',
+    feladoTelefon: '+36 30 888 9900',
+    driverId: 'sofor-2',
+    driverName: 'Kiss Béla',
+    driverPhone: '+36 20 444 3322',
+    elvallalvaAt: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 30).toISOString(),
+    messages: [
+      {
+        id: 'm4',
+        senderId: 'sofor-2',
+        senderName: 'Kiss Béla',
+        text: 'Felvettem Cirmit Székesfehérváron, elindultam Veszprém felé!',
+        createdAt: new Date(Date.now() - 1000 * 60 * 20).toISOString(),
+        isDriver: true
+      }
+    ]
+  }
+];
+
+// Helyi gyorsítótár kezelése
+export function getLocalTransports(): TransportJob[] {
+  if (typeof window === 'undefined') return INITIAL_TRANSPORTS;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_TRANSPORTS));
+      return INITIAL_TRANSPORTS;
+    }
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_TRANSPORTS;
+  } catch {
+    return INITIAL_TRANSPORTS;
+  }
+}
+
+export function saveLocalTransports(jobs: TransportJob[]) {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(jobs));
+  } catch {}
+}
+
+/**
+ * Valós idejű szállítási feladat feliratkozás (Firestore + Local fallback)
+ */
+export function subscribeTransports(callback: (jobs: TransportJob[]) => void): () => void {
+  // Elsőként a helyi gyorsítótárat adjuk vissza a 0 ms-os betöltéshez
+  const cached = getLocalTransports();
+  callback(cached);
+
+  if (!db) {
+    return () => {};
+  }
+
+  try {
+    const colRef = collection(db, 'transports');
+    const q = query(colRef, orderBy('createdAt', 'desc'));
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        if (!snapshot.empty) {
+          const list: TransportJob[] = [];
+          snapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            list.push({
+              id: docSnap.id,
+              ...data,
+              createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : (data.createdAt || new Date().toISOString())
+            } as TransportJob);
+          });
+          saveLocalTransports(list);
+          callback(list);
+        } else {
+          // Ha a felhő kollekció még üres, a kezdeti adatokkal dolgozunk
+          saveLocalTransports(INITIAL_TRANSPORTS);
+          callback(INITIAL_TRANSPORTS);
+        }
+      },
+      (err) => {
+        console.warn('Firestore transports subscription fallback to local cache:', err);
+        callback(getLocalTransports());
+      }
+    );
+
+    return unsubscribe;
+  } catch (err) {
+    console.warn('Error setting up Firestore transport listener:', err);
+    return () => {};
+  }
+}
+
+/**
+ * Új fuvarozási igény feladása
+ */
+export async function createTransport(data: {
+  honnanVaros: string;
+  honnanCim?: string;
+  honnanMegye?: string;
+  hovaVaros: string;
+  hovaCim?: string;
+  hovaMegye?: string;
+  cargoType: TransportJob['cargoType'];
+  cargoSize: TransportJob['cargoSize'];
+  allatNev?: string;
+  allatFajta?: string;
+  leiras: string;
+  crateRequirement: TransportJob['crateRequirement'];
+  datum: string;
+  idosav?: string;
+  urgency: TransportJob['urgency'];
+  feladoNev: string;
+  feladoTelefon: string;
+  feladoSzervezet?: string;
+  feladoUserId?: string;
+}): Promise<string> {
+  const fromGeo = resolveLocation(data.honnanVaros, data.honnanMegye);
+  const toGeo = resolveLocation(data.hovaVaros, data.hovaMegye);
+  const tavolsagKm = calculateDistanceKm(fromGeo.lat, fromGeo.lon, toGeo.lat, toGeo.lon);
+
+  const newId = `fuvar-${Date.now()}`;
+  const newJob: TransportJob = {
+    id: newId,
+    honnanVaros: data.honnanVaros,
+    honnanCim: data.honnanCim,
+    honnanMegye: fromGeo.county,
+    honnanLat: fromGeo.lat,
+    honnanLon: fromGeo.lon,
+    hovaVaros: data.hovaVaros,
+    hovaCim: data.hovaCim,
+    hovaMegye: toGeo.county,
+    hovaLat: toGeo.lat,
+    hovaLon: toGeo.lon,
+    tavolsagKm,
+    cargoType: data.cargoType,
+    cargoSize: data.cargoSize,
+    allatNev: data.allatNev,
+    allatFajta: data.allatFajta,
+    leiras: data.leiras,
+    crateRequirement: data.crateRequirement,
+    datum: data.datum,
+    idosav: data.idosav,
+    urgency: data.urgency,
+    statusz: 'nyitott',
+    feladoNev: data.feladoNev,
+    feladoTelefon: data.feladoTelefon,
+    feladoSzervezet: data.feladoSzervezet,
+    feladoUserId: data.feladoUserId,
+    createdAt: new Date().toISOString(),
+    messages: []
+  };
+
+  // Frissítjük a helyi tárat azonnal
+  const current = getLocalTransports();
+  const updated = [newJob, ...current];
+  saveLocalTransports(updated);
+
+  // Felhőbe mentés
+  if (db) {
+    try {
+      const docRef = doc(db, 'transports', newId);
+      await setDoc(docRef, {
+        ...newJob,
+        createdAt: serverTimestamp()
+      });
+    } catch (err) {
+      console.warn('Firestore create transport failed, kept locally:', err);
+    }
+  }
+
+  return newId;
+}
+
+/**
+ * Fuvar státusz frissítése és feladatvállalás
+ */
+export async function updateTransportStatus(
+  id: string,
+  newStatus: TransportStatus,
+  driverInfo?: {
+    driverId: string;
+    driverName: string;
+    driverPhone?: string;
+  }
+): Promise<void> {
+  const current = getLocalTransports();
+  const index = current.findIndex((j) => j.id === id);
+
+  if (index !== -1) {
+    const updatedJob: TransportJob = {
+      ...current[index],
+      statusz: newStatus,
+      updatedAt: new Date().toISOString(),
+      ...(driverInfo ? {
+        driverId: driverInfo.driverId,
+        driverName: driverInfo.driverName,
+        driverPhone: driverInfo.driverPhone || current[index].driverPhone,
+        elvallalvaAt: current[index].elvallalvaAt || new Date().toISOString()
+      } : {}),
+      ...(newStatus === 'teljesitve' ? { teljesitveAt: new Date().toISOString() } : {})
+    };
+
+    current[index] = updatedJob;
+    saveLocalTransports([...current]);
+  }
+
+  if (db) {
+    try {
+      const docRef = doc(db, 'transports', id);
+      const updateData: any = {
+        statusz: newStatus,
+        updatedAt: serverTimestamp()
+      };
+      if (driverInfo) {
+        updateData.driverId = driverInfo.driverId;
+        updateData.driverName = driverInfo.driverName;
+        if (driverInfo.driverPhone) updateData.driverPhone = driverInfo.driverPhone;
+        updateData.elvallalvaAt = serverTimestamp();
+      }
+      if (newStatus === 'teljesitve') {
+        updateData.teljesitveAt = serverTimestamp();
+      }
+      await updateDoc(docRef, updateData);
+    } catch (err) {
+      console.warn('Firestore updateTransportStatus error, kept locally:', err);
+    }
+  }
+}
+
+/**
+ * Belső egyeztető üzenet hozzáadása
+ */
+export async function addTransportMessage(
+  id: string,
+  message: {
+    senderId: string;
+    senderName: string;
+    text: string;
+    isDriver?: boolean;
+  }
+): Promise<void> {
+  const newMsg: TransportMessage = {
+    id: `msg-${Date.now()}`,
+    senderId: message.senderId,
+    senderName: message.senderName,
+    text: message.text,
+    createdAt: new Date().toISOString(),
+    isDriver: message.isDriver
+  };
+
+  const current = getLocalTransports();
+  const index = current.findIndex((j) => j.id === id);
+  if (index !== -1) {
+    const msgs = current[index].messages || [];
+    current[index] = {
+      ...current[index],
+      messages: [...msgs, newMsg],
+      updatedAt: new Date().toISOString()
+    };
+    saveLocalTransports([...current]);
+  }
+
+  if (db) {
+    try {
+      const docRef = doc(db, 'transports', id);
+      await updateDoc(docRef, {
+        messages: arrayUnion(newMsg),
+        updatedAt: serverTimestamp()
+      });
+    } catch (err) {
+      console.warn('Firestore addTransportMessage error:', err);
+    }
+  }
+}

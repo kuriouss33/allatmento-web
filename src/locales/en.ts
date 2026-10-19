@@ -22,6 +22,7 @@ export const en: typeof hu = {
   navGuide: "First Aid",
   navStats: "Statistics",
   navAdmin: "Administration",
+  navTransport: "Transport Board",
   backToHome: "Home",
 
   // Auth & Roles
@@ -241,6 +242,9 @@ export const en: typeof hu = {
   statsCardAction: "View",
   myCasesCardDesc: "Track incidents submitted by you and rescue missions accepted.",
   myCasesCardAction: "Open",
+  transportCardTitle: "Transport Board (Logistics)",
+  transportCardDesc: "Planned animal transport coordination between shelters, fosters and vet clinics.",
+  transportCardAction: "Browse rides",
 
   // Header & Badges
   badgeRescuer: "Rescuer",
@@ -488,4 +492,25 @@ export const en: typeof hu = {
   noOrgsFoundSub: "Try choosing another category or county!",
   navToOrg: "Directions",
   nearMeTooltip: "Nearby shelters, vets, hospitals, and wildlife rescues based on your GPS",
+
+  // Transport Board (Logistics)
+  transportTitle: "Animal Transport Board",
+  transportSubtitle: "Planned animal transport coordination and supply logistics",
+  transportPostRequest: "Post Transport Request",
+  transportStatusOpen: "Open ride",
+  transportStatusAccepted: "Accepted",
+  transportStatusInProg: "In transit",
+  transportStatusCompleted: "Completed",
+  transportUrgencyNormal: "Normal",
+  transportUrgencyUrgent: "Urgent",
+  transportUrgencyFixed: "Fixed appointment",
+  transportTakeJob: "Accept ride",
+  transportDeparted: "Started transit",
+  transportArrived: "Arrived (Complete)",
+  transportDriver: "Volunteer Driver",
+  transportCallDriver: "Call driver",
+  transportCallSender: "Call sender",
+  transportBoxNeeded: "Crate needed!",
+  transportBoxProvided: "Crate provided",
+  transportBoxNotNeeded: "Not required",
 };
