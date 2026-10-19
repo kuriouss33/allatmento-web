@@ -105,7 +105,7 @@ export async function getReports(status?: string, idToken?: string): Promise<Rep
 // 2. Új bejelentés létrehozása
 export async function createReport(data: {
   fajta: string;
-  leiras?: string;
+  leiras: string;
   megye?: string;
   cim?: string;
   telefon?: string;

@@ -130,6 +130,8 @@ export const hu = {
   countyLabel: "Megye / Régió",
   descLabel: "Részletes leírás / állapot",
   descPlaceholder: "Pl. sérült a bal hátsó lába, az árokban fekszik, nyakörve van...",
+  descRequired: "A részletes leírás kitöltése kötelező a helyszíni mentés megkönnyítéséhez!",
+  descRequiredHint: "A leírás kitöltése kötelező az állat állapotáról és a helyszínről.",
   phoneLabel: "Bejelentő telefonszáma (ajánlott)",
   phonePlaceholder: "+36 30 123 4567",
   privacyConsentLabel: "Elfogadom az adatkezelési tájékoztatót és hozzájárulok a megadott adatok mentés célú kezeléséhez.",

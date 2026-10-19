@@ -185,6 +185,10 @@ export default function ReportWizardPage() {
   // Beküldés
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!leiras.trim()) {
+      setError(t.descRequired || 'A részletes leírás kitöltése kötelező a helyszíni mentés megkönnyítéséhez!');
+      return;
+    }
     if (!privacyConsent) {
       setError('A beküldéshez el kell fogadnod az adatkezelési tájékoztatót!');
       return;
@@ -697,15 +701,22 @@ export default function ReportWizardPage() {
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1 text-center">
-                {t.descLabel}
+                <span>{t.descLabel}</span> <span className="text-red-500 font-bold" title="Kötelező mező">*</span>
               </label>
               <textarea
                 rows={3}
+                required
                 value={leiras}
-                onChange={(e) => setLeiras(e.target.value)}
+                onChange={(e) => {
+                  setLeiras(e.target.value);
+                  if (error) setError(null);
+                }}
                 placeholder={t.descPlaceholder}
                 className="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none text-center"
               />
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 text-center mt-1">
+                {t.descRequiredHint || "A leírás kitöltése kötelező az állat állapotáról és a helyszínről."}
+              </p>
             </div>
 
             <div>

@@ -132,6 +132,8 @@ export const en: typeof hu = {
   countyLabel: "County / Region",
   descLabel: "Description / Animal Condition",
   descPlaceholder: "E.g. injured left rear paw, lying in ditch, wearing collar...",
+  descRequired: "Detailed description is required to help on-site rescuers!",
+  descRequiredHint: "A description is required regarding the animal's condition and location.",
   phoneLabel: "Reporter Phone Number (recommended)",
   phonePlaceholder: "+36 30 123 4567",
   privacyConsentLabel: "I agree to the privacy policy and consent to the data processing for rescue purposes.",
